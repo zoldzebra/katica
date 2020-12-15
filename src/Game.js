@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { INVALID_MOVE } from 'boardgame.io/core';
 
 // Return true if `cells` is in a winning configuration.
