@@ -2,14 +2,14 @@
 import { Server } from 'boardgame.io/server';
 import path from 'path';
 import serve from 'koa-static';
-import { TicTacToe } from './src/Games/TicTacToe/Game';
-import { KaticaGame } from './src/Games/Katica/game.ts';
+import { TicTacToe } from './Games/TicTacToe/Game';
+import { KaticaGame } from './Games/Katica/game';
 
 const server = Server({ games: [TicTacToe, KaticaGame] });
-const PORT = process.env.PORT || 8000;
+const PORT = Number(process.env.PORT) || 8000;
 
 // Build path relative to the server.js file
-const frontEndAppBuildPath = path.resolve(__dirname, './build');
+const frontEndAppBuildPath = path.resolve(__dirname, './../build');
 server.app.use(serve(frontEndAppBuildPath));
 
 console.log('frontEndAppBuildPath', frontEndAppBuildPath);

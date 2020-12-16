@@ -3,7 +3,7 @@ import { Server } from 'boardgame.io/server';
 import path from 'path';
 import serve from 'koa-static';
 import { TicTacToe } from './src/Games/TicTacToe/Game';
-import { KaticaGame } from './src/Games/Katica/game.ts';
+import { KaticaGame } from './src/Games/Katica/game';
 
 const server = Server({ games: [TicTacToe, KaticaGame] });
 const PORT = process.env.PORT || 8000;
