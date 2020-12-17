@@ -23,7 +23,7 @@
     "types": []
   },
   "files": [
-    "game.ts"
+    "Game.ts"
   ],
   "exclude": [
     "node_modules",
