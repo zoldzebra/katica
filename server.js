@@ -3,7 +3,7 @@ import { Server } from 'boardgame.io/server';
 import path from 'path';
 import serve from 'koa-static';
 import { TicTacToe } from './src/Games/TicTacToe/Game';
-import { KaticaGame } from './tsBuild/Game';
+import { KaticaGame } from './KaticaGameBuild/Game';
 
 
 const server = Server({ games: [TicTacToe, KaticaGame] });
