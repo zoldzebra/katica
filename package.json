@@ -3,25 +3,29 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^5.11.6",
-    "@testing-library/react": "^11.2.2",
-    "@testing-library/user-event": "^12.6.0",
-    "@types/jest": "^26.0.19",
-    "@types/node": "^12.19.9",
-    "@types/react": "^16.14.2",
-    "@types/react-dom": "^16.9.10",
-    "boardgame.io": "^0.42.2",
-    "esm": "^3.2.25",
-    "koa-static": "^5.0.0",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
+    "@freeboardgame.org/boardgame.io": "0.0.12",
+    "@material-ui/core": "4.11.2",
+    "@testing-library/jest-dom": "5.11.6",
+    "@testing-library/react": "11.2.2",
+    "@testing-library/user-event": "12.6.0",
+    "@tweenjs/tween.js": "18.6.4",
+    "@types/jest": "26.0.19",
+    "@types/node": "12.19.9",
+    "@types/react": "16.14.2",
+    "@types/react-dom": "16.9.10",
+    "boardgame.io": "0.42.2",
+    "esm": "3.2.25",
+    "koa-static": "5.0.0",
+    "ramda": "0.27.1",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
     "react-scripts": "4.0.1",
-    "typescript": "^4.1.3",
-    "web-vitals": "^0.2.4"
+    "three": "0.123.0",
+    "typescript": "4.1.3",
+    "web-vitals": "0.2.4"
   },
   "scripts": {
-    "start": "node -r esm server.js",
-    "start2": "react-scripts start",
+    "start": "tsc --p src/Games/Katica/tsconfig.json && node -r esm server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -45,8 +49,10 @@
     ]
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.10.0",
-    "@typescript-eslint/parser": "^4.10.0",
-    "eslint": "^7.15.0"
+    "@types/koa-static": "4.0.1",
+    "@types/ramda": "0.27.33",
+    "@typescript-eslint/eslint-plugin": "4.10.0",
+    "@typescript-eslint/parser": "4.10.0",
+    "eslint": "7.15.0"
   }
 }

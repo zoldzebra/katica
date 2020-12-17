@@ -1,8 +1,7 @@
 import React from 'react';
-import { LobbyComponent } from './Lobby';
+import { LobbyComponent } from './components/Lobby';
 
 const App = () => {
-  console.log('Lobby start');
   return (
     <LobbyComponent />
   )
