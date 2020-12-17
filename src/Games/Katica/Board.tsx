@@ -7,9 +7,6 @@ import grey from '@material-ui/core/colors/grey';
 import blue from '@material-ui/core/colors/blue';
 import orange from '@material-ui/core/colors/orange';
 
-// import { IGameArgs } from 'components/App/Game/GameBoardWrapper';
-// import { GameLayout } from 'components/App/Game/GameLayout';
-// import { isOnlineGame, isAIGame } from '../common/gameMode';
 import { IG, Piece, EMPTY_FIELD, toCoord, toIndex, getValidMoves } from './Game';
 import { Token } from '@freeboardgame.org/boardgame.io/ui';
 import {

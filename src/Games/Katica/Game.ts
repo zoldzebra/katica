@@ -1,12 +1,3 @@
-/*
- * Copyright 2017 The boardgame.io Authors
- *
- * Use of this source code is governed by a MIT-style
- * license that can be found in the LICENSE file or at
- * https://opensource.org/licenses/MIT.
- */
-
-// import { Game, INVALID_MOVE } from '@freeboardgame.org/boardgame.io/core';
 import { INVALID_MOVE } from 'boardgame.io/core';
 
 
@@ -31,6 +22,11 @@ export interface IG {
 interface ICoord {
   x: number;
   y: number;
+}
+
+interface Result {
+  winner?: string;
+  draw?: boolean;
 }
 
 export const EMPTY_FIELD = {
@@ -104,7 +100,7 @@ const COLUMNS = 6;
 
 const initialBoard = Array(ROWS * COLUMNS).fill(EMPTY_FIELD);
 
-function getStartingPieces() {
+function getStartingPieces(): Piece[] {
   const players = [0, 1];
   const pieceTypes = [1, 2, 3];
   const piecesPerPieceType = 3;
@@ -125,15 +121,15 @@ function getStartingPieces() {
   return pieces;
 }
 
-function shuffleArray(array: any[]) {
-  for (let i = array.length - 1; i > 0; i--) {
+function shufflePieces(pieces: Piece[]): Piece[] {
+  for (let i = pieces.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+    [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
   }
-  return array;
+  return pieces;
 }
 
-function createStartingOrder(startingPieces: Piece[]) {
+function createStartingOrder(startingPieces: Piece[]): Piece[] {
   // TODO generate 2 pieces arrays already...
   const startingOrder: Piece[] = [];
   const player0Pieces: Piece[] = [];
@@ -145,7 +141,7 @@ function createStartingOrder(startingPieces: Piece[]) {
       player1Pieces.push(piece);
     }
   });
-  [player0Pieces, player1Pieces].forEach(pieces => shuffleArray(pieces));
+  [player0Pieces, player1Pieces].forEach(pieces => shufflePieces(pieces));
   for (let i = 0; i < startingPieces.length; i++) {
     if (i % 2 === 0) {
       startingOrder.push(player0Pieces[Math.floor(i / 2)]);
@@ -158,7 +154,7 @@ function createStartingOrder(startingPieces: Piece[]) {
 
 // to go around the table from top left -> top right -> bottom right -> bottom left.
 // 0,0 is bottom right
-function sortStartCoords(startCoords: ICoord[]) {
+function sortStartCoords(startCoords: ICoord[]): ICoord[] {
   const topRow: ICoord[] = [];
   const rightRow: ICoord[] = []
   const bottomRow: ICoord[] = [];
@@ -181,7 +177,7 @@ function sortStartCoords(startCoords: ICoord[]) {
   return sortedCoords;
 }
 
-function createBasicStartBoard(board: any[]) {
+function createBasicStartBoard(board: any[]): Piece[] {
   const boardMatrix: Piece[][] = Array(COLUMNS).fill(null).map(() => Array(ROWS).fill(null));
   board.forEach((cell, index) => {
     const coords = toCoord(index);
@@ -216,7 +212,7 @@ function createBasicStartBoard(board: any[]) {
   return startingBoard;
 }
 
-function findGroup(boardMatrix: (number | null)[][], col: number, row: number, player: number) {
+function findGroup(boardMatrix: (number | null)[][], col: number, row: number, player: number): number {
   if (boardMatrix[col][row] !== player) {
     return 0;
   }
@@ -240,7 +236,7 @@ function findGroup(boardMatrix: (number | null)[][], col: number, row: number, p
   return size;
 }
 
-function getMatchResult(G: IG) {
+function getMatchResult(G: IG): Result | null {
   const boardMatrix: (number | null)[][] = Array(COLUMNS).fill(null).map(() => Array(ROWS).fill(null));
   G.board.forEach((cell, index) => {
     const coords = toCoord(index);
@@ -249,10 +245,6 @@ function getMatchResult(G: IG) {
   const players = [0, 1];
   const player0Groups = [];
   const player1Groups = [];
-  // const groups = {
-  //   player0: [],
-  //   player1: [],
-  // };
   let size = 0;
 
   for (let col = 0; col < COLUMNS; col++) {
@@ -264,7 +256,6 @@ function getMatchResult(G: IG) {
             player === 0
               ? player0Groups.push(size)
               : player1Groups.push(size)
-            // groups[`player${player}`].push(size);
           }
         }
       })
@@ -289,7 +280,8 @@ function getMatchResult(G: IG) {
   return null;
 }
 
-export function toIndex(coord: ICoord) {
+// todo use variable for 6...
+export function toIndex(coord: ICoord): number {
   return coord.x + coord.y * 6;
 }
 
@@ -299,11 +291,11 @@ export function toCoord(position: number): ICoord {
   return { x, y };
 }
 
-export function areCoordsEqual(a: ICoord, b: ICoord) {
+export function areCoordsEqual(a: ICoord, b: ICoord): boolean {
   return a.x === b.x && a.y === b.y;
 }
 
-export function placePiece(G: IG, ctx: any, boardIndex: number) {
+export function placePiece(G: IG, ctx: any, boardIndex: number): IG {
   const board = [...G.board];
   let pieceType = null;
   if (ctx.turn < 2) {
@@ -326,15 +318,15 @@ export function placePiece(G: IG, ctx: any, boardIndex: number) {
   return { ...newG };
 }
 
-export function getValidMoves(G: IG, ctx: any, moveFrom: ICoord) {
+export function getValidMoves(G: IG, ctx: any, moveFrom: ICoord): ICoord[] | null {
   const board = [...G.board];
   const actualPieceType = board[toIndex(moveFrom)].pieceType;
   if (!actualPieceType) {
-    return;
+    return null;
   }
   const moveSet = actualPieceType - 1;
   if (moveSet < 0) {
-    return;
+    return null;
   }
 
   const possibleMoves = ALL_MOVES[moveSet]
@@ -351,7 +343,7 @@ export function getValidMoves(G: IG, ctx: any, moveFrom: ICoord) {
   const otherPlayer = ctx.currentPlayer === '0' ? 1 : 0;
   const opponentFields = possibleMoves.filter(coords => board[toIndex(coords)].player === otherPlayer);
   // dont jump over opponent + cant move over (knock out) too close opp
-  let validMoves = [];
+  let validMoves: ICoord[] = [];
   if (opponentFields) {
     const vectorsToOpponents = opponentFields.map(opponent => {
       return {
@@ -409,10 +401,10 @@ export function getValidMoves(G: IG, ctx: any, moveFrom: ICoord) {
   return validMoves;
 }
 
-export function movePiece(G: IG, ctx: any, moveFrom: ICoord, moveTo: ICoord) {
+export function movePiece(G: IG, ctx: any, moveFrom: ICoord, moveTo: ICoord): IG | string {
   const validMoves = getValidMoves(G, ctx, moveFrom);
   if (!validMoves) {
-    return;
+    return INVALID_MOVE;
   }
   const board = [...G.board];
 
@@ -449,13 +441,8 @@ export const KaticaGame = {
     moveLimit: 1,
   },
 
-  // flow: {
-  // movesPerTurn: 1,
-  // use Place here if advantage activated
-  // startingPhase: Phase.Move,
   phases: {
     Place: {
-      // allowedMoves: ['placePiece'],
       start: true,
       moves: { placePiece },
       endIf: (G: IG) => (G.piecesPlaced >= 18),

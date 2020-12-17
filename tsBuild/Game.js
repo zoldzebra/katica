@@ -1,10 +1,3 @@
-/*
- * Copyright 2017 The boardgame.io Authors
- *
- * Use of this source code is governed by a MIT-style
- * license that can be found in the LICENSE file or at
- * https://opensource.org/licenses/MIT.
- */
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -23,7 +16,6 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
             r[k] = a[j];
     return r;
 };
-// import { Game, INVALID_MOVE } from '@freeboardgame.org/boardgame.io/core';
 import { INVALID_MOVE } from 'boardgame.io/core';
 import * as R from 'ramda';
 export var Phase;
@@ -115,13 +107,13 @@ function getStartingPieces() {
     });
     return pieces;
 }
-function shuffleArray(array) {
+function shufflePieces(pieces) {
     var _a;
-    for (var i = array.length - 1; i > 0; i--) {
+    for (var i = pieces.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
-        _a = [array[j], array[i]], array[i] = _a[0], array[j] = _a[1];
+        _a = [pieces[j], pieces[i]], pieces[i] = _a[0], pieces[j] = _a[1];
     }
-    return array;
+    return pieces;
 }
 function createStartingOrder(startingPieces) {
     // TODO generate 2 pieces arrays already...
@@ -136,7 +128,7 @@ function createStartingOrder(startingPieces) {
             player1Pieces.push(piece);
         }
     });
-    [player0Pieces, player1Pieces].forEach(function (pieces) { return shuffleArray(pieces); });
+    [player0Pieces, player1Pieces].forEach(function (pieces) { return shufflePieces(pieces); });
     for (var i = 0; i < startingPieces.length; i++) {
         if (i % 2 === 0) {
             startingOrder.push(player0Pieces[Math.floor(i / 2)]);
@@ -238,10 +230,6 @@ function getMatchResult(G) {
     var players = [0, 1];
     var player0Groups = [];
     var player1Groups = [];
-    // const groups = {
-    //   player0: [],
-    //   player1: [],
-    // };
     var size = 0;
     var _loop_1 = function (col) {
         var _loop_2 = function (row) {
@@ -252,7 +240,6 @@ function getMatchResult(G) {
                         player === 0
                             ? player0Groups.push(size)
                             : player1Groups.push(size);
-                        // groups[`player${player}`].push(size);
                     }
                 }
             });
@@ -284,6 +271,7 @@ function getMatchResult(G) {
     }
     return null;
 }
+// todo use variable for 6...
 export function toIndex(coord) {
     return coord.x + coord.y * 6;
 }
@@ -319,11 +307,11 @@ export function getValidMoves(G, ctx, moveFrom) {
     var board = __spreadArrays(G.board);
     var actualPieceType = board[toIndex(moveFrom)].pieceType;
     if (!actualPieceType) {
-        return;
+        return null;
     }
     var moveSet = actualPieceType - 1;
     if (moveSet < 0) {
-        return;
+        return null;
     }
     var possibleMoves = ALL_MOVES[moveSet]
         .map(function (move) {
@@ -400,7 +388,7 @@ export function getValidMoves(G, ctx, moveFrom) {
 export function movePiece(G, ctx, moveFrom, moveTo) {
     var validMoves = getValidMoves(G, ctx, moveFrom);
     if (!validMoves) {
-        return;
+        return INVALID_MOVE;
     }
     var board = __spreadArrays(G.board);
     if (!validMoves.find(function (dir) { return R.equals(dir, moveTo); })) {
@@ -428,13 +416,8 @@ export var KaticaGame = {
     turn: {
         moveLimit: 1,
     },
-    // flow: {
-    // movesPerTurn: 1,
-    // use Place here if advantage activated
-    // startingPhase: Phase.Move,
     phases: {
         Place: {
-            // allowedMoves: ['placePiece'],
             start: true,
             moves: { placePiece: placePiece },
             endIf: function (G) { return (G.piecesPlaced >= 18); },
