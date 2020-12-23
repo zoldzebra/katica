@@ -25,10 +25,11 @@
     "web-vitals": "0.2.4"
   },
   "scripts": {
-    "start": "tsc --p src/Games/Katica/tsconfig.json && node -r esm server.js",
+    "start": "npm run build:katica && node -r esm server.js",
     "start:client": "react-scripts start",
-    "start:localServer": "node -r esm localServer.js",
+    "start:localServer": "npm run build:katica && node -r esm localServer.js",
     "build": "react-scripts build",
+    "build:katica": "tsc --p src/Games/Katica/tsconfig.json",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
