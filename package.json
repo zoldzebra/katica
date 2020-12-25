@@ -31,7 +31,8 @@
     "build": "react-scripts build",
     "build:katica": "tsc --p src/Games/Katica/tsconfig.json",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint ./src"
   },
   "eslintConfig": {
     "extends": [
