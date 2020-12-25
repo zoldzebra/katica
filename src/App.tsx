@@ -1,9 +1,10 @@
 import React from 'react';
-import { LobbyComponent } from './components/Lobby';
+// import { LobbyComponent } from './components/Lobby_old';
+import { Lobby } from './components/Lobby/Lobby';
 
 const App = () => {
   return (
-    <LobbyComponent />
+    <Lobby />
   )
 
 }

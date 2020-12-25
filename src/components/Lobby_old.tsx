@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import React from 'react';
 import { Lobby } from 'boardgame.io/react';
+import { LobbyClient } from 'boardgame.io/client';
 import { TicTacToeBoard } from '../Games/TicTacToe/Board';
 import { TicTacToe } from '../Games/TicTacToe/Game';
 import { Board as KaticaBoard } from '../Games/Katica/Board';
@@ -11,13 +12,19 @@ const { protocol, hostname, port } = window.location;
 const server = APP_PRODUCTION
   ? `${protocol}//${hostname}:${port}`
   : LOCAL_SERVER_URL;
-console.log('server', server);
-console.log('process.env.NODE_ENV', process.env.NODE_ENV);
+console.log('Lobby server', server);
+console.log('Lobby process.env.NODE_ENV', process.env.NODE_ENV);
 
 const importedGames = [
   { game: TicTacToe, board: TicTacToeBoard },
   { game: KaticaGame, board: KaticaBoard },
 ];
+
+const lobbyClient = new LobbyClient({ server });
+
+lobbyClient.listGames()
+  .then(console.log)
+  .catch(console.error);
 
 export const LobbyComponent = (): JSX.Element => (
   <div>
