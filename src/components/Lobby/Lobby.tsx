@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Input, Paper } from '@material-ui/core';
+import { Paper } from '@material-ui/core';
 
 import { LobbyClient } from 'boardgame.io/client';
 import { LobbyAPI } from 'boardgame.io';
@@ -13,7 +13,6 @@ export const Lobby = (): JSX.Element => {
     : LOCAL_SERVER_URL;
   const lobbyClient = new LobbyClient({ server });
 
-  const [playerName, setPlayerName] = useState<string>('');
   const [games, setGames] = useState<string[]>([]);
   const [matches, setMatches] = useState<LobbyAPI.Match[]>([]);
 
@@ -34,18 +33,10 @@ export const Lobby = (): JSX.Element => {
     games.forEach(game => fetchGameMatches(game));
   }, [games]);
 
-  const handlePlayerNameChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void => {
-    setPlayerName(event.target.value);
-  }
-
   return (
     <Paper>
       <h1>Katica Lobby</h1>
-      <p>Welcome to the Lobby! Please add your name:</p>
-      <p>{playerName}</p>
-      <form>
-        <Input placeholder="Player name" value={playerName} onChange={handlePlayerNameChange} />
-      </form>
+      <p>Welcome to the Lobby!</p>
       <p>Available games:</p>
       <ul>
         {games.map(game => <li key={game}>{game}</li>)}
