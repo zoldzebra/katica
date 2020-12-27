@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Paper } from '@material-ui/core';
+import { useHistory } from "react-router-dom";
 
+import firebaseApp from "../../Firebase/firebaseApp";
+import "firebase/firestore";
 import { LobbyClient } from 'boardgame.io/client';
 import { LobbyAPI } from 'boardgame.io';
 
@@ -8,6 +11,7 @@ import { APP_PRODUCTION, LOCAL_SERVER_URL } from '../../config';
 
 export const Lobby = (): JSX.Element => {
   const { protocol, hostname, port } = window.location;
+  const history = useHistory();
   const server = APP_PRODUCTION
     ? `${protocol}//${hostname}:${port}`
     : LOCAL_SERVER_URL;
@@ -15,6 +19,18 @@ export const Lobby = (): JSX.Element => {
 
   const [games, setGames] = useState<string[]>([]);
   const [matches, setMatches] = useState<LobbyAPI.Match[]>([]);
+
+  const handleLogoutClick = (event: any) => {
+    event.preventDefault();
+
+    firebaseApp
+      .auth()
+      .signOut()
+      .then(res => {
+        console.log(res);
+        history.push("/auth/login");
+      })
+  }
 
 
   useEffect(() => {
@@ -37,6 +53,7 @@ export const Lobby = (): JSX.Element => {
     <Paper>
       <h1>Katica Lobby</h1>
       <p>Welcome to the Lobby!</p>
+      <button onClick={handleLogoutClick}>Logout</button>
       <p>Available games:</p>
       <ul>
         {games.map(game => <li key={game}>{game}</li>)}
