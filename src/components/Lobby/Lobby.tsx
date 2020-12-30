@@ -8,8 +8,7 @@ import "firebase/firestore";
 import { LobbyClient } from 'boardgame.io/client';
 import { LobbyAPI } from 'boardgame.io';
 
-import { getUserInfo } from '../../Services/userService';
-import firebaseApp from "../../Firebase/firebaseApp";
+import { getUserInfo, signOutUser } from '../../Services/userService';
 import { APP_PRODUCTION, LOCAL_SERVER_URL } from '../../config';
 import { AuthContext } from '../AuthProvider/AuthProvider';
 
@@ -30,14 +29,10 @@ export const Lobby = (): JSX.Element => {
   const [games, setGames] = useState<string[]>([]);
   const [matches, setMatches] = useState<LobbyAPI.Match[]>([]);
 
-  const handleLogoutClick = (event: any) => {
+  const handleLogoutClick = async (event: any) => {
     event.preventDefault();
-    firebaseApp
-      .auth()
-      .signOut()
-      .then(() => {
-        history.push("/auth/login");
-      })
+    await signOutUser();
+    history.push("/auth/login");
   }
 
   useEffect(() => {

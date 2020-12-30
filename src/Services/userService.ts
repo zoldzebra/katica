@@ -3,6 +3,7 @@ import "firebase/auth";
 import "firebase/firestore";
 
 import { User } from '../components/AuthProvider/AuthProvider';
+import firebaseApp from "../Firebase/firebaseApp";
 
 // more props to be added later
 export interface UserInfo extends User {
@@ -63,6 +64,15 @@ export const createEmailAndUserNameForUser = async (id: string, email: string, u
     });
   } catch (error) {
     console.log('Error saving userName and email:', error);
+    alert(error.message);
+  }
+}
+
+export const signOutUser = async () => {
+  try {
+    firebaseApp.auth().signOut();
+  } catch (error) {
+    console.log('Error signing out user:', error);
     alert(error.message);
   }
 }
