@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 
-import { AuthContext } from "../Firebase/FireBaseAuthProvider";
+import { AuthContext } from "../components/AuthProvider/AuthProvider";
 import { ProtectedRoute } from "./PrivateRoute";
 import { AuthRoutes } from "./AuthRoutes";
 import { LobbyRoutes } from "./LobbyRoutes";

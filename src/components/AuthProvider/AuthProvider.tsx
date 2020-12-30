@@ -1,12 +1,16 @@
 import React, { FC, useEffect, useState } from "react";
-import firebase from "firebase/app";
 
-import firebaseApp from "./firebaseApp";
+import firebaseApp from "../../Firebase/firebaseApp";
+
+type User = {
+  id: string;
+  email: string;
+}
 
 // source:
 // https://medium.com/wesionary-team/react-firebase-authentication-with-context-api-a770975f33cf
 type ContextProps = {
-  user: firebase.User | null;
+  user: User | null;
   authenticated: boolean;
   setUser: any;
   loadingAuthState: boolean;
@@ -15,12 +19,15 @@ type ContextProps = {
 export const AuthContext = React.createContext<Partial<ContextProps>>({});
 
 export const AuthProvider: FC = ({ children }) => {
-  const [user, setUser] = useState(null as firebase.User | null);
+  const [user, setUser] = useState<User | null>(null);
   const [loadingAuthState, setLoadingAuthState] = useState(true);
 
   useEffect(() => {
     firebaseApp.auth().onAuthStateChanged((user: any) => {
-      setUser(user);
+      setUser({
+        id: user.uid,
+        email: user.email,
+      });
       setLoadingAuthState(false);
     });
   }, []);

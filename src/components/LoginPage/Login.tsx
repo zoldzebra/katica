@@ -4,7 +4,8 @@ import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 
-import { AuthContext } from "../../Firebase/FireBaseAuthProvider";
+import { AuthContext } from "../AuthProvider/AuthProvider";
+
 interface UserData {
   email: string;
   password: string;

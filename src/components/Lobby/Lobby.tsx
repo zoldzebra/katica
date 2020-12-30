@@ -10,7 +10,7 @@ import { LobbyAPI } from 'boardgame.io';
 
 import firebaseApp from "../../Firebase/firebaseApp";
 import { APP_PRODUCTION, LOCAL_SERVER_URL } from '../../config';
-import { AuthContext } from '../../Firebase/FireBaseAuthProvider';
+import { AuthContext } from '../AuthProvider/AuthProvider';
 
 export const Lobby = (): JSX.Element => {
   const { user } = useContext(AuthContext);
@@ -41,7 +41,7 @@ export const Lobby = (): JSX.Element => {
   useEffect(() => {
     const fetchUserInfo = async (): Promise<void> => {
       const db = firebase.firestore();
-      const userInfoRef = db.collection("Users").doc(user?.uid);
+      const userInfoRef = db.collection("Users").doc(user?.id);
       userInfoRef
         .get()
         .then((doc) => {

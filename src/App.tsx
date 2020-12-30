@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { AuthProvider } from "./Firebase/FireBaseAuthProvider";
+import { AuthProvider } from "./components/AuthProvider/AuthProvider";
 import { AppRoutes } from './Routes/AppRoutes';
 
 const App = () => {
