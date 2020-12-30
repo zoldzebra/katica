@@ -26,7 +26,7 @@ export const Lobby = (): JSX.Element => {
     email: '',
     userName: '',
   });
-  const [games, setGames] = useState<string[]>([]);
+  const [gameNames, setGameNames] = useState<string[]>([]);
   const [matches, setMatches] = useState<LobbyAPI.Match[]>([]);
 
   const handleLogoutClick = async (event: any) => {
@@ -46,7 +46,7 @@ export const Lobby = (): JSX.Element => {
   useEffect(() => {
     const fetchGames = async (): Promise<void> => {
       const gamesList = await lobbyClient.listGames();
-      setGames(gamesList);
+      setGameNames(gamesList);
     }
     fetchGames();
   }, []);
@@ -56,24 +56,25 @@ export const Lobby = (): JSX.Element => {
       const gameMatches = await lobbyClient.listMatches(game);
       setMatches(oldMatches => [...oldMatches, ...gameMatches.matches]);
     }
-    games.forEach(game => fetchGameMatches(game));
-  }, [games]);
+    gameNames.forEach(game => fetchGameMatches(game));
+  }, [gameNames]);
+
+  const username = userInfo?.userName ?? '-';
+  const email = userInfo?.email ?? '-';
 
   return (
     <Paper>
-      <p>Username: {userInfo?.userName}, email: {userInfo?.email}</p>
+      <p>Username: {username}, email: {email}</p>
       <button onClick={handleLogoutClick}>Logout</button>
       <h1>Katica Lobby</h1>
       <p>Welcome to the Lobby!</p>
       <p>Available games:</p>
       <ul>
-        {games.map(game => <li key={game}>{game}</li>)}
+        {gameNames.map(gameName => <li key={gameName}>{gameName}</li>)}
       </ul>
       <p>There are a total of {matches.length} matches now:</p>
       <ul>
-        {matches
-          ? matches.map(match => <li key={match.matchID}>{match.gameName}-{match.matchID}</li>)
-          : null}
+        {matches && matches.map(match => <li key={match.matchID}>{match.gameName}-{match.matchID}</li>)}
       </ul>
     </Paper>
   );

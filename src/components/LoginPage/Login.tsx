@@ -15,7 +15,7 @@ export const Login = () => {
     password: ""
   } as UserData);
 
-  const handleClick = () => {
+  const handleSignUp = () => {
     history.push("/auth/signup");
   }
 
@@ -27,7 +27,7 @@ export const Login = () => {
     }));
   }
 
-  const handleSubmit = async (event: any) => {
+  const handleLogin = async (event: any) => {
     event.preventDefault();
     await signInUser(values.email, values.password);
     history.push("/lobby");
@@ -36,12 +36,12 @@ export const Login = () => {
   return (
     <div style={{ textAlign: 'center' }}>
       <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleLogin}>
         <input type="text" name="email" value={values.email} placeholder="Enter your Email" onChange={handleChange} /><br /><br />
         <input type="password" name="password" value={values.password} placeholder="Enter your Password" onChange={handleChange} /><br /><br />
         <button>Login</button>
         <p>Not registered yet?</p>
-        <button onClick={handleClick}>SignUp</button>
+        <button onClick={handleSignUp}>SignUp</button>
       </form>
     </div>
   );
