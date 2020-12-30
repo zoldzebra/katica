@@ -40,7 +40,7 @@ export const Login = () => {
         <input type="text" name="email" value={values.email} placeholder="Enter your Email" onChange={handleChange} /><br /><br />
         <input type="password" name="password" value={values.password} placeholder="Enter your Password" onChange={handleChange} /><br /><br />
         <button>Login</button>
-        <p>Not logged in yet?</p>
+        <p>Not registered yet?</p>
         <button onClick={handleClick}>SignUp</button>
       </form>
     </div>

@@ -25,7 +25,7 @@ export const Lobby = (): JSX.Element => {
 
   const [userInfo, setUserInfo] = useState<firebase.firestore.DocumentData | undefined>({
     email: '',
-    username: '',
+    userName: '',
   });
   const [games, setGames] = useState<string[]>([]);
   const [matches, setMatches] = useState<LobbyAPI.Match[]>([]);
@@ -66,7 +66,7 @@ export const Lobby = (): JSX.Element => {
 
   return (
     <Paper>
-      <p>Username: {userInfo?.username}, email: {userInfo?.email}</p>
+      <p>Username: {userInfo?.userName}, email: {userInfo?.email}</p>
       <button onClick={handleLogoutClick}>Logout</button>
       <h1>Katica Lobby</h1>
       <p>Welcome to the Lobby!</p>

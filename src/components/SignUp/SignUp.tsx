@@ -1,21 +1,17 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import firebase from "firebase/app";
-import "firebase/auth";
-import "firebase/firestore";
 
-import { AuthContext } from "../AuthProvider/AuthProvider";
+import { createUser, createEmailAndUserNameForUser } from "../../Services/userService";
 
 interface FormItems {
-  username: string;
+  userName: string;
   email: string;
   password: string;
 }
 
 export const SignUp = () => {
-  const authContext = useContext(AuthContext);
   const [values, setValues] = useState({
-    username: "",
+    userName: "",
     email: "",
     password: "",
   } as FormItems);
@@ -33,36 +29,22 @@ export const SignUp = () => {
     }));
   }
 
-  const handleSubmit = (event: any) => {
+  const handleSubmit = async (event: any) => {
     event?.preventDefault();
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(values.email, values.password)
-      .then((userCredential: firebase.auth.UserCredential) => {
-        authContext.setUser(userCredential);
-        const db = firebase.firestore();
-        db.collection("Users")
-          .doc(userCredential.user!.uid)
-          .set({
-            email: values.email,
-            username: values.username,
-          })
-          .then(() => {
-            console.log('ok');
-            history.push("/lobby");
-          })
-          .catch(error => {
-            console.log(error.message);
-            alert(error.message);
-          });
-      })
+    const userCredentials = await createUser(values.email, values.password);
+    await createEmailAndUserNameForUser(
+      userCredentials.user.uid,
+      userCredentials.user.email,
+      values.userName
+    )
+    history.push("/lobby");
   }
 
   return (
     <div style={{ textAlign: 'center' }}>
       <h1>Sign Up</h1>
       <form onSubmit={handleSubmit}>
-        <input type="text" name="username" placeholder="Username" onChange={handleChange} /><br /><br />
+        <input type="text" name="userName" placeholder="Username" onChange={handleChange} /><br /><br />
         <input type="text" name="email" placeholder="Enter your Email" onChange={handleChange} /><br /><br />
         <input type="password" name="password" placeholder="Enter your Password" onChange={handleChange} /><br /><br />
         <button type="submit">Sign Up</button>

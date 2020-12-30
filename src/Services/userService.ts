@@ -30,7 +30,7 @@ export const getUserInfo = async (user: User): Promise<any> => {
 export const signInUser = async (email: string, password: string)
   : Promise<any | undefined> => {
   try {
-    const firebaseAuth = await firebase.auth();
+    const firebaseAuth = firebase.auth();
     const userCredentials = await firebaseAuth
       .signInWithEmailAndPassword(email, password);
     return userCredentials;
@@ -38,4 +38,31 @@ export const signInUser = async (email: string, password: string)
     console.log('Error signing in user:', error);
     alert(error.message);
   }
-} 
+}
+
+export const createUser = async (email: string, password: string)
+  : Promise<any | undefined> => {
+  try {
+    const firebaseAuth = firebase.auth();
+    const userCredentials = await firebaseAuth
+      .createUserWithEmailAndPassword(email, password);
+    return userCredentials;
+  } catch (error) {
+    console.log('Error creating user:', error);
+    alert(error.message);
+  }
+}
+
+export const createEmailAndUserNameForUser = async (id: string, email: string, userName: string) => {
+  try {
+    const db = firebase.firestore();
+    const userInfoRef = db.collection("Users").doc(id);
+    userInfoRef.set({
+      email: email,
+      userName: userName,
+    });
+  } catch (error) {
+    console.log('Error saving userName and email:', error);
+    alert(error.message);
+  }
+}
