@@ -1,10 +1,7 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import firebase from "firebase/app";
-import "firebase/auth";
-import "firebase/firestore";
 
-import { AuthContext } from "../AuthProvider/AuthProvider";
+import { signInUser } from "../../Services/userService";
 
 interface UserData {
   email: string;
@@ -12,7 +9,6 @@ interface UserData {
 }
 
 export const Login = () => {
-  const authContext = useContext(AuthContext);
   const history = useHistory();
   const [values, setValues] = useState({
     email: "",
@@ -31,19 +27,10 @@ export const Login = () => {
     }));
   }
 
-  const handleSubmit = (event: any) => {
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(values.email, values.password)
-      .then(res => {
-        authContext.setUser(res);
-        history.push("/lobby");
-      })
-      .catch(error => {
-        console.log(error.message);
-        alert(error.message);
-      });
+    await signInUser(values.email, values.password);
+    history.push("/lobby");
   }
 
   return (

@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from "react";
 
 import firebaseApp from "../../Firebase/firebaseApp";
 
-type User = {
+export type User = {
   id: string;
   email: string;
 }

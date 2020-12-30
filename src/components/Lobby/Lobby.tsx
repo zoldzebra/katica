@@ -8,12 +8,14 @@ import "firebase/firestore";
 import { LobbyClient } from 'boardgame.io/client';
 import { LobbyAPI } from 'boardgame.io';
 
+import { getUserInfo } from '../../Services/userService';
 import firebaseApp from "../../Firebase/firebaseApp";
 import { APP_PRODUCTION, LOCAL_SERVER_URL } from '../../config';
 import { AuthContext } from '../AuthProvider/AuthProvider';
 
 export const Lobby = (): JSX.Element => {
   const { user } = useContext(AuthContext);
+
   const { protocol, hostname, port } = window.location;
   const history = useHistory();
   const server = APP_PRODUCTION
@@ -39,31 +41,11 @@ export const Lobby = (): JSX.Element => {
   }
 
   useEffect(() => {
-    const fetchUserInfo = async (): Promise<void> => {
-      const db = firebase.firestore();
-      const userInfoRef = db.collection("Users").doc(user?.id);
-      userInfoRef
-        .get()
-        .then((doc) => {
-          if (doc.exists) {
-            console.log("Document data:", doc.data());
-            setUserInfo(doc.data());
-          } else {
-            console.log("No such document!");
-          }
-        }).catch(function (error) {
-          console.log("Error getting document:", error);
-        });
+    const fetchUserInfo = async () => {
+      const actualUserInfo = user && await getUserInfo(user);
+      setUserInfo(actualUserInfo);
     }
     fetchUserInfo();
-  }, []);
-
-  useEffect(() => {
-    const fetchGames = async (): Promise<void> => {
-      const gamesList = await lobbyClient.listGames();
-      setGames(gamesList);
-    }
-    fetchGames();
   }, []);
 
   useEffect(() => {
