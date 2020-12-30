@@ -16,15 +16,11 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = props => {
     );
   }
 
-  let redirectPath = '';
   if (!props.isAuthenticated) {
-    redirectPath = props.authenticationPath;
+    const pathname = props.authenticationPath;
+    const redirect = () => <Redirect to={{ pathname }} />;
+    return <Route {...props} component={redirect} />;
   }
 
-  if (redirectPath) {
-    const renderComponent = () => <Redirect to={{ pathname: redirectPath }} />;
-    return <Route {...props} component={renderComponent} render={undefined} />;
-  } else {
-    return <Route {...props} />;
-  }
+  return <Route {...props} />;
 };

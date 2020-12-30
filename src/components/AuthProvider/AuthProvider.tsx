@@ -24,10 +24,14 @@ export const AuthProvider: FC = ({ children }) => {
 
   useEffect(() => {
     firebaseApp.auth().onAuthStateChanged((user: any) => {
-      setUser({
-        id: user.uid,
-        email: user.email,
-      });
+      if (!user) {
+        setUser(null);
+      } else {
+        setUser({
+          id: user.uid,
+          email: user.email,
+        });
+      }
       setLoadingAuthState(false);
     });
   }, []);
