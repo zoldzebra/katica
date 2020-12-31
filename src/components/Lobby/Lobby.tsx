@@ -2,27 +2,19 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Paper } from '@material-ui/core';
 import { useHistory } from "react-router-dom";
 
-import firebase from "firebase/app";
-import "firebase/auth";
-import "firebase/firestore";
 import { LobbyClient } from 'boardgame.io/client';
 import { LobbyAPI } from 'boardgame.io';
 
-import { getUserInfo, signOutUser } from '../../Services/userService';
-import { APP_PRODUCTION, LOCAL_SERVER_URL } from '../../config';
+import { getUserInfo, signOutUser, UserInfo } from '../../Services/userService';
+import { server } from '../../config';
 import { AuthContext } from '../AuthProvider/AuthProvider';
 
 export const Lobby = (): JSX.Element => {
   const { user } = useContext(AuthContext);
-
-  const { protocol, hostname, port } = window.location;
   const history = useHistory();
-  const server = APP_PRODUCTION
-    ? `${protocol}//${hostname}:${port}`
-    : LOCAL_SERVER_URL;
   const lobbyClient = new LobbyClient({ server });
-
-  const [userInfo, setUserInfo] = useState<firebase.firestore.DocumentData | undefined>({
+  const [userInfo, setUserInfo] = useState<UserInfo | undefined>({
+    id: '',
     email: '',
     userName: '',
   });
