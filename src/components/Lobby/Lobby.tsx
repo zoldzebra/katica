@@ -21,12 +21,6 @@ export const Lobby = (): JSX.Element => {
   const [gameNames, setGameNames] = useState<string[]>([]);
   const [matches, setMatches] = useState<LobbyAPI.Match[]>([]);
 
-  const handleLogoutClick = async (event: any) => {
-    event.preventDefault();
-    await signOutUser();
-    history.push("/auth/login");
-  }
-
   useEffect(() => {
     const fetchUserInfo = async () => {
       const actualUserInfo = user && await getUserInfo(user);
@@ -54,6 +48,36 @@ export const Lobby = (): JSX.Element => {
   const username = userInfo?.userName ?? '-';
   const email = userInfo?.email ?? '-';
 
+  const handleLogoutClick = async (event: any) => {
+    event.preventDefault();
+    await signOutUser();
+    history.push("/auth/login");
+  }
+
+  const handleCreateNewMatch = async (event: any) => {
+    event.preventDefault();
+    await lobbyClient.createMatch('katica', {
+      numPlayers: 2
+    });
+  }
+
+  const handleJoinMatch = async (match: LobbyAPI.Match) => {
+    console.log('match', match)
+    try {
+      await lobbyClient.joinMatch(
+        'katica',
+        match.matchID,
+        {
+          playerID: '1',
+          playerName: username,
+        }
+      )
+    } catch (error) {
+      console.log('Error joining match:', error);
+      alert(error.message);
+    }
+  }
+
   return (
     <Paper>
       <p>Username: {username}, email: {email}</p>
@@ -66,8 +90,13 @@ export const Lobby = (): JSX.Element => {
       </ul>
       <p>There are a total of {matches.length} matches now:</p>
       <ul>
-        {matches && matches.map(match => <li key={match.matchID}>{match.gameName}-{match.matchID}</li>)}
+        {matches && matches.map(match =>
+          <li key={match.matchID}>
+            {match.gameName}-{match.matchID}. Players: {match.players.length}
+            <button onClick={() => handleJoinMatch(match)}>Join!</button>
+          </li>)}
       </ul>
+      <button onClick={handleCreateNewMatch}>Create new KATICA match</button>
     </Paper>
   );
 }
