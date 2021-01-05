@@ -1,12 +1,15 @@
 import React from 'react';
 
 import { AuthProvider } from "./components/AuthProvider/AuthProvider";
+import { GameServerProvider } from './components/GameServerProvider/GameServerProvider';
 import { AppRoutes } from './Routes/AppRoutes';
 
 const App = () => {
   return (
     <AuthProvider>
-      <AppRoutes />
+      <GameServerProvider>
+        <AppRoutes />
+      </GameServerProvider>
     </AuthProvider>
   )
 }

@@ -6,13 +6,14 @@ import { LobbyClient } from 'boardgame.io/client';
 import { LobbyAPI } from 'boardgame.io';
 
 import { getUserInfo, signOutUser, UserInfo } from '../../Services/userService';
-import { server } from '../../config';
 import { AuthContext } from '../AuthProvider/AuthProvider';
+import { GameServerContext } from '../GameServerProvider/GameServerProvider';
 
 export const Lobby = (): JSX.Element => {
   const { user } = useContext(AuthContext);
+  const { gameServer } = useContext(GameServerContext);
   const history = useHistory();
-  const lobbyClient = new LobbyClient({ server });
+  const lobbyClient = new LobbyClient({ server: gameServer });
   const [userInfo, setUserInfo] = useState<UserInfo | undefined>({
     id: '',
     email: '',
