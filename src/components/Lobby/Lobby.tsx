@@ -8,6 +8,7 @@ import { LobbyAPI } from 'boardgame.io';
 import { getUserInfo, signOutUser, UserInfo } from '../../Services/userService';
 import { AuthContext } from '../AuthProvider/AuthProvider';
 import { GameServerContext } from '../GameServerProvider/GameServerProvider';
+import { MatchDetails } from './MatchDetails';
 
 export const Lobby = (): JSX.Element => {
   const { user } = useContext(AuthContext);
@@ -62,14 +63,14 @@ export const Lobby = (): JSX.Element => {
     });
   }
 
-  const handleJoinMatch = async (match: LobbyAPI.Match) => {
+  const handleJoinMatch = async (match: LobbyAPI.Match, playerID: number) => {
     console.log('match', match)
     try {
       await lobbyClient.joinMatch(
         'katica',
         match.matchID,
         {
-          playerID: '1',
+          playerID: playerID.toString(),
           playerName: username,
         }
       )
@@ -93,8 +94,10 @@ export const Lobby = (): JSX.Element => {
       <ul>
         {matches && matches.map(match =>
           <li key={match.matchID}>
-            {match.gameName}-{match.matchID}. Players: {match.players.length}
-            <button onClick={() => handleJoinMatch(match)}>Join!</button>
+            <MatchDetails
+              match={match}
+              handleJoinMatch={handleJoinMatch}
+            />
           </li>)}
       </ul>
       <button onClick={handleCreateNewMatch}>Create new KATICA match</button>
