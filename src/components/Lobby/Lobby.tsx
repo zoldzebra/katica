@@ -4,6 +4,9 @@ import { useHistory } from "react-router-dom";
 
 import { LobbyClient } from 'boardgame.io/client';
 import { LobbyAPI } from 'boardgame.io';
+// import { SocketIO } from "boardgame.io/multiplayer";
+// import { Client } from "boardgame.io/react";
+
 
 import { getUserInfo, signOutUser, UserInfo } from '../../Services/userService';
 import { AuthContext } from '../AuthProvider/AuthProvider';
@@ -47,8 +50,16 @@ export const Lobby = (): JSX.Element => {
     gameNames.forEach(game => fetchGameMatches(game));
   }, [gameNames]);
 
-  const username = userInfo?.userName ?? '-';
+  const userName = userInfo?.userName ?? '-';
   const email = userInfo?.email ?? '-';
+
+  // const GameClient = Client({
+  //   game: UdaipurGame,
+  //   board: UdaipurBoard,
+  //   multiplayer: SocketIO({
+  //     server: server,
+  //   }),
+  // });
 
   const handleLogoutClick = async (event: any) => {
     event.preventDefault();
@@ -63,26 +74,9 @@ export const Lobby = (): JSX.Element => {
     });
   }
 
-  const handleJoinMatch = async (match: LobbyAPI.Match, playerID: number) => {
-    console.log('match', match)
-    try {
-      await lobbyClient.joinMatch(
-        'katica',
-        match.matchID,
-        {
-          playerID: playerID.toString(),
-          playerName: username,
-        }
-      )
-    } catch (error) {
-      console.log('Error joining match:', error);
-      alert(error.message);
-    }
-  }
-
   return (
     <Paper>
-      <p>Username: {username}, email: {email}</p>
+      <p>Username: {userName}, email: {email}</p>
       <button onClick={handleLogoutClick}>Logout</button>
       <h1>Katica Lobby</h1>
       <p>Welcome to the Lobby!</p>
@@ -96,7 +90,8 @@ export const Lobby = (): JSX.Element => {
           <li key={match.matchID}>
             <MatchDetails
               match={match}
-              handleJoinMatch={handleJoinMatch}
+              userName={userName}
+              lobbyClient={lobbyClient}
             />
           </li>)}
       </ul>
