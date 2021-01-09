@@ -1,11 +1,17 @@
 import React from 'react';
-import { LobbyComponent } from './components/Lobby';
+
+import { AuthProvider } from "./components/AuthProvider/AuthProvider";
+import { GameServerProvider } from './components/GameServerProvider/GameServerProvider';
+import { AppRoutes } from './Routes/AppRoutes';
 
 const App = () => {
   return (
-    <LobbyComponent />
+    <AuthProvider>
+      <GameServerProvider>
+        <AppRoutes />
+      </GameServerProvider>
+    </AuthProvider>
   )
-
 }
 
 export default App;

@@ -5,23 +5,18 @@
   "dependencies": {
     "@freeboardgame.org/boardgame.io": "0.0.12",
     "@material-ui/core": "4.11.2",
-    "@testing-library/jest-dom": "5.11.6",
-    "@testing-library/react": "11.2.2",
-    "@testing-library/user-event": "12.6.0",
     "@tweenjs/tween.js": "18.6.4",
-    "@types/jest": "26.0.19",
-    "@types/node": "12.19.9",
-    "@types/react": "16.14.2",
-    "@types/react-dom": "16.9.10",
     "boardgame.io": "0.42.2",
     "esm": "3.2.25",
+    "firebase": "8.2.1",
     "koa-static": "5.0.0",
     "ramda": "0.27.1",
     "react": "17.0.1",
     "react-dom": "17.0.1",
+    "react-firebaseui": "4.1.0",
+    "react-router-dom": "5.2.0",
     "react-scripts": "4.0.1",
     "three": "0.123.0",
-    "typescript": "4.1.3",
     "web-vitals": "0.2.4"
   },
   "scripts": {
@@ -31,7 +26,8 @@
     "build": "react-scripts build",
     "build:katica": "tsc --p src/Games/Katica/tsconfig.json",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint ./src"
   },
   "eslintConfig": {
     "extends": [
@@ -52,8 +48,17 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "5.11.6",
+    "@testing-library/react": "11.2.2",
+    "@testing-library/user-event": "12.6.0",
+    "@types/jest": "26.0.19",
     "@types/koa-static": "4.0.1",
+    "@types/node": "12.19.9",
     "@types/ramda": "0.27.33",
+    "@types/react": "16.14.2",
+    "@types/react-dom": "16.9.10",
+    "@types/react-router-dom": "5.1.6",
+    "typescript": "4.1.3",
     "@typescript-eslint/eslint-plugin": "4.10.0",
     "@typescript-eslint/parser": "4.10.0",
     "eslint": "7.15.0"
