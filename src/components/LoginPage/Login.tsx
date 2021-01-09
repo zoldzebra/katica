@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, FormEvent, ChangeEvent } from "react";
 import { useHistory } from "react-router-dom";
 
 import { signInUser } from "../../Services/userService";
@@ -19,7 +19,7 @@ export const Login = () => {
     history.push("/auth/signup");
   }
 
-  const handleChange = (event: any) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     event.persist();
     setValues(values => ({
       ...values,
@@ -27,7 +27,7 @@ export const Login = () => {
     }));
   }
 
-  const handleLogin = async (event: any) => {
+  const handleLogin = async (event: FormEvent) => {
     event.preventDefault();
     await signInUser(values.email, values.password);
     history.push("/lobby");

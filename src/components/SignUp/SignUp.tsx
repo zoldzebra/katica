@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 
+import { UserInfo } from "../../Services/userService";
 import { createUser, createEmailAndUserNameForUser } from "../../Services/userService";
 
 interface FormItems {
@@ -10,11 +11,11 @@ interface FormItems {
 }
 
 export const SignUp = () => {
-  const [values, setValues] = useState({
+  const [values, setValues] = useState<FormItems>({
     userName: "",
     email: "",
     password: "",
-  } as FormItems);
+  });
 
   const history = useHistory();
   const handleClick = () => {
@@ -30,13 +31,14 @@ export const SignUp = () => {
   }
 
   const handleSubmit = async (event: any) => {
-    event?.preventDefault();
+    event.preventDefault();
     const userCredentials = await createUser(values.email, values.password);
-    await createEmailAndUserNameForUser(
-      userCredentials.user.uid,
-      userCredentials.user.email,
-      values.userName
-    )
+    const userInfo = {
+      id: userCredentials.user.uid,
+      email: userCredentials.user.email,
+      userName: values.userName,
+    } as UserInfo;
+    await createEmailAndUserNameForUser(userInfo);
     history.push("/lobby");
   }
 
