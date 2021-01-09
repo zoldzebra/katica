@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, FormEvent, ChangeEvent } from "react";
 import { useHistory } from "react-router-dom";
 
 import { UserInfo } from "../../Services/userService";
@@ -22,7 +22,7 @@ export const SignUp = () => {
     history.push("/auth/login")
   }
 
-  const handleChange = (event: any) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     event.persist();
     setValues(values => ({
       ...values,
@@ -30,7 +30,7 @@ export const SignUp = () => {
     }));
   }
 
-  const handleSubmit = async (event: any) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     const userCredentials = await createUser(values.email, values.password);
     const userInfo = {
