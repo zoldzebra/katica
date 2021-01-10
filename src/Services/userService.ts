@@ -5,31 +5,32 @@ import "firebase/firestore";
 import { User } from '../components/AuthProvider/AuthProvider';
 import firebaseApp from "../Firebase/firebaseApp";
 
-// more props to be added later
 export interface UserInfo extends User {
   userName: string;
 }
 
-export const getUserInfo = async (user: User): Promise<any> => {
+export const getUserInfo = async (user: User): Promise<UserInfo | null> => {
   try {
     const db = firebase.firestore();
-    const userInfoRef = db.collection("Users").doc(user?.id);
+    const userInfoRef = db.collection("Users").doc(user.id);
     const userDoc = await userInfoRef.get();
     if (userDoc.exists) {
       const response = {
         ...user,
         ...userDoc.data(),
       }
-      return response;
+      return response as UserInfo;
     }
+    return { ...user, userName: '' } as UserInfo;
   } catch (error) {
     console.log('Error fetching user info:', error);
     alert(error.message);
+    return null;
   }
 }
 
 export const signInUser = async (email: string, password: string)
-  : Promise<any | undefined> => {
+  : Promise<any | null> => {
   try {
     const firebaseAuth = firebase.auth();
     const userCredentials = await firebaseAuth
@@ -38,11 +39,12 @@ export const signInUser = async (email: string, password: string)
   } catch (error) {
     console.log('Error signing in user:', error);
     alert(error.message);
+    return null;
   }
 }
 
 export const createUser = async (email: string, password: string)
-  : Promise<any | undefined> => {
+  : Promise<any | null> => {
   try {
     const firebaseAuth = firebase.auth();
     const userCredentials = await firebaseAuth
@@ -51,16 +53,17 @@ export const createUser = async (email: string, password: string)
   } catch (error) {
     console.log('Error creating user:', error);
     alert(error.message);
+    return null;
   }
 }
 
-export const createEmailAndUserNameForUser = async (id: string, email: string, userName: string) => {
+export const createEmailAndUserNameForUser = async (userInfo: UserInfo) => {
   try {
     const db = firebase.firestore();
-    const userInfoRef = db.collection("Users").doc(id);
-    userInfoRef.set({
-      email: email,
-      userName: userName,
+    const userInfoRef = db.collection("Users").doc(userInfo.id);
+    await userInfoRef.set({
+      email: userInfo.email,
+      userName: userInfo.userName,
     });
   } catch (error) {
     console.log('Error saving userName and email:', error);
@@ -70,7 +73,7 @@ export const createEmailAndUserNameForUser = async (id: string, email: string, u
 
 export const signOutUser = async () => {
   try {
-    firebaseApp.auth().signOut();
+    await firebaseApp.auth().signOut();
   } catch (error) {
     console.log('Error signing out user:', error);
     alert(error.message);

@@ -7,8 +7,6 @@ export type User = {
   email: string;
 }
 
-// source:
-// https://medium.com/wesionary-team/react-firebase-authentication-with-context-api-a770975f33cf
 type ContextProps = {
   user: User | null;
   authenticated: boolean;

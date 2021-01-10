@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, FormEvent, ChangeEvent } from "react";
 import { useHistory } from "react-router-dom";
 
+import { UserInfo } from "../../Services/userService";
 import { createUser, createEmailAndUserNameForUser } from "../../Services/userService";
 
 interface FormItems {
@@ -10,18 +11,18 @@ interface FormItems {
 }
 
 export const SignUp = () => {
-  const [values, setValues] = useState({
+  const [values, setValues] = useState<FormItems>({
     userName: "",
     email: "",
     password: "",
-  } as FormItems);
+  });
 
   const history = useHistory();
   const handleClick = () => {
     history.push("/auth/login")
   }
 
-  const handleChange = (event: any) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     event.persist();
     setValues(values => ({
       ...values,
@@ -29,14 +30,15 @@ export const SignUp = () => {
     }));
   }
 
-  const handleSubmit = async (event: any) => {
-    event?.preventDefault();
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
     const userCredentials = await createUser(values.email, values.password);
-    await createEmailAndUserNameForUser(
-      userCredentials.user.uid,
-      userCredentials.user.email,
-      values.userName
-    )
+    const userInfo = {
+      id: userCredentials.user.uid,
+      email: userCredentials.user.email,
+      userName: values.userName,
+    } as UserInfo;
+    await createEmailAndUserNameForUser(userInfo);
     history.push("/lobby");
   }
 

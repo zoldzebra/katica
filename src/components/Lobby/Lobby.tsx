@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, MouseEvent } from 'react';
 import { Paper } from '@material-ui/core';
 import { useHistory } from "react-router-dom";
 
@@ -18,17 +18,17 @@ export const Lobby = (): JSX.Element => {
   const { gameServer } = useContext(GameServerContext);
   const history = useHistory();
   const lobbyClient = new LobbyClient({ server: gameServer });
-  const [userInfo, setUserInfo] = useState<UserInfo | undefined>({
-    id: '',
-    email: '',
-    userName: '',
-  });
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [gameNames, setGameNames] = useState<string[]>([]);
   const [matches, setMatches] = useState<LobbyAPI.Match[]>([]);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
-      const actualUserInfo = user && await getUserInfo(user);
+      if (!user) {
+        setUserInfo(null)
+        return;
+      }
+      const actualUserInfo = await getUserInfo(user);
       setUserInfo(actualUserInfo);
     }
     fetchUserInfo();
@@ -61,7 +61,7 @@ export const Lobby = (): JSX.Element => {
   //   }),
   // });
 
-  const handleLogoutClick = async (event: any) => {
+  const handleLogoutClick = async (event: MouseEvent) => {
     event.preventDefault();
     await signOutUser();
     history.push("/auth/login");
