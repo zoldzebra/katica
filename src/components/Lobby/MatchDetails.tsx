@@ -24,7 +24,12 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
 
   const isJoinable = (): boolean => {
     return (joinedPlayers.length < match.players.length
-      && !joinedPlayers.includes(userName))
+      && !joinedPlayers.includes(userName));
+  }
+
+  const isStartable = (): boolean => {
+    return (joinedPlayers.length === match.players.length
+      && joinedPlayers.includes(userName));
   }
 
   const handleJoinMatch = async (match: LobbyAPI.Match) => {
@@ -49,11 +54,18 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
     }
   }
 
+  const handleStartMatch = () => {
+    console.log('start match');
+  }
+
   return (
     <div>
       { match.gameName} - { match.matchID}. Players joined: {joinedPlayers}
       {isJoinable()
         ? <button onClick={() => handleJoinMatch(match)}>Join!</button>
+        : null}
+      {isStartable()
+        ? <button onClick={handleStartMatch}>Start match!</button>
         : null}
     </div>
   );
