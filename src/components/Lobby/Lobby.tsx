@@ -67,9 +67,8 @@ export const Lobby = (): JSX.Element => {
     history.push("/auth/login");
   }
 
-  const handleCreateNewMatch = async (event: any) => {
-    event.preventDefault();
-    await lobbyClient.createMatch('katica', {
+  const handleCreateNewMatch = async (gameName: string) => {
+    await lobbyClient.createMatch(gameName, {
       numPlayers: 2
     });
   }
@@ -82,7 +81,12 @@ export const Lobby = (): JSX.Element => {
       <p>Welcome to the Lobby!</p>
       <p>Available games:</p>
       <ul>
-        {gameNames.map(gameName => <li key={gameName}>{gameName}</li>)}
+        {gameNames.map((gameName) => {
+          return (
+            <li key={gameName}>{gameName} <button onClick={() => handleCreateNewMatch(gameName)}>Create new match</button></li>
+          )
+        })
+        }
       </ul>
       <p>There are a total of {matches.length} matches now:</p>
       <ul>
@@ -95,7 +99,6 @@ export const Lobby = (): JSX.Element => {
             />
           </li>)}
       </ul>
-      <button onClick={handleCreateNewMatch}>Create new KATICA match</button>
     </Paper>
   );
 }
