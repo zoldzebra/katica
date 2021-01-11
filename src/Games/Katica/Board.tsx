@@ -137,23 +137,23 @@ export class Board extends React.Component<IBoardProps, unknown> {
     return validMovesHighlight;
   }
 
-  _getStatus() {
-    if (isOnlineGame) {
-      if (this.props.ctx.currentPlayer === this.props.playerID) {
-        return 'YOUR TURN';
-      } else {
-        return 'Waiting for opponent...';
-      }
-    } else {
-      // Local or AI game
-      switch (this.props.ctx.currentPlayer) {
-        case '0':
-          return "Red's turn";
-        case '1':
-          return "Orange's turn";
-      }
-    }
-  }
+  // _getStatus() {
+  //   if (isOnlineGame) {
+  //     if (this.props.ctx.currentPlayer === this.props.playerID) {
+  //       return 'YOUR TURN';
+  //     } else {
+  //       return 'Waiting for opponent...';
+  //     }
+  //   } else {
+  //     // Local or AI game
+  //     switch (this.props.ctx.currentPlayer) {
+  //       case '0':
+  //         return "Red's turn";
+  //       case '1':
+  //         return "Orange's turn";
+  //     }
+  //   }
+  // }
 
   _getGameOver() {
 
@@ -258,7 +258,7 @@ export class Board extends React.Component<IBoardProps, unknown> {
     return (
       <div>
         <Typography variant="h5" style={{ textAlign: 'center', color: 'white', marginBottom: '16px' }}>
-          {this._getStatus()}
+          {/* {this._getStatus()} */}
         </Typography>
         <Checkerboard
           onClick={this._onClick}

@@ -4,14 +4,17 @@ import { useHistory } from "react-router-dom";
 
 import { LobbyClient } from 'boardgame.io/client';
 import { LobbyAPI } from 'boardgame.io';
-// import { SocketIO } from "boardgame.io/multiplayer";
-// import { Client } from "boardgame.io/react";
-
 
 import { getUserInfo, signOutUser, UserInfo } from '../../Services/userService';
 import { AuthContext } from '../AuthProvider/AuthProvider';
 import { GameServerContext } from '../GameServerProvider/GameServerProvider';
 import { MatchDetails } from './MatchDetails';
+
+// import { KaticaGame } from '../../Games/Katica/Game';
+// import { Board } from '../../Games/Katica/Board';
+
+
+
 
 export const Lobby = (): JSX.Element => {
   const { user } = useContext(AuthContext);
@@ -52,14 +55,6 @@ export const Lobby = (): JSX.Element => {
 
   const userName = userInfo?.userName ?? '-';
   const email = userInfo?.email ?? '-';
-
-  // const GameClient = Client({
-  //   game: UdaipurGame,
-  //   board: UdaipurBoard,
-  //   multiplayer: SocketIO({
-  //     server: server,
-  //   }),
-  // });
 
   const handleLogoutClick = async (event: MouseEvent) => {
     event.preventDefault();
