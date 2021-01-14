@@ -6,10 +6,9 @@ import { SocketIO } from "boardgame.io/multiplayer";
 import { Client } from "boardgame.io/react";
 
 import { GameServerContext } from '../GameServerProvider/GameServerProvider';
-
 import { TicTacToe } from '../../Games/TicTacToe/Game';
 import { TicTacToeBoard } from '../../Games/TicTacToe/Board';
-
+import { getObjectFromLocalStorage, updateObjectInLocalStorage } from '../../utils/localStorageHelper';
 
 interface MatchDetailProps {
   match: LobbyAPI.Match,
@@ -17,17 +16,21 @@ interface MatchDetailProps {
   lobbyClient: LobbyClient;
 }
 
+interface MatchCredentials {
+  credentials: string,
+  playerID: string,
+}
+
+const USER_MATCH_CREDENTIALS = 'userMatchCredentials';
+
 export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => {
   const { gameServer } = useContext(GameServerContext);
   const { match, userName, lobbyClient } = props;
   const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
-  const [userMatchCredentials, setUserMatchCredentials] = useState<string>('');
-  const [playerID, setPlayerID] = useState('');
-  const [matchOn, setMatchOn] = useState(false);
+  const [matchCredentials, setMatchCredentials] = useState<MatchCredentials | null>(null);
+  const [isMatchOn, setIsMatchOn] = useState(false);
 
   console.log('match', match);
-  console.log('userMatchCredentials', userMatchCredentials);
-
 
   useEffect(() => {
     match.players.forEach(player => {
@@ -37,15 +40,11 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
   }, []);
 
   useEffect(() => {
-    const localCreds = localStorage.getItem('playerCredentials');
-    const localPlayerID = localStorage.getItem('playerID');
-    if (localCreds && localPlayerID) {
-      setUserMatchCredentials(localCreds);
-      setPlayerID(localPlayerID);
+    const localCreds = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS);
+    if (localCreds && localCreds[match.matchID]) {
+      setMatchCredentials(localCreds[match.matchID] as MatchCredentials);
     }
   }, []);
-
-  // decide where to persist credentials and playerID for match, state not ok after refresh...
 
   const isJoinable = (): boolean => {
     return (joinedPlayers.length < match.players.length
@@ -72,10 +71,16 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
           playerName: userName,
         }
       )
-      setUserMatchCredentials(playerCredentials);
-      localStorage.setItem('playerCredentials', playerCredentials);
-      setPlayerID(emptySeat.id.toString());
-      localStorage.setItem('playerID', emptySeat.id.toString());
+      const actualMatchCredentials = {
+        credentials: playerCredentials,
+        playerID: emptySeat.id.toString(),
+      };
+      setMatchCredentials(actualMatchCredentials);
+
+      const actualUserMatchCredentials = {
+        [match.matchID]: actualMatchCredentials,
+      }
+      updateObjectInLocalStorage(USER_MATCH_CREDENTIALS, actualUserMatchCredentials);
       setJoinedPlayers(oldPlayers => [...oldPlayers, userName]);
     } catch (error) {
       console.log('Error joining match:', error);
@@ -85,7 +90,7 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
 
   const handleStartMatch = () => {
     console.log('start match');
-    setMatchOn(true);
+    setIsMatchOn(true);
   }
 
   const TicTacToeClient = Client({
@@ -98,12 +103,13 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
   });
 
   const getTicTacToeClient = () => {
-    console.log(`Creating match w playerID ${playerID}, creds: ${userMatchCredentials}`);
+    if (!matchCredentials) return null;
+    console.log(`Creating match w playerID ${matchCredentials.playerID}, creds: ${matchCredentials.credentials}`);
     return (
       <TicTacToeClient
         matchID={match.matchID}
-        playerID={playerID}
-        credentials={userMatchCredentials}
+        playerID={matchCredentials.playerID}
+        credentials={matchCredentials.credentials}
       />
     );
   };
@@ -118,9 +124,9 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
         ? <button onClick={() => handleJoinMatch(match)}>Join!</button>
         : null}
       {isStartable()
-        ? <button onClick={handleStartMatch}>Start match!</button>
+        ? <button onClick={handleStartMatch}>Play match!</button>
         : null}
-      {matchOn
+      {isMatchOn
         ? getTicTacToeClient()
         : null}
     </div>
