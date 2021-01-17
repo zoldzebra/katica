@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState, useContext } from 'react';
 
 import { LobbyAPI } from 'boardgame.io';
@@ -8,6 +9,8 @@ import { Client } from "boardgame.io/react";
 import { GameServerContext } from '../GameServerProvider/GameServerProvider';
 import { TicTacToe } from '../../Games/TicTacToe/Game';
 import { TicTacToeBoard } from '../../Games/TicTacToe/Board';
+import { KaticaGame } from '../../Games/Katica/Game';
+import { KaticaBoard } from '../../Games/Katica/Board';
 import { getObjectFromLocalStorage, mergeToObjectInLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
 
 interface MatchDetailProps {
@@ -97,9 +100,18 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
     }),
   });
 
+  const KaticaClient = Client({
+    game: KaticaGame,
+    numPlayers: 2,
+    board: KaticaBoard,
+    multiplayer: SocketIO({
+      server: gameServer,
+    }),
+  });
+
   const getTicTacToeClient = () => {
     if (!matchCredentials) return null;
-    console.log(`Creating match w playerID ${matchCredentials.playerID}, creds: ${matchCredentials.credentials}`);
+    console.log(`Creating TICTACTOE match w playerID ${matchCredentials.playerID}, creds: ${matchCredentials.credentials}`);
     return (
       <TicTacToeClient
         matchID={match.matchID}
@@ -108,6 +120,30 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
       />
     );
   };
+
+  const getKaticaClient = () => {
+    if (!matchCredentials) return null;
+    console.log(`Creating KATICA match w playerID ${matchCredentials.playerID}, creds: ${matchCredentials.credentials}`);
+    return (
+      <KaticaClient
+        matchID={match.matchID}
+        playerID={matchCredentials.playerID}
+        credentials={matchCredentials.credentials}
+      />
+    );
+  };
+
+  // TODO: get client as props from Lobby?
+
+  const getGameClient = () => {
+    if (match.gameName === 'tic-tac-toe') {
+      return getTicTacToeClient();
+    }
+    if (match.gameName === 'katica') {
+      return getKaticaClient();
+    }
+    return;
+  }
 
   return (
     <div>
@@ -122,7 +158,7 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
         ? <button onClick={handleStartMatch}>Play match!</button>
         : null}
       {isMatchOn
-        ? getTicTacToeClient()
+        ? getGameClient()
         : null}
     </div>
   );

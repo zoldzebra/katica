@@ -9,6 +9,7 @@ import orange from '@material-ui/core/colors/orange';
 
 import { IG, Piece, EMPTY_FIELD, toCoord, toIndex, getValidMoves } from './Game';
 import { Token } from '@freeboardgame.org/boardgame.io/ui';
+import { BoardProps } from "boardgame.io/react";
 import {
   Checkerboard,
   IAlgebraicCoords,
@@ -20,11 +21,11 @@ import {
   cartesianToAlgebraic,
 } from './CheckerboardCustom';
 
-interface IBoardProps {
+interface IBoardProps extends BoardProps {
   G: IG;
   ctx: any;
   moves: any;
-  playerID: string;
+  playerID: string | null;
   gameArgs?: any;
   step?: any;
 }
@@ -41,7 +42,7 @@ function roundCoords(coords: ICartesianCoords) {
 const isOnlineGame = true;
 const isAIGame = false;
 
-export class Board extends React.Component<IBoardProps, unknown> {
+export class KaticaBoard extends React.Component<IBoardProps, unknown> {
   state: IBoardState = {
     selected: null,
     validMovesHighlight: {},
@@ -290,4 +291,4 @@ export class Board extends React.Component<IBoardProps, unknown> {
   }
 }
 
-export default Board;
+export default KaticaBoard;

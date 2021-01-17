@@ -11,11 +11,6 @@ import { GameServerContext } from '../GameServerProvider/GameServerProvider';
 import { MatchDetails } from './MatchDetails';
 import { getObjectFromLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
 
-
-// import { KaticaGame } from '../../Games/Katica/Game';
-// import { Board } from '../../Games/Katica/Board';
-
-
 export const Lobby = (): JSX.Element => {
   const { user } = useContext(AuthContext);
   const { gameServer } = useContext(GameServerContext);
