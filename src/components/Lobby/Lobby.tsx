@@ -73,9 +73,6 @@ export const Lobby = (): JSX.Element => {
     syncLocalStorageMatches();
   }, [matches]);
 
-  const userName = userInfo?.userName ?? '-';
-  const email = userInfo?.email ?? '-';
-
   const handleLogoutClick = async (event: MouseEvent) => {
     event.preventDefault();
     await signOutUser();
@@ -83,10 +80,15 @@ export const Lobby = (): JSX.Element => {
   }
 
   const handleCreateNewMatch = async (gameName: string) => {
-    await lobbyClient.createMatch(gameName, {
+    const newMatchID = await lobbyClient.createMatch(gameName, {
       numPlayers: 2
     });
+    const newMatch = await lobbyClient.getMatch(gameName, newMatchID.matchID);
+    setMatches(oldMatches => [...oldMatches, newMatch])
   }
+
+  const userName = userInfo?.userName ?? '-';
+  const email = userInfo?.email ?? '-';
 
   return (
     <Paper>

@@ -85,7 +85,6 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
   }
 
   const handleStartMatch = () => {
-    console.log('start match');
     setIsMatchOn(true);
   }
 
