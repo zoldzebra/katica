@@ -8,7 +8,7 @@ import { Client } from "boardgame.io/react";
 import { GameServerContext } from '../GameServerProvider/GameServerProvider';
 import { TicTacToe } from '../../Games/TicTacToe/Game';
 import { TicTacToeBoard } from '../../Games/TicTacToe/Board';
-import { getObjectFromLocalStorage, updateObjectInLocalStorage } from '../../utils/localStorageHelper';
+import { getObjectFromLocalStorage, mergeToObjectInLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
 
 interface MatchDetailProps {
   match: LobbyAPI.Match,
@@ -21,16 +21,12 @@ interface MatchCredentials {
   playerID: string,
 }
 
-const USER_MATCH_CREDENTIALS = 'userMatchCredentials';
-
 export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => {
   const { gameServer } = useContext(GameServerContext);
   const { match, userName, lobbyClient } = props;
   const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
   const [matchCredentials, setMatchCredentials] = useState<MatchCredentials | null>(null);
   const [isMatchOn, setIsMatchOn] = useState(false);
-
-  console.log('match', match);
 
   useEffect(() => {
     match.players.forEach(player => {
@@ -80,7 +76,7 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
       const actualUserMatchCredentials = {
         [match.matchID]: actualMatchCredentials,
       }
-      updateObjectInLocalStorage(USER_MATCH_CREDENTIALS, actualUserMatchCredentials);
+      mergeToObjectInLocalStorage(USER_MATCH_CREDENTIALS, actualUserMatchCredentials);
       setJoinedPlayers(oldPlayers => [...oldPlayers, userName]);
     } catch (error) {
       console.log('Error joining match:', error);

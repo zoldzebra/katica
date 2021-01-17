@@ -1,19 +1,23 @@
+export const USER_MATCH_CREDENTIALS = 'userMatchCredentials';
+
 export const getObjectFromLocalStorage = (
   key: string
 ): Record<string, unknown> | undefined => {
   const rawJson = localStorage.getItem(key);
   if (!rawJson) return undefined;
-  return JSON.parse(rawJson);
+  const parsedObject = JSON.parse(rawJson);
+  if (Object.keys(parsedObject).length === 0) return undefined;
+  return parsedObject;
 }
 
-export const updateObjectInLocalStorage = (
+export const mergeToObjectInLocalStorage = (
   key: string,
-  updateWith: Record<string, unknown>,
+  mergeWith: Record<string, unknown>,
 ): void => {
   const objectToUpdate = getObjectFromLocalStorage(key);
   const updatedObject = {
     ...objectToUpdate,
-    ...updateWith,
+    ...mergeWith,
   }
   localStorage.setItem(key, JSON.stringify(updatedObject));
 }

@@ -9,11 +9,11 @@ import { getUserInfo, signOutUser, UserInfo } from '../../Services/userService';
 import { AuthContext } from '../AuthProvider/AuthProvider';
 import { GameServerContext } from '../GameServerProvider/GameServerProvider';
 import { MatchDetails } from './MatchDetails';
+import { getObjectFromLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
+
 
 // import { KaticaGame } from '../../Games/Katica/Game';
 // import { Board } from '../../Games/Katica/Board';
-
-
 
 
 export const Lobby = (): JSX.Element => {
@@ -46,12 +46,32 @@ export const Lobby = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    const fetchGameMatches = async (game: string): Promise<void> => {
+    const fetchMatches = async (game: string): Promise<void> => {
       const gameMatches = await lobbyClient.listMatches(game);
       setMatches(oldMatches => [...oldMatches, ...gameMatches.matches]);
     }
-    gameNames.forEach(game => fetchGameMatches(game));
+    gameNames.forEach(game => fetchMatches(game));
   }, [gameNames]);
+
+  useEffect(() => {
+    if (matches.length === 0) return;
+    const syncLocalStorageMatches = () => {
+      const matchCredentials = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS);
+      if (!matchCredentials) return;
+      const storedMatchIds = Object.keys(matchCredentials);
+      const syncedMatchCredentials: Record<string, unknown> = {};
+      storedMatchIds.forEach(storedMatchId => {
+        matches.forEach(match => {
+          if (match.matchID === storedMatchId) {
+            syncedMatchCredentials[storedMatchId] = matchCredentials[storedMatchId];
+            return;
+          }
+        });
+      })
+      localStorage.setItem(USER_MATCH_CREDENTIALS, JSON.stringify(syncedMatchCredentials));
+    }
+    syncLocalStorageMatches();
+  }, [matches]);
 
   const userName = userInfo?.userName ?? '-';
   const email = userInfo?.email ?? '-';
