@@ -11,6 +11,7 @@ import { TicTacToe } from '../../Games/TicTacToe/Game';
 import { TicTacToeBoard } from '../../Games/TicTacToe/Board';
 import { KaticaGame } from '../../Games/Katica/Game';
 import { KaticaBoard } from '../../Games/Katica/Board';
+import { GameClientComponent } from '../GameClient/GameClient';
 import { getObjectFromLocalStorage, mergeToObjectInLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
 
 interface MatchDetailProps {
@@ -117,6 +118,7 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
         matchID={match.matchID}
         playerID={matchCredentials.playerID}
         credentials={matchCredentials.credentials}
+        debug
       />
     );
   };
@@ -129,20 +131,41 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
         matchID={match.matchID}
         playerID={matchCredentials.playerID}
         credentials={matchCredentials.credentials}
+        debug
       />
     );
   };
 
-  // TODO: get client as props from Lobby?
+  // push to new route when playing match
 
   const getGameClient = () => {
+    if (!gameServer || !matchCredentials) return null;
     if (match.gameName === 'tic-tac-toe') {
-      return getTicTacToeClient();
+      return (
+        <GameClientComponent
+          game={TicTacToe}
+          board={TicTacToeBoard}
+          gameServer={gameServer}
+          matchID={match.matchID}
+          playerID={matchCredentials.playerID}
+          credentials={matchCredentials.credentials}
+          debug={false}
+        />
+      );
     }
     if (match.gameName === 'katica') {
-      return getKaticaClient();
+      return (
+        <GameClientComponent
+          game={KaticaGame}
+          board={KaticaBoard}
+          gameServer={gameServer}
+          matchID={match.matchID}
+          playerID={matchCredentials.playerID}
+          credentials={matchCredentials.credentials}
+          debug={false}
+        />
+      );
     }
-    return;
   }
 
   return (
