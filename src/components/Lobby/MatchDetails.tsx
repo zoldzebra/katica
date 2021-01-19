@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import { LobbyAPI } from 'boardgame.io';
 import { LobbyClient } from 'boardgame.io/client';
@@ -26,6 +27,7 @@ interface MatchCredentials {
 }
 
 export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => {
+  const history = useHistory();
   const { gameServer } = useContext(GameServerContext);
   const { match, userName, lobbyClient } = props;
   const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
@@ -112,7 +114,6 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
 
   const getTicTacToeClient = () => {
     if (!matchCredentials) return null;
-    console.log(`Creating TICTACTOE match w playerID ${matchCredentials.playerID}, creds: ${matchCredentials.credentials}`);
     return (
       <TicTacToeClient
         matchID={match.matchID}
@@ -125,7 +126,6 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
 
   const getKaticaClient = () => {
     if (!matchCredentials) return null;
-    console.log(`Creating KATICA match w playerID ${matchCredentials.playerID}, creds: ${matchCredentials.credentials}`);
     return (
       <KaticaClient
         matchID={match.matchID}
@@ -136,36 +136,36 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
     );
   };
 
-  // push to new route when playing match
-
   const getGameClient = () => {
-    if (!gameServer || !matchCredentials) return null;
-    if (match.gameName === 'tic-tac-toe') {
-      return (
-        <GameClientComponent
-          game={TicTacToe}
-          board={TicTacToeBoard}
-          gameServer={gameServer}
-          matchID={match.matchID}
-          playerID={matchCredentials.playerID}
-          credentials={matchCredentials.credentials}
-          debug={false}
-        />
-      );
-    }
-    if (match.gameName === 'katica') {
-      return (
-        <GameClientComponent
-          game={KaticaGame}
-          board={KaticaBoard}
-          gameServer={gameServer}
-          matchID={match.matchID}
-          playerID={matchCredentials.playerID}
-          credentials={matchCredentials.credentials}
-          debug={false}
-        />
-      );
-    }
+    history.push(`/match/${match.matchID}`);
+    // window.open(`/match/${match.matchID}`);
+    // if (!gameServer || !matchCredentials) return null;
+    // if (match.gameName === 'tic-tac-toe') {
+    //   return (
+    //     <GameClientComponent
+    //       game={TicTacToe}
+    //       board={TicTacToeBoard}
+    //       gameServer={gameServer}
+    //       matchID={match.matchID}
+    //       playerID={matchCredentials.playerID}
+    //       credentials={matchCredentials.credentials}
+    //       debug={false}
+    //     />
+    //   );
+    // }
+    // if (match.gameName === 'katica') {
+    //   return (
+    //     <GameClientComponent
+    //       game={KaticaGame}
+    //       board={KaticaBoard}
+    //       gameServer={gameServer}
+    //       matchID={match.matchID}
+    //       playerID={matchCredentials.playerID}
+    //       credentials={matchCredentials.credentials}
+    //       debug={false}
+    //     />
+    //   );
+    // }
   }
 
   return (

@@ -41,15 +41,22 @@ export const Lobby = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
+    let tempMatchList = matches;
     const fetchMatches = async (game: string): Promise<void> => {
       const gameMatches = await lobbyClient.listMatches(game);
-      setMatches(oldMatches => [...oldMatches, ...gameMatches.matches]);
+      tempMatchList = [...tempMatchList, ...gameMatches.matches];
+      console.log({ tempMatchList });
     }
-    gameNames.forEach(game => fetchMatches(game));
+    for (const gameName of gameNames) {
+      fetchMatches(gameName);
+    }
+    console.log('only once'); // this should run after the server calls...
+    setMatches(oldMatches => [...oldMatches, ...tempMatchList]);
   }, [gameNames]);
 
   useEffect(() => {
     if (matches.length === 0) return;
+    console.log(matches);
     const syncLocalStorageMatches = () => {
       const matchCredentials = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS);
       if (!matchCredentials) return;
