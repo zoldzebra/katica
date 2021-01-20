@@ -41,20 +41,20 @@ export const Lobby = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    (async () => {
+    const setAllMatches = async () => {
       const promises = gameNames.map(async (gameName) => await lobbyClient.listMatches(gameName));
       const allMatchLists = await Promise.all(promises);
       let allMatches: LobbyAPI.Match[] | null = null;
       allMatchLists.forEach(matchList => allMatches = allMatches === null ? [...matchList.matches] : [...allMatches, ...matchList.matches]);
       if (allMatches === null) return;
       setMatches(oldMatches => [...oldMatches, ...(allMatches as LobbyAPI.Match[])]);
-    })();
+    }
+    setAllMatches();
   }, [gameNames]);
 
   useEffect(() => {
     if (matches.length === 0) return;
-    console.log(matches);
-    const syncLocalStorageMatches = () => {
+    const syncLocalStorageWithMatches = () => {
       const matchCredentials = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS);
       if (!matchCredentials) return;
       const storedMatchIds = Object.keys(matchCredentials);
@@ -69,7 +69,7 @@ export const Lobby = (): JSX.Element => {
       })
       localStorage.setItem(USER_MATCH_CREDENTIALS, JSON.stringify(syncedMatchCredentials));
     }
-    syncLocalStorageMatches();
+    syncLocalStorageWithMatches();
   }, [matches]);
 
   const handleLogoutClick = async (event: MouseEvent) => {
