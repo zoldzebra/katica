@@ -55,14 +55,14 @@ export const Lobby = (): JSX.Element => {
   useEffect(() => {
     if (matches.length === 0) return;
     const syncLocalStorageWithMatches = () => {
-      const matchCredentials = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS);
-      if (!matchCredentials) return;
-      const storedMatchIds = Object.keys(matchCredentials);
+      const storedMatchCredentials = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS);
+      if (!storedMatchCredentials) return;
+      const storedMatchIds = Object.keys(storedMatchCredentials);
       const syncedMatchCredentials: Record<string, unknown> = {};
       storedMatchIds.forEach(storedMatchId => {
         matches.forEach(match => {
           if (match.matchID === storedMatchId) {
-            syncedMatchCredentials[storedMatchId] = matchCredentials[storedMatchId];
+            syncedMatchCredentials[storedMatchId] = storedMatchCredentials[storedMatchId];
             return;
           }
         });

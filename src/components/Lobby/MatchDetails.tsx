@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Redirect } from 'react-router-dom';
 
 import { LobbyAPI } from 'boardgame.io';
 import { LobbyClient } from 'boardgame.io/client';
@@ -21,7 +21,10 @@ interface MatchDetailProps {
   lobbyClient: LobbyClient;
 }
 
-interface MatchCredentials {
+export interface StoredMatchCredentials {
+  [key: string]: MatchCredential;
+}
+export interface MatchCredential {
   credentials: string,
   playerID: string,
 }
@@ -31,7 +34,7 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
   const { gameServer } = useContext(GameServerContext);
   const { match, userName, lobbyClient } = props;
   const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
-  const [matchCredentials, setMatchCredentials] = useState<MatchCredentials | null>(null);
+  const [matchCredentials, setMatchCredentials] = useState<MatchCredential | null>(null);
   const [isMatchOn, setIsMatchOn] = useState(false);
 
   useEffect(() => {
@@ -44,7 +47,7 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
   useEffect(() => {
     const localCreds = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS);
     if (localCreds && localCreds[match.matchID]) {
-      setMatchCredentials(localCreds[match.matchID] as MatchCredentials);
+      setMatchCredentials(localCreds[match.matchID] as MatchCredential);
     }
   }, []);
 
@@ -136,8 +139,10 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
     );
   };
 
-  const getGameClient = () => {
-    history.push(`/match/${match.matchID}`);
+  const redirectToMatchPage = () => {
+    return (
+      <Redirect to={`/match/${match.matchID}`} />
+    );
     // window.open(`/match/${match.matchID}`);
     // if (!gameServer || !matchCredentials) return null;
     // if (match.gameName === 'tic-tac-toe') {
@@ -181,7 +186,7 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
         ? <button onClick={handleStartMatch}>Play match!</button>
         : null}
       {isMatchOn
-        ? getGameClient()
+        ? redirectToMatchPage()
         : null}
     </div>
   );
