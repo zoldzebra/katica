@@ -5,7 +5,7 @@ import { AuthContext } from "../components/AuthProvider/AuthProvider";
 import { ProtectedRoute } from "./PrivateRoute";
 import { AuthRoutes } from "./AuthRoutes";
 import { LobbyRoutes } from "./LobbyRoutes";
-import { MatchComponent } from "../components/Match/Match";
+import { MatchPage } from "../components/MatchPage/MatchPage";
 
 export const AppRoutes = () => {
   const { authenticated, loadingAuthState } = useContext(AuthContext);
@@ -22,7 +22,7 @@ export const AppRoutes = () => {
         />
         <ProtectedRoute
           path="/match/:matchID"
-          component={MatchComponent}
+          component={MatchPage}
           isAuthenticated={authenticated}
           authenticationPath="/auth"
           isLoadingAuthState={loadingAuthState}
