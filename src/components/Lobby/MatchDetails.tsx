@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { LobbyAPI } from 'boardgame.io';
 import { LobbyClient } from 'boardgame.io/client';
 
-import { getObjectFromLocalStorage, mergeToObjectInLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
+import { mergeToObjectInLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
 
 interface MatchDetailProps {
   match: LobbyAPI.Match,
@@ -22,23 +22,15 @@ export interface MatchCredential {
 }
 
 export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => {
+  const history = useHistory();
   const { match, userName, lobbyClient } = props;
   const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
-  const [matchCredentials, setMatchCredentials] = useState<MatchCredential | null>(null);
-  const [isMatchOn, setIsMatchOn] = useState(false);
 
   useEffect(() => {
     match.players.forEach(player => {
       if (!player.name) return;
       setJoinedPlayers(oldPlayers => [...oldPlayers, player.name as string]);
     })
-  }, []);
-
-  useEffect(() => {
-    const localCreds = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS);
-    if (localCreds && localCreds[match.matchID]) {
-      setMatchCredentials(localCreds[match.matchID] as MatchCredential);
-    }
   }, []);
 
   const isFull = (): boolean => {
@@ -53,7 +45,7 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
     if (isFull()) {
       if (isJoined()) {
         return (
-          <button onClick={handleStartMatch}>Play match!</button>
+          <button onClick={() => history.push(`/match/${match.matchID}`)}>Play match!</button>
         )
       }
       return (
@@ -89,33 +81,19 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
           playerName: userName,
         }
       )
-      const actualMatchCredentials = {
-        gameName: match.gameName,
-        credentials: playerCredentials,
-        playerID: emptySeat.id.toString(),
-      };
-      setMatchCredentials(actualMatchCredentials);
-
       const actualUserMatchCredentials = {
-        [match.matchID]: actualMatchCredentials,
-      }
+        [match.matchID]: {
+          gameName: match.gameName,
+          credentials: playerCredentials,
+          playerID: emptySeat.id.toString(),
+        }
+      };
       mergeToObjectInLocalStorage(USER_MATCH_CREDENTIALS, actualUserMatchCredentials);
       setJoinedPlayers(oldPlayers => [...oldPlayers, userName]);
     } catch (error) {
       console.log('Error joining match:', error);
       alert(error.message);
     }
-  }
-
-  const handleStartMatch = () => {
-    setIsMatchOn(true);
-  }
-
-  const redirectToMatchPage = () => {
-    if (!matchCredentials) return null;
-    return (
-      <Redirect to={`/match/${match.matchID}`} />
-    );
   }
 
   return (
@@ -125,9 +103,6 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
         {joinedPlayers.map(player => <li key={player}>{player}</li>)}
       </ul>
       {matchStatusOrAction()}
-      {isMatchOn
-        ? redirectToMatchPage()
-        : null}
     </div>
   );
 }

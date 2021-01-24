@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect, useContext } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps, useHistory } from "react-router-dom";
 
 import { GameServerContext } from '../GameServerProvider/GameServerProvider';
 import { StoredMatchCredentials } from '../Lobby/MatchDetails';
@@ -22,6 +22,7 @@ interface PlayedMatchCredentials {
 }
 
 export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
+  const history = useHistory();
   const { gameServer } = useContext(GameServerContext);
   const { matchID } = props.match.params;
   const [playedMatchCredentials, setPlayedMatchCredentials] = useState<PlayedMatchCredentials | undefined>(undefined);
@@ -70,10 +71,11 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
   }
 
   const backToLobby = () => {
-    console.log('no credentials');
-    // redirect to lobby
     return (
-      <h1>Match credentials not found, back to Lobby</h1>
+      <>
+        <p>Sorry, match credentials not found.</p>
+        <button onClick={() => history.push('/lobby')}>Back to lobby</button>
+      </>
     )
   }
 
@@ -91,9 +93,6 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
       />
     )
   }
-
-  console.log('playedMatchCredentials', playedMatchCredentials);
-  console.log('gameAndBoard', gameAndBoard);
 
   return (
     <div>
