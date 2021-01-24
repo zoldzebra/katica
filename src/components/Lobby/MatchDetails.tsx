@@ -41,14 +41,37 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
     }
   }, []);
 
-  const isJoinable = (): boolean => {
-    return (joinedPlayers.length < match.players.length
-      && !joinedPlayers.includes(userName));
+  const isFull = (): boolean => {
+    return joinedPlayers.length === match.players.length;
   }
 
-  const isStartable = (): boolean => {
-    return (joinedPlayers.length === match.players.length
-      && joinedPlayers.includes(userName));
+  const isJoined = (): boolean => {
+    return joinedPlayers.includes(userName);
+  }
+
+  const matchStatusOrAction = (): JSX.Element => {
+    if (isFull()) {
+      if (isJoined()) {
+        return (
+          <button onClick={handleStartMatch}>Play match!</button>
+        )
+      }
+      return (
+        <p>
+          Match is full.
+        </p>
+      )
+    }
+    if (isJoined()) {
+      return (
+        <p>
+          Waiting for others to join...
+        </p>
+      )
+    }
+    return (
+      <button onClick={() => handleJoinMatch(match)}>Join!</button>
+    )
   }
 
   const handleJoinMatch = async (match: LobbyAPI.Match) => {
@@ -84,7 +107,6 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
     }
   }
 
-  // can be simplified here, no need to matchOn boolean...
   const handleStartMatch = () => {
     setIsMatchOn(true);
   }
@@ -102,12 +124,7 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
       <ul>
         {joinedPlayers.map(player => <li key={player}>{player}</li>)}
       </ul>
-      {isJoinable()
-        ? <button onClick={() => handleJoinMatch(match)}>Join!</button>
-        : null}
-      {isStartable()
-        ? <button onClick={handleStartMatch}>Play match!</button>
-        : null}
+      {matchStatusOrAction()}
       {isMatchOn
         ? redirectToMatchPage()
         : null}
