@@ -29,9 +29,10 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
   useEffect(() => {
     match.players.forEach(player => {
       if (!player.name) return;
+      if (joinedPlayers.includes(player.name)) return;
       setJoinedPlayers(oldPlayers => [...oldPlayers, player.name as string]);
     })
-  }, []);
+  }, [match]);
 
   const isFull = (): boolean => {
     return joinedPlayers.length === match.players.length;

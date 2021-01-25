@@ -10,6 +10,7 @@ import { AuthContext } from '../AuthProvider/AuthProvider';
 import { GameServerContext } from '../GameServerProvider/GameServerProvider';
 import { MatchDetails } from './MatchDetails';
 import { getObjectFromLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
+import { useInterval } from '../../utils/useInterval';
 
 export const Lobby = (): JSX.Element => {
   const { user } = useContext(AuthContext);
@@ -33,24 +34,19 @@ export const Lobby = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    const fetchGames = async (): Promise<void> => {
-      const gamesList = await lobbyClient.listGames();
-      setGameNames(gamesList);
+    const fetchGameNames = async (): Promise<void> => {
+      const gameNameList = await lobbyClient.listGames();
+      setGameNames(gameNameList);
     }
-    fetchGames();
+    fetchGameNames();
   }, []);
 
-  useEffect(() => {
-    const setAllMatches = async () => {
-      const promises = gameNames.map(async (gameName) => await lobbyClient.listMatches(gameName));
-      const allMatchLists = await Promise.all(promises);
-      let allMatches: LobbyAPI.Match[] | null = null;
-      allMatchLists.forEach(matchList => allMatches = allMatches === null ? [...matchList.matches] : [...allMatches, ...matchList.matches]);
-      if (allMatches === null) return;
-      setMatches(oldMatches => [...oldMatches, ...(allMatches as LobbyAPI.Match[])]);
-    }
-    setAllMatches();
-  }, [gameNames]);
+  useInterval(() => {
+    (async () => {
+      const allMatches = await getAllMatches();
+      setMatches(allMatches);
+    })();
+  }, 1000);
 
   useEffect(() => {
     if (matches.length === 0) return;
@@ -71,6 +67,15 @@ export const Lobby = (): JSX.Element => {
     }
     syncLocalStorageWithMatches();
   }, [matches]);
+
+  // multiple game types fuck up matchlist update, only 1 game persists
+  const getAllMatches = async (): Promise<LobbyAPI.Match[]> => {
+    const promises = gameNames.map(async (gameName) => await lobbyClient.listMatches(gameName));
+    const allMatchLists = await Promise.all(promises);
+    let allMatches: LobbyAPI.Match[] = [];
+    allMatchLists.forEach(matchList => allMatches = allMatches.length ? [...matchList.matches] : [...allMatches, ...matchList.matches]);
+    return allMatches;
+  }
 
   const handleLogoutClick = async (event: MouseEvent) => {
     event.preventDefault();
