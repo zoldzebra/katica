@@ -68,12 +68,11 @@ export const Lobby = (): JSX.Element => {
     syncLocalStorageWithMatches();
   }, [matches]);
 
-  // multiple game types fuck up matchlist update, only 1 game persists
   const getAllMatches = async (): Promise<LobbyAPI.Match[]> => {
     const promises = gameNames.map(async (gameName) => await lobbyClient.listMatches(gameName));
     const allMatchLists = await Promise.all(promises);
     let allMatches: LobbyAPI.Match[] = [];
-    allMatchLists.forEach(matchList => allMatches = allMatches.length ? [...matchList.matches] : [...allMatches, ...matchList.matches]);
+    allMatchLists.forEach(matchList => allMatches = [...allMatches, ...matchList.matches]);
     return allMatches;
   }
 
