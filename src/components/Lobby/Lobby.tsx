@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, MouseEvent } from 'react';
 import { Paper } from '@material-ui/core';
 import { useHistory } from "react-router-dom";
+import * as R from 'ramda';
 
 import { LobbyClient } from 'boardgame.io/client';
 import { LobbyAPI } from 'boardgame.io';
@@ -8,7 +9,7 @@ import { LobbyAPI } from 'boardgame.io';
 import { getUserInfo, signOutUser, UserInfo } from '../../Services/userService';
 import { AuthContext } from '../AuthProvider/AuthProvider';
 import { GameServerContext } from '../GameServerProvider/GameServerProvider';
-import { MatchDetails } from './MatchDetails';
+import { MemoMatchDetails as MatchDetails } from './MatchDetails';
 import { getObjectFromLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
 import { useInterval } from '../../utils/useInterval';
 
@@ -44,6 +45,7 @@ export const Lobby = (): JSX.Element => {
   useInterval(() => {
     (async () => {
       const allMatches = await getAllMatches();
+      if (R.equals(allMatches, matches)) return;
       setMatches(allMatches);
     })();
   }, 1000);

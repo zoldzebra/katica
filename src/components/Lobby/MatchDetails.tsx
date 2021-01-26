@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import * as R from 'ramda';
 
 import { LobbyAPI } from 'boardgame.io';
 import { LobbyClient } from 'boardgame.io/client';
@@ -21,7 +22,7 @@ export interface MatchCredential {
   playerID: string,
 }
 
-export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => {
+const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => {
   const history = useHistory();
   const { match, userName, lobbyClient } = props;
   const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
@@ -107,3 +108,5 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
     </div>
   );
 }
+
+export const MemoMatchDetails = React.memo(MatchDetails, (prevProps, nextProps) => R.equals(prevProps.match, nextProps.match));
