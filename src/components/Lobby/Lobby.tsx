@@ -45,7 +45,7 @@ export const Lobby = (): JSX.Element => {
       const promises = gameNames.map((gameName) => lobbyClient.listMatches(gameName));
       const allMatchLists = await Promise.all(promises);
       let allMatches: LobbyAPI.Match[] = [];
-      allMatchLists.forEach(matchList => allMatches = [...matchList.matches]);
+      allMatchLists.forEach(matchList => allMatches = [...allMatches, ...matchList.matches]);
       if (allMatches.length === 0) {
         return;
       }
