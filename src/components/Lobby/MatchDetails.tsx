@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 
 import { LobbyAPI } from 'boardgame.io';
 import { LobbyClient } from 'boardgame.io/client';
 
+import { MatchStatusOrAction } from './MatchStatusOrAction';
 import { mergeToObjectInLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
 
 interface MatchDetailProps {
@@ -22,7 +22,7 @@ export interface MatchCredential {
 }
 
 export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => {
-  const history = useHistory();
+  // const history = useHistory();
   const { match, userName, lobbyClient } = props;
   const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
 
@@ -31,42 +31,9 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
       if (!player.name) return;
       setJoinedPlayers(oldPlayers => [...oldPlayers, player.name as string]);
     })
-  }, []);
+  }, [match]);
 
-  const isFull = (): boolean => {
-    return joinedPlayers.length === match.players.length;
-  }
-
-  const isJoined = (): boolean => {
-    return joinedPlayers.includes(userName);
-  }
-
-  const matchStatusOrAction = (): JSX.Element => {
-    if (isFull()) {
-      if (isJoined()) {
-        return (
-          <button onClick={() => history.push(`/match/${match.matchID}`)}>Play match!</button>
-        )
-      }
-      return (
-        <p>
-          Match is full.
-        </p>
-      )
-    }
-    if (isJoined()) {
-      return (
-        <p>
-          Waiting for others to join...
-        </p>
-      )
-    }
-    return (
-      <button onClick={() => handleJoinMatch(match)}>Join!</button>
-    )
-  }
-
-  const handleJoinMatch = async (match: LobbyAPI.Match) => {
+  const handleJoinMatch = async () => {
     const emptySeat = match.players.find(player => !player.name);
     if (!emptySeat) {
       return;
@@ -102,7 +69,13 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
       <ul>
         {joinedPlayers.map(player => <li key={player}>{player}</li>)}
       </ul>
-      {matchStatusOrAction()}
+      <MatchStatusOrAction
+        joinedPlayers={joinedPlayers}
+        maxPlayers={match.players.length}
+        userName={userName}
+        handleJoinMatch={handleJoinMatch}
+        matchID={match.matchID}
+      />
     </div>
   );
 }
