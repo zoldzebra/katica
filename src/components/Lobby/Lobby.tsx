@@ -57,13 +57,12 @@ export const Lobby = (): JSX.Element => {
       if (!storedMatchCredentials) return;
       const storedMatchIds = Object.keys(storedMatchCredentials);
       const syncedMatchCredentials: Record<string, unknown> = {};
+
+      const matchIds = matches.map(match => match.matchID)
       storedMatchIds.forEach(storedMatchId => {
-        matches.forEach(match => {
-          if (match.matchID === storedMatchId) {
-            syncedMatchCredentials[storedMatchId] = storedMatchCredentials[storedMatchId];
-            return;
-          }
-        });
+        if (matchIds.includes(storedMatchId)) {
+          syncedMatchCredentials[storedMatchId] = storedMatchCredentials[storedMatchId];
+        }
       })
       localStorage.setItem(USER_MATCH_CREDENTIALS, JSON.stringify(syncedMatchCredentials));
     }
@@ -71,7 +70,7 @@ export const Lobby = (): JSX.Element => {
   }, [matches]);
 
   const getAllMatches = async (): Promise<LobbyAPI.Match[]> => {
-    const promises = gameNames.map(async (gameName) => await lobbyClient.listMatches(gameName));
+    const promises = gameNames.map((gameName) => lobbyClient.listMatches(gameName));
     const allMatchLists = await Promise.all(promises);
     let allMatches: LobbyAPI.Match[] = [];
     allMatchLists.forEach(matchList => allMatches = [...allMatches, ...matchList.matches]);
@@ -105,7 +104,11 @@ export const Lobby = (): JSX.Element => {
       <ul>
         {gameNames.map((gameName) => {
           return (
-            <li key={gameName}>{gameName} <button onClick={() => handleCreateNewMatch(gameName)}>Create new match</button></li>
+            <li key={gameName}>{gameName}
+              <button onClick={() => handleCreateNewMatch(gameName)}>
+                Create new match
+              </button>
+            </li>
           )
         })
         }

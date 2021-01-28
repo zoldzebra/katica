@@ -26,7 +26,7 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
   const { gameServer } = useContext(GameServerContext);
   const { matchID } = props.match.params;
   const [playedMatchCredentials, setPlayedMatchCredentials] = useState<PlayedMatchCredentials | undefined>(undefined);
-  const [loadingCredentials, setLoadingCredentials] = useState(true);
+  const [isLoadingCredentials, setIsLoadingCredentials] = useState(true);
   const [gameAndBoard, setGameAndBoard] = useState<any>(undefined);
 
   useEffect(() => {
@@ -34,33 +34,32 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
       const storedMatchCredentials = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS);
       if (!storedMatchCredentials) return;
       const storedMatchIds = Object.keys(storedMatchCredentials);
-      if (storedMatchIds.includes(matchID)) setPlayedMatchCredentials({
-        matchID,
-        gameName: (storedMatchCredentials as StoredMatchCredentials)[matchID].gameName,
-        credentials: (storedMatchCredentials as StoredMatchCredentials)[matchID].credentials,
-        playerID: (storedMatchCredentials as StoredMatchCredentials)[matchID].playerID
-      });
+      if (storedMatchIds.includes(matchID)) {
+        setPlayedMatchCredentials({
+          matchID,
+          gameName: (storedMatchCredentials as StoredMatchCredentials)[matchID].gameName,
+          credentials: (storedMatchCredentials as StoredMatchCredentials)[matchID].credentials,
+          playerID: (storedMatchCredentials as StoredMatchCredentials)[matchID].playerID
+        });
+      }
     }
     getLocalMatchCredentials();
-    setLoadingCredentials(false);
+    setIsLoadingCredentials(false);
   }, []);
 
   useEffect(() => {
     if (!playedMatchCredentials) return;
-    switch (playedMatchCredentials.gameName) {
-      case 'katica':
-        setGameAndBoard({
-          game: KaticaGame,
-          board: KaticaBoard,
-        });
-        break;
-      case 'tic-tac-toe':
-        setGameAndBoard({
-          game: TicTacToe,
-          board: TicTacToeBoard,
-        });
-        break;
-      default: return;
+    if (playedMatchCredentials.gameName === 'katica') {
+      setGameAndBoard({
+        game: KaticaGame,
+        board: KaticaBoard,
+      });
+    }
+    if (playedMatchCredentials.gameName === 'tic-tac-toe') {
+      setGameAndBoard({
+        game: TicTacToe,
+        board: TicTacToeBoard,
+      });
     }
   }, [playedMatchCredentials])
 
@@ -94,14 +93,22 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
     )
   }
 
+  const renderMatchOrBackToLobby = () => {
+    if (isLoadingCredentials) {
+      return loadIngCredentials();
+    }
+    if (!isLoadingCredentials && playedMatchCredentials) {
+      return displayGame();
+    }
+    if (!isLoadingCredentials && !playedMatchCredentials) {
+      return backToLobby();
+    }
+  }
+
   return (
     <div>
       <h1>This is the match page for {matchID}</h1>
-      {loadingCredentials
-        ? loadIngCredentials()
-        : playedMatchCredentials
-          ? displayGame()
-          : backToLobby()}
+      {renderMatchOrBackToLobby()}
     </div>
   );
 }
