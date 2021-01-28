@@ -8,6 +8,8 @@ import { LobbyAPI } from 'boardgame.io';
 import { getUserInfo, signOutUser, UserInfo } from '../../Services/userService';
 import { AuthContext } from '../AuthProvider/AuthProvider';
 import { GameServerContext } from '../GameServerProvider/GameServerProvider';
+import { MatchDetails } from './MatchDetails';
+import { getObjectFromLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
 
 export const Lobby = (): JSX.Element => {
   const { user } = useContext(AuthContext);
@@ -17,12 +19,6 @@ export const Lobby = (): JSX.Element => {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [gameNames, setGameNames] = useState<string[]>([]);
   const [matches, setMatches] = useState<LobbyAPI.Match[]>([]);
-
-  const handleLogoutClick = async (event: MouseEvent) => {
-    event.preventDefault();
-    await signOutUser();
-    history.push("/auth/login");
-  }
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -45,29 +41,84 @@ export const Lobby = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    const fetchGameMatches = async (game: string): Promise<void> => {
-      const gameMatches = await lobbyClient.listMatches(game);
-      setMatches(oldMatches => [...oldMatches, ...gameMatches.matches]);
+    const setAllMatches = async () => {
+      const promises = gameNames.map((gameName) => lobbyClient.listMatches(gameName));
+      const allMatchLists = await Promise.all(promises);
+      let allMatches: LobbyAPI.Match[] = [];
+      allMatchLists.forEach(matchList => allMatches = [...allMatches, ...matchList.matches]);
+      if (allMatches.length === 0) {
+        return;
+      }
+      setMatches(allMatches);
     }
-    gameNames.forEach(game => fetchGameMatches(game));
+    setAllMatches();
   }, [gameNames]);
 
-  const username = userInfo?.userName ?? '-';
+  useEffect(() => {
+    if (matches.length === 0) return;
+    const syncLocalStorageWithMatches = () => {
+      const storedMatchCredentials = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS);
+      if (!storedMatchCredentials) return;
+      const storedMatchIds = Object.keys(storedMatchCredentials);
+      const syncedMatchCredentials: Record<string, unknown> = {};
+
+      const matchIds = matches.map(match => match.matchID)
+      storedMatchIds.forEach(storedMatchId => {
+        if (matchIds.includes(storedMatchId)) {
+          syncedMatchCredentials[storedMatchId] = storedMatchCredentials[storedMatchId];
+        }
+      })
+      localStorage.setItem(USER_MATCH_CREDENTIALS, JSON.stringify(syncedMatchCredentials));
+    }
+    syncLocalStorageWithMatches();
+  }, [matches]);
+
+  const handleLogoutClick = async (event: MouseEvent) => {
+    event.preventDefault();
+    await signOutUser();
+    history.push("/auth/login");
+  }
+
+  const handleCreateNewMatch = async (gameName: string) => {
+    const newMatchID = await lobbyClient.createMatch(gameName, {
+      numPlayers: 2
+    });
+    const newMatch = await lobbyClient.getMatch(gameName, newMatchID.matchID);
+    setMatches(oldMatches => [...oldMatches, newMatch])
+  }
+
+  const userName = userInfo?.userName ?? '-';
   const email = userInfo?.email ?? '-';
 
   return (
     <Paper>
-      <p>Username: {username}, email: {email}</p>
+      <p>Username: {userName}, email: {email}</p>
       <button onClick={handleLogoutClick}>Logout</button>
       <h1>Katica Lobby</h1>
       <p>Welcome to the Lobby!</p>
       <p>Available games:</p>
       <ul>
-        {gameNames.map(gameName => <li key={gameName}>{gameName}</li>)}
+        {gameNames.map((gameName) => {
+          return (
+            <li key={gameName}>{gameName}
+              <button onClick={() => handleCreateNewMatch(gameName)}>
+                Create new match
+              </button>
+            </li>
+          )
+        })
+        }
       </ul>
       <p>There are a total of {matches.length} matches now:</p>
       <ul>
-        {matches && matches.map(match => <li key={match.matchID}>{match.gameName}-{match.matchID}</li>)}
+        {matches && matches.map(match =>
+          <li key={match.matchID}>
+            <MatchDetails
+              match={match}
+              userName={userName}
+              lobbyClient={lobbyClient}
+            />
+          </li>)}
       </ul>
     </Paper>
   );
