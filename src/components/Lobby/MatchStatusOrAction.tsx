@@ -6,12 +6,20 @@ interface MatchStatusOrActionProps {
   maxPlayers: number;
   userName: string;
   handleJoinMatch: () => Promise<void>;
+  handleLeaveMatch: () => Promise<void>;
   matchID: string;
 }
 
 export const MatchStatusOrAction: React.FC<MatchStatusOrActionProps> = (props): JSX.Element => {
   const history = useHistory();
-  const { joinedPlayers, maxPlayers, userName, handleJoinMatch, matchID } = props;
+  const {
+    joinedPlayers,
+    maxPlayers,
+    userName,
+    handleJoinMatch,
+    handleLeaveMatch,
+    matchID
+  } = props;
 
   const isFull = (): boolean => joinedPlayers.length === maxPlayers;
 
@@ -19,7 +27,10 @@ export const MatchStatusOrAction: React.FC<MatchStatusOrActionProps> = (props): 
 
   if (isFull() && isJoined()) {
     return (
-      <button onClick={() => history.push(`/match/${matchID}`)}>Play match!</button>
+      <>
+        <button onClick={() => history.push(`/match/${matchID}`)}>Play match!</button>
+        <button onClick={() => handleLeaveMatch()}>Leave match!</button>
+      </>
     )
   }
 
@@ -33,9 +44,10 @@ export const MatchStatusOrAction: React.FC<MatchStatusOrActionProps> = (props): 
 
   if (isJoined()) {
     return (
-      <p>
-        Waiting for others to join...
-      </p>
+      <>
+        <p>Waiting for others to join...</p>
+        <button onClick={() => handleLeaveMatch()}>Leave match!</button>
+      </>
     )
   }
 

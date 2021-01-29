@@ -5,7 +5,11 @@ import { LobbyAPI } from 'boardgame.io';
 import { LobbyClient } from 'boardgame.io/client';
 
 import { MatchStatusOrAction } from './MatchStatusOrAction';
-import { mergeToObjectInLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
+import {
+  getObjectFromLocalStorage,
+  mergeToObjectInLocalStorage,
+  USER_MATCH_CREDENTIALS,
+} from '../../utils/localStorageHelper';
 
 interface MatchDetailProps {
   match: LobbyAPI.Match,
@@ -24,14 +28,17 @@ export interface MatchCredential {
 
 export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => {
   const { match, userName, lobbyClient } = props;
-  const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
+  const [joinedPlayers, setJoinedPlayers] = useState<(string)[]>([]);
 
   useEffect(() => {
-    match.players.forEach(player => {
-      if (!player.name) return;
-      if (joinedPlayers.includes(player.name)) return;
-      setJoinedPlayers(oldPlayers => [...oldPlayers, player.name as string]);
-    })
+    const playerList: string[] = [];
+    match.players.forEach((player) => {
+      if (player.name === undefined) {
+        return;
+      }
+      playerList.push(player.name);
+    });
+    setJoinedPlayers(playerList);
   }, [match]);
 
   const handleJoinMatch = async () => {
@@ -64,6 +71,28 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
     }
   }
 
+  const handleLeaveMatch = async () => {
+    try {
+      const storedMatchCredentials = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS);
+      if (!storedMatchCredentials) {
+        return;
+      }
+      const matchCredentials = (storedMatchCredentials as StoredMatchCredentials)[match.matchID];
+
+      await lobbyClient.leaveMatch(
+        match.gameName,
+        match.matchID,
+        {
+          playerID: matchCredentials.playerID,
+          credentials: matchCredentials.credentials,
+        }
+      );
+    } catch (error) {
+      console.log('Error leaving match:', error);
+      alert(error.message);
+    }
+  }
+
   return (
     <div>
       {match.gameName} - {match.matchID}. Players joined:
@@ -75,6 +104,7 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
         maxPlayers={match.players.length}
         userName={userName}
         handleJoinMatch={handleJoinMatch}
+        handleLeaveMatch={handleLeaveMatch}
         matchID={match.matchID}
       />
     </div>
