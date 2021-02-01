@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import * as R from 'ramda';
 
 import { LobbyAPI } from 'boardgame.io';
 import { LobbyClient } from 'boardgame.io/client';
@@ -22,13 +23,13 @@ export interface MatchCredential {
 }
 
 export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => {
-  // const history = useHistory();
   const { match, userName, lobbyClient } = props;
   const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
 
   useEffect(() => {
     match.players.forEach(player => {
       if (!player.name) return;
+      if (joinedPlayers.includes(player.name)) return;
       setJoinedPlayers(oldPlayers => [...oldPlayers, player.name as string]);
     })
   }, [match]);
@@ -79,3 +80,5 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
     </div>
   );
 }
+
+export const MemoMatchDetails = React.memo(MatchDetails, (prevProps, nextProps) => R.equals(prevProps.match, nextProps.match));

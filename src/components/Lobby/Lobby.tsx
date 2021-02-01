@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, MouseEvent } from 'react';
 import { Paper } from '@material-ui/core';
 import { useHistory } from "react-router-dom";
+import * as R from 'ramda';
 
 import { LobbyClient } from 'boardgame.io/client';
 import { LobbyAPI } from 'boardgame.io';
@@ -8,8 +9,9 @@ import { LobbyAPI } from 'boardgame.io';
 import { getUserInfo, signOutUser, UserInfo } from '../../Services/userService';
 import { AuthContext } from '../AuthProvider/AuthProvider';
 import { GameServerContext } from '../GameServerProvider/GameServerProvider';
-import { MatchDetails } from './MatchDetails';
+import { MemoMatchDetails as MatchDetails } from './MatchDetails';
 import { getObjectFromLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
+import { useInterval } from '../../utils/useInterval';
 
 export const Lobby = (): JSX.Element => {
   const { user } = useContext(AuthContext);
@@ -33,29 +35,26 @@ export const Lobby = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    const fetchGames = async (): Promise<void> => {
-      const gamesList = await lobbyClient.listGames();
-      setGameNames(gamesList);
+    const fetchGameNames = async (): Promise<void> => {
+      const gameNameList = await lobbyClient.listGames();
+      setGameNames(gameNameList);
     }
-    fetchGames();
+    fetchGameNames();
   }, []);
 
-  useEffect(() => {
-    const setAllMatches = async () => {
-      const promises = gameNames.map((gameName) => lobbyClient.listMatches(gameName));
-      const allMatchLists = await Promise.all(promises);
-      let allMatches: LobbyAPI.Match[] = [];
-      allMatchLists.forEach(matchList => allMatches = [...allMatches, ...matchList.matches]);
-      if (allMatches.length === 0) {
-        return;
-      }
+  useInterval(() => {
+    const updateMatchList = async () => {
+      const allMatches = await getAllMatches();
+      if (R.equals(allMatches, matches)) return;
       setMatches(allMatches);
-    }
-    setAllMatches();
-  }, [gameNames]);
+    };
+    updateMatchList();
+  }, 1000);
 
   useEffect(() => {
-    if (matches.length === 0) return;
+    if (matches.length === 0) {
+      return;
+    }
     const syncLocalStorageWithMatches = () => {
       const storedMatchCredentials = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS);
       if (!storedMatchCredentials) return;
@@ -73,6 +72,15 @@ export const Lobby = (): JSX.Element => {
     syncLocalStorageWithMatches();
   }, [matches]);
 
+  const getAllMatches = async (): Promise<LobbyAPI.Match[]> => {
+    const promises = gameNames.map((gameName) => lobbyClient.listMatches(gameName));
+    const allMatchLists = await Promise.all(promises);
+    const allMatches: LobbyAPI.Match[] = [];
+    allMatchLists.forEach(matchList => allMatches.push(...matchList.matches));
+    allMatches.sort((a, b) => (a.createdAt > b.createdAt) ? 1 : -1);
+    return allMatches;
+  }
+
   const handleLogoutClick = async (event: MouseEvent) => {
     event.preventDefault();
     await signOutUser();
@@ -83,8 +91,7 @@ export const Lobby = (): JSX.Element => {
     const newMatchID = await lobbyClient.createMatch(gameName, {
       numPlayers: 2
     });
-    const newMatch = await lobbyClient.getMatch(gameName, newMatchID.matchID);
-    setMatches(oldMatches => [...oldMatches, newMatch])
+    await lobbyClient.getMatch(gameName, newMatchID.matchID);
   }
 
   const userName = userInfo?.userName ?? '-';
