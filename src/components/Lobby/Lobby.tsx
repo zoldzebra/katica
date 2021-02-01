@@ -43,15 +43,18 @@ export const Lobby = (): JSX.Element => {
   }, []);
 
   useInterval(() => {
-    (async () => {
+    const updateMatchList = async () => {
       const allMatches = await getAllMatches();
       if (R.equals(allMatches, matches)) return;
       setMatches(allMatches);
-    })();
+    };
+    updateMatchList();
   }, 1000);
 
   useEffect(() => {
-    if (matches.length === 0) return;
+    if (matches.length === 0) {
+      return;
+    }
     const syncLocalStorageWithMatches = () => {
       const storedMatchCredentials = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS);
       if (!storedMatchCredentials) return;
@@ -72,8 +75,9 @@ export const Lobby = (): JSX.Element => {
   const getAllMatches = async (): Promise<LobbyAPI.Match[]> => {
     const promises = gameNames.map((gameName) => lobbyClient.listMatches(gameName));
     const allMatchLists = await Promise.all(promises);
-    let allMatches: LobbyAPI.Match[] = [];
-    allMatchLists.forEach(matchList => allMatches = [...allMatches, ...matchList.matches]);
+    const allMatches: LobbyAPI.Match[] = [];
+    allMatchLists.forEach(matchList => allMatches.push(...matchList.matches));
+    allMatches.sort((a, b) => (a.createdAt > b.createdAt) ? 1 : -1);
     return allMatches;
   }
 
@@ -87,8 +91,7 @@ export const Lobby = (): JSX.Element => {
     const newMatchID = await lobbyClient.createMatch(gameName, {
       numPlayers: 2
     });
-    const newMatch = await lobbyClient.getMatch(gameName, newMatchID.matchID);
-    setMatches(oldMatches => [...oldMatches, newMatch])
+    await lobbyClient.getMatch(gameName, newMatchID.matchID);
   }
 
   const userName = userInfo?.userName ?? '-';
