@@ -23,7 +23,7 @@ interface PlayedMatchCredentials {
 
 export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
   const history = useHistory();
-  const { gameServer } = useContext(GameServerContext);
+  const { gameServer, lobbyClient } = useContext(GameServerContext);
   const { matchID } = props.match.params;
   const [playedMatchCredentials, setPlayedMatchCredentials] = useState<PlayedMatchCredentials | undefined>(undefined);
   const [isLoadingCredentials, setIsLoadingCredentials] = useState(true);
@@ -32,7 +32,9 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
   useEffect(() => {
     const getLocalMatchCredentials = () => {
       const storedMatchCredentials = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS);
-      if (!storedMatchCredentials) return;
+      if (!storedMatchCredentials) {
+        return;
+      }
       const storedMatchIds = Object.keys(storedMatchCredentials);
       if (storedMatchIds.includes(matchID)) {
         setPlayedMatchCredentials({
@@ -48,7 +50,9 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
   }, []);
 
   useEffect(() => {
-    if (!playedMatchCredentials) return;
+    if (!playedMatchCredentials) {
+      return;
+    }
     if (playedMatchCredentials.gameName === 'katica') {
       setGameAndBoard({
         game: KaticaGame,
@@ -61,7 +65,28 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
         board: TicTacToeBoard,
       });
     }
-  }, [playedMatchCredentials])
+  }, [playedMatchCredentials]);
+
+  const leaveMatch = async () => {
+    if (!playedMatchCredentials) {
+      // give some feedback here...
+      return;
+    }
+    try {
+      await lobbyClient.leaveMatch(
+        playedMatchCredentials.gameName,
+        playedMatchCredentials.matchID,
+        {
+          playerID: playedMatchCredentials.playerID,
+          credentials: playedMatchCredentials.credentials,
+        }
+      );
+    } catch (error) {
+      console.log('Error leaving match:', error);
+      alert(error.message);
+    }
+    history.push('/lobby');
+  }
 
   const loadIngCredentials = () => {
     return (
@@ -81,15 +106,18 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
   const displayGame = () => {
     if (!gameServer || !playedMatchCredentials || !gameAndBoard) return null;
     return (
-      <GameClientComponent
-        game={gameAndBoard.game}
-        board={gameAndBoard.board}
-        gameServer={gameServer}
-        matchID={playedMatchCredentials.matchID}
-        playerID={playedMatchCredentials.playerID}
-        credentials={playedMatchCredentials.credentials}
-        debug={false}
-      />
+      <>
+        <button onClick={() => leaveMatch()}>Leave match and back to lobby</button>
+        <GameClientComponent
+          game={gameAndBoard.game}
+          board={gameAndBoard.board}
+          gameServer={gameServer}
+          matchID={playedMatchCredentials.matchID}
+          playerID={playedMatchCredentials.playerID}
+          credentials={playedMatchCredentials.credentials}
+          debug={false}
+        />
+      </>
     )
   }
 
