@@ -1,10 +1,9 @@
-import React, { FC, useState, useEffect, useContext } from "react";
+import React, { FC, useState, useEffect } from "react";
 import { RouteComponentProps, useHistory } from "react-router-dom";
 
-import { GameServerContext } from '../GameServerProvider/GameServerProvider';
+import { MatchComponent } from './MatchComponent';
 import { StoredMatchCredentials } from '../Lobby/MatchDetails';
 import { getObjectFromLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
-import { GameClientComponent } from '../GameClient/GameClient';
 import { KaticaGame } from '../../Games/Katica/Game';
 import { KaticaBoard } from '../../Games/Katica/Board';
 import { TicTacToe } from '../../Games/TicTacToe/Game';
@@ -14,7 +13,7 @@ interface RouteMatchParams {
   matchID: string;
 }
 
-interface PlayedMatchCredentials {
+export interface PlayedMatchCredentials {
   matchID: string,
   gameName: string;
   credentials: string,
@@ -23,7 +22,6 @@ interface PlayedMatchCredentials {
 
 export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
   const history = useHistory();
-  const { gameServer, lobbyClient } = useContext(GameServerContext);
   const { matchID } = props.match.params;
   const [playedMatchCredentials, setPlayedMatchCredentials] = useState<PlayedMatchCredentials | undefined>(undefined);
   const [isLoadingCredentials, setIsLoadingCredentials] = useState(true);
@@ -67,34 +65,13 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
     }
   }, [playedMatchCredentials]);
 
-  const leaveMatch = async () => {
-    if (!playedMatchCredentials) {
-      // give some feedback here...
-      return;
-    }
-    try {
-      await lobbyClient.leaveMatch(
-        playedMatchCredentials.gameName,
-        playedMatchCredentials.matchID,
-        {
-          playerID: playedMatchCredentials.playerID,
-          credentials: playedMatchCredentials.credentials,
-        }
-      );
-    } catch (error) {
-      console.log('Error leaving match:', error);
-      alert(error.message);
-    }
-    history.push('/lobby');
-  }
-
-  const loadIngCredentials = () => {
+  const loadingCredentials = () => {
     return (
       <h1>Loading...</h1>
     )
   }
 
-  const backToLobby = () => {
+  const noCredentialsBackToLobby = () => {
     return (
       <>
         <p>Sorry, match credentials not found.</p>
@@ -103,33 +80,20 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
     )
   }
 
-  const displayGame = () => {
-    if (!gameServer || !playedMatchCredentials || !gameAndBoard) return null;
-    return (
-      <>
-        <button onClick={() => leaveMatch()}>Leave match and back to lobby</button>
-        <GameClientComponent
-          game={gameAndBoard.game}
-          board={gameAndBoard.board}
-          gameServer={gameServer}
-          matchID={playedMatchCredentials.matchID}
-          playerID={playedMatchCredentials.playerID}
-          credentials={playedMatchCredentials.credentials}
-          debug={false}
-        />
-      </>
-    )
-  }
-
   const renderMatchOrBackToLobby = () => {
     if (isLoadingCredentials) {
-      return loadIngCredentials();
+      return loadingCredentials();
     }
-    if (!isLoadingCredentials && playedMatchCredentials) {
-      return displayGame();
+    if (!isLoadingCredentials && playedMatchCredentials && gameAndBoard) {
+      return (
+        <MatchComponent
+          gameAndBoard={gameAndBoard}
+          playedMatchCredentials={playedMatchCredentials}
+        />
+      )
     }
     if (!isLoadingCredentials && !playedMatchCredentials) {
-      return backToLobby();
+      return noCredentialsBackToLobby();
     }
   }
 
