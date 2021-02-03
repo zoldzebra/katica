@@ -34,7 +34,7 @@ export const MatchComponent: FC<MatchComponentProps> = (props) => {
 
   return (
     <>
-      <button onClick={() => leaveMatch()}>Leave match and back to lobby</button>
+      <button onClick={leaveMatch}>Leave match and back to lobby</button>
       <GameClientComponent
         game={gameAndBoard.game}
         board={gameAndBoard.board}

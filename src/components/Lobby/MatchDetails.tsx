@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import * as R from 'ramda';
 
 import { LobbyAPI } from 'boardgame.io';
@@ -11,12 +12,6 @@ import {
   USER_MATCH_CREDENTIALS,
 } from '../../utils/localStorageHelper';
 
-interface MatchDetailProps {
-  match: LobbyAPI.Match,
-  userName: string;
-  lobbyClient: LobbyClient;
-}
-
 export interface StoredMatchCredentials {
   [key: string]: MatchCredential;
 }
@@ -25,19 +20,21 @@ export interface MatchCredential {
   credentials: string,
   playerID: string,
 }
+interface MatchDetailProps {
+  match: LobbyAPI.Match,
+  userName: string;
+  lobbyClient: LobbyClient;
+}
 
 export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => {
+  const history = useHistory();
   const { match, userName, lobbyClient } = props;
-  const [joinedPlayers, setJoinedPlayers] = useState<(string)[]>([]);
+  const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
 
   useEffect(() => {
-    const playerList: string[] = [];
-    match.players.forEach((player) => {
-      if (player.name === undefined) {
-        return;
-      }
-      playerList.push(player.name);
-    });
+    const playerList = match.players
+      .filter(player => typeof player.name !== 'undefined')
+      .map(player => player.name as string);
     setJoinedPlayers(playerList);
   }, [match]);
 
@@ -73,11 +70,11 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
 
   const handleLeaveMatch = async () => {
     try {
-      const storedMatchCredentials = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS);
+      const storedMatchCredentials = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS) as StoredMatchCredentials | undefined;
       if (!storedMatchCredentials) {
         return;
       }
-      const matchCredentials = (storedMatchCredentials as StoredMatchCredentials)[match.matchID];
+      const matchCredentials = (storedMatchCredentials)[match.matchID];
 
       await lobbyClient.leaveMatch(
         match.gameName,
@@ -93,6 +90,10 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
     }
   }
 
+  const handlePlayMatch = () => {
+    history.push(`/match/${match.matchID}`);
+  }
+
   return (
     <div>
       {match.gameName} - {match.matchID}. Players joined:
@@ -105,7 +106,7 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
         userName={userName}
         handleJoinMatch={handleJoinMatch}
         handleLeaveMatch={handleLeaveMatch}
-        matchID={match.matchID}
+        handlePlayMatch={handlePlayMatch}
       />
     </div>
   );

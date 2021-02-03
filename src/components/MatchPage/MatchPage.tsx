@@ -71,11 +71,15 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
     )
   }
 
+  const backToLobby = () => {
+    history.push('/lobby');
+  }
+
   const noCredentialsBackToLobby = () => {
     return (
       <>
         <p>Sorry, match credentials not found.</p>
-        <button onClick={() => history.push('/lobby')}>Back to lobby</button>
+        <button onClick={backToLobby}>Back to lobby</button>
       </>
     )
   }
