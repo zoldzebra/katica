@@ -8,7 +8,7 @@ import { LobbyAPI } from 'boardgame.io';
 import { getUserInfo, signOutUser, UserInfo } from '../../Services/userService';
 import { AuthContext } from '../AuthProvider/AuthProvider';
 import { GameServerContext } from '../GameServerProvider/GameServerProvider';
-import { MemoMatchDetails as MatchDetails } from './MatchDetails';
+import { MatchList } from './MatchList';
 import { getObjectFromLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
 import { useInterval } from '../../utils/useInterval';
 
@@ -116,25 +116,11 @@ export const Lobby = (): JSX.Element => {
         })
         }
       </ul>
-      {loadingMatches
-        ? (
-          <p>Loading matches</p>
-        )
-        : (
-          <>
-            <p>There are a total of {matches.length} matches now:</p>
-            <ul>
-              {matches && matches.map(match =>
-                <li key={match.matchID}>
-                  <MatchDetails
-                    match={match}
-                    userName={userName}
-                    lobbyClient={lobbyClient}
-                  />
-                </li>)}
-            </ul>
-          </>
-        )}
+      <MatchList
+        matches={matches}
+        userName={userName}
+        loadingMatches={loadingMatches}
+      />
     </Paper>
   );
 }
