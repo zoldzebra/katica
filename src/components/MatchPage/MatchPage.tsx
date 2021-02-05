@@ -29,7 +29,7 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
 
   useEffect(() => {
     const getLocalMatchCredentials = () => {
-      const storedMatchCredentials = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS);
+      const storedMatchCredentials = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS) as StoredMatchCredentials | undefined;
       if (!storedMatchCredentials) {
         return;
       }
@@ -37,9 +37,9 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
       if (storedMatchIds.includes(matchID)) {
         setPlayedMatchCredentials({
           matchID,
-          gameName: (storedMatchCredentials as StoredMatchCredentials)[matchID].gameName,
-          credentials: (storedMatchCredentials as StoredMatchCredentials)[matchID].credentials,
-          playerID: (storedMatchCredentials as StoredMatchCredentials)[matchID].playerID
+          gameName: (storedMatchCredentials)[matchID].gameName,
+          credentials: (storedMatchCredentials)[matchID].credentials,
+          playerID: (storedMatchCredentials)[matchID].playerID
         });
       }
     }
@@ -84,17 +84,21 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
     )
   }
 
+  const renderMatchComponent = (gameAndBoard: any, playedMatchCredentials: PlayedMatchCredentials) => {
+    return (
+      <MatchComponent
+        gameAndBoard={gameAndBoard}
+        playedMatchCredentials={playedMatchCredentials}
+      />
+    );
+  }
+
   const renderMatchOrBackToLobby = () => {
     if (isLoadingCredentials) {
       return loadingCredentials();
     }
     if (!isLoadingCredentials && playedMatchCredentials && gameAndBoard) {
-      return (
-        <MatchComponent
-          gameAndBoard={gameAndBoard}
-          playedMatchCredentials={playedMatchCredentials}
-        />
-      )
+      return renderMatchComponent(gameAndBoard, playedMatchCredentials);
     }
     if (!isLoadingCredentials && !playedMatchCredentials) {
       return noCredentialsBackToLobby();
