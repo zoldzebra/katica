@@ -19,6 +19,7 @@ export const Lobby = (): JSX.Element => {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [gameNames, setGameNames] = useState<string[]>([]);
   const [matches, setMatches] = useState<LobbyAPI.Match[]>([]);
+  const [loadingMatches, setLoadingMatches] = useState(true);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -43,6 +44,7 @@ export const Lobby = (): JSX.Element => {
   useInterval(() => {
     const updateMatchList = async () => {
       const allMatches = await getAllMatches();
+      setLoadingMatches(false);
       if (R.equals(allMatches, matches)) return;
       setMatches(allMatches);
     };
@@ -114,17 +116,25 @@ export const Lobby = (): JSX.Element => {
         })
         }
       </ul>
-      <p>There are a total of {matches.length} matches now:</p>
-      <ul>
-        {matches && matches.map(match =>
-          <li key={match.matchID}>
-            <MatchDetails
-              match={match}
-              userName={userName}
-              lobbyClient={lobbyClient}
-            />
-          </li>)}
-      </ul>
+      {loadingMatches
+        ? (
+          <p>Loading matches</p>
+        )
+        : (
+          <>
+            <p>There are a total of {matches.length} matches now:</p>
+            <ul>
+              {matches && matches.map(match =>
+                <li key={match.matchID}>
+                  <MatchDetails
+                    match={match}
+                    userName={userName}
+                    lobbyClient={lobbyClient}
+                  />
+                </li>)}
+            </ul>
+          </>
+        )}
     </Paper>
   );
 }
