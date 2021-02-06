@@ -251,6 +251,10 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
           highlightedSquares={this._getHighlightedSquares()}
           primaryColor={green[900]}
           secondaryColor={green[600]}
+          style={{
+            maxHeight: '80vh',
+            maxWidth: '80vw',
+          }}
         >
           {this.getPieces()}
         </Checkerboard>
@@ -270,6 +274,10 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
           highlightedSquares={this._getHighlightedSquares()}
           primaryColor={green[900]}
           secondaryColor={green[600]}
+          style={{
+            maxHeight: '80vh',
+            maxWidth: '80vw',
+          }}
         >
           {this.getPieces()}
         </Checkerboard>
