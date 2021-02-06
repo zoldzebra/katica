@@ -138,66 +138,50 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
     return validMovesHighlight;
   }
 
-  // _getStatus() {
-  //   if (isOnlineGame) {
-  //     if (this.props.ctx.currentPlayer === this.props.playerID) {
-  //       return 'YOUR TURN';
-  //     } else {
-  //       return 'Waiting for opponent...';
-  //     }
-  //   } else {
-  //     // Local or AI game
-  //     switch (this.props.ctx.currentPlayer) {
-  //       case '0':
-  //         return "Red's turn";
-  //       case '1':
-  //         return "Orange's turn";
-  //     }
-  //   }
-  // }
-
-  _getGameOver() {
-
+  _getStatus() {
     if (isOnlineGame) {
-      // Online game
-      if (this.props.ctx.gameover.winner !== undefined) {
-        if (this.props.ctx.gameover.winner === this.props.playerID) {
-          return 'you won';
-        } else {
-          return 'you lost';
-        }
+      if (this.props.ctx.currentPlayer === this.props.playerID) {
+        return 'Your turn';
       } else {
-        return 'draw';
-      }
-    } else if (isAIGame) {
-      switch (this.props.ctx.gameover.winner) {
-        case '0':
-          return 'you won';
-        case '1':
-          return 'you lost';
-        case undefined:
-          return 'draw';
+        return 'Waiting for opponent...';
       }
     } else {
-      // Local game
-      switch (this.props.ctx.gameover.winner) {
+      // Local or AI game
+      switch (this.props.ctx.currentPlayer) {
         case '0':
-          return 'red won';
+          return "Red's turn";
         case '1':
-          return 'orange won';
-        case undefined:
-          return 'draw';
+          return "Orange's turn";
       }
     }
   }
 
+  _getGameOver() {
+    const gameOverText = 'Game over: ';
+    let result = '';
+    if (isOnlineGame) {
+      // Online game
+      if (this.props.ctx.gameover.winner !== undefined) {
+        if (this.props.ctx.gameover.winner === this.props.playerID) {
+          result = 'You won';
+        } else {
+          result = 'You lost';
+        }
+      } else {
+        result = 'Draw';
+      }
+    } else if (isAIGame) {
+      console.log('AI game not supported.');
+    } else {
+      // Local game
+      console.log('Local game not supported.');
+    }
+    return gameOverText.concat(result);
+  }
+
   render() {
     if (this.props.ctx.gameover) {
-      return (
-        <Typography>
-          GAME OVER
-        </Typography>
-      );
+      return this._getGameOverBoard();
     }
     return this._getBoard();
   }
@@ -258,8 +242,8 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
   _getBoard() {
     return (
       <div>
-        <Typography variant="h5" style={{ textAlign: 'center', color: 'white', marginBottom: '16px' }}>
-          {/* {this._getStatus()} */}
+        <Typography variant="h5" style={{ textAlign: 'center', marginBottom: '16px' }}>
+          {this._getStatus()}
         </Typography>
         <Checkerboard
           onClick={this._onClick}
@@ -276,7 +260,10 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
 
   _getGameOverBoard() {
     return (
-      <div style={{ textAlign: 'center' }}>
+      <div>
+        <Typography variant="h5" style={{ textAlign: 'center', marginBottom: '16px' }}>
+          {this._getGameOver()}
+        </Typography>
         <Checkerboard
           onClick={this._onClick}
           invert={true}
