@@ -1,10 +1,9 @@
-import React, { FC, useState, useEffect, useContext } from "react";
+import React, { FC, useState, useEffect } from "react";
 import { RouteComponentProps, useHistory } from "react-router-dom";
 
-import { GameServerContext } from '../GameServerProvider/GameServerProvider';
+import { MatchComponent } from './MatchComponent';
 import { StoredMatchCredentials } from '../Lobby/MatchDetails';
 import { getObjectFromLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
-import { GameClientComponent } from '../GameClient/GameClient';
 import { KaticaGame } from '../../Games/Katica/Game';
 import { KaticaBoard } from '../../Games/Katica/Board';
 import { TicTacToe } from '../../Games/TicTacToe/Game';
@@ -14,7 +13,7 @@ interface RouteMatchParams {
   matchID: string;
 }
 
-interface PlayedMatchCredentials {
+export interface PlayedMatchCredentials {
   matchID: string,
   gameName: string;
   credentials: string,
@@ -23,7 +22,6 @@ interface PlayedMatchCredentials {
 
 export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
   const history = useHistory();
-  const { gameServer } = useContext(GameServerContext);
   const { matchID } = props.match.params;
   const [playedMatchCredentials, setPlayedMatchCredentials] = useState<PlayedMatchCredentials | undefined>(undefined);
   const [isLoadingCredentials, setIsLoadingCredentials] = useState(true);
@@ -31,15 +29,17 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
 
   useEffect(() => {
     const getLocalMatchCredentials = () => {
-      const storedMatchCredentials = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS);
-      if (!storedMatchCredentials) return;
+      const storedMatchCredentials = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS) as StoredMatchCredentials | undefined;
+      if (!storedMatchCredentials) {
+        return;
+      }
       const storedMatchIds = Object.keys(storedMatchCredentials);
       if (storedMatchIds.includes(matchID)) {
         setPlayedMatchCredentials({
           matchID,
-          gameName: (storedMatchCredentials as StoredMatchCredentials)[matchID].gameName,
-          credentials: (storedMatchCredentials as StoredMatchCredentials)[matchID].credentials,
-          playerID: (storedMatchCredentials as StoredMatchCredentials)[matchID].playerID
+          gameName: (storedMatchCredentials)[matchID].gameName,
+          credentials: (storedMatchCredentials)[matchID].credentials,
+          playerID: (storedMatchCredentials)[matchID].playerID
         });
       }
     }
@@ -48,7 +48,9 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
   }, []);
 
   useEffect(() => {
-    if (!playedMatchCredentials) return;
+    if (!playedMatchCredentials) {
+      return;
+    }
     if (playedMatchCredentials.gameName === 'katica') {
       setGameAndBoard({
         game: KaticaGame,
@@ -61,47 +63,45 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
         board: TicTacToeBoard,
       });
     }
-  }, [playedMatchCredentials])
+  }, [playedMatchCredentials]);
 
-  const loadIngCredentials = () => {
+  const loadingCredentials = () => {
     return (
       <h1>Loading...</h1>
     )
   }
 
   const backToLobby = () => {
+    history.push('/lobby');
+  }
+
+  const noCredentialsBackToLobby = () => {
     return (
       <>
         <p>Sorry, match credentials not found.</p>
-        <button onClick={() => history.push('/lobby')}>Back to lobby</button>
+        <button onClick={backToLobby}>Back to lobby</button>
       </>
     )
   }
 
-  const displayGame = () => {
-    if (!gameServer || !playedMatchCredentials || !gameAndBoard) return null;
+  const renderMatchComponent = (gameAndBoard: any, playedMatchCredentials: PlayedMatchCredentials) => {
     return (
-      <GameClientComponent
-        game={gameAndBoard.game}
-        board={gameAndBoard.board}
-        gameServer={gameServer}
-        matchID={playedMatchCredentials.matchID}
-        playerID={playedMatchCredentials.playerID}
-        credentials={playedMatchCredentials.credentials}
-        debug={false}
+      <MatchComponent
+        gameAndBoard={gameAndBoard}
+        playedMatchCredentials={playedMatchCredentials}
       />
-    )
+    );
   }
 
   const renderMatchOrBackToLobby = () => {
     if (isLoadingCredentials) {
-      return loadIngCredentials();
+      return loadingCredentials();
     }
-    if (!isLoadingCredentials && playedMatchCredentials) {
-      return displayGame();
+    if (!isLoadingCredentials && playedMatchCredentials && gameAndBoard) {
+      return renderMatchComponent(gameAndBoard, playedMatchCredentials);
     }
     if (!isLoadingCredentials && !playedMatchCredentials) {
-      return backToLobby();
+      return noCredentialsBackToLobby();
     }
   }
 

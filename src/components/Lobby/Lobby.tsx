@@ -3,7 +3,6 @@ import { Paper } from '@material-ui/core';
 import { useHistory } from "react-router-dom";
 import * as R from 'ramda';
 
-import { LobbyClient } from 'boardgame.io/client';
 import { LobbyAPI } from 'boardgame.io';
 
 import { getUserInfo, signOutUser, UserInfo } from '../../Services/userService';
@@ -15,9 +14,8 @@ import { useInterval } from '../../utils/useInterval';
 
 export const Lobby = (): JSX.Element => {
   const { user } = useContext(AuthContext);
-  const { gameServer } = useContext(GameServerContext);
+  const { lobbyClient } = useContext(GameServerContext);
   const history = useHistory();
-  const lobbyClient = new LobbyClient({ server: gameServer });
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [gameNames, setGameNames] = useState<string[]>([]);
   const [matches, setMatches] = useState<LobbyAPI.Match[]>([]);

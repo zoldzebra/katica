@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import * as R from 'ramda';
 
 import { LobbyAPI } from 'boardgame.io';
 import { LobbyClient } from 'boardgame.io/client';
 
 import { MatchStatusOrAction } from './MatchStatusOrAction';
-import { mergeToObjectInLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
-
-interface MatchDetailProps {
-  match: LobbyAPI.Match,
-  userName: string;
-  lobbyClient: LobbyClient;
-}
+import {
+  getObjectFromLocalStorage,
+  mergeToObjectInLocalStorage,
+  USER_MATCH_CREDENTIALS,
+} from '../../utils/localStorageHelper';
 
 export interface StoredMatchCredentials {
   [key: string]: MatchCredential;
@@ -21,17 +20,22 @@ export interface MatchCredential {
   credentials: string,
   playerID: string,
 }
+interface MatchDetailProps {
+  match: LobbyAPI.Match,
+  userName: string;
+  lobbyClient: LobbyClient;
+}
 
 export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => {
+  const history = useHistory();
   const { match, userName, lobbyClient } = props;
   const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
 
   useEffect(() => {
-    match.players.forEach(player => {
-      if (!player.name) return;
-      if (joinedPlayers.includes(player.name)) return;
-      setJoinedPlayers(oldPlayers => [...oldPlayers, player.name as string]);
-    })
+    const playerList = match.players
+      .filter(player => typeof player.name !== 'undefined')
+      .map(player => player.name as string);
+    setJoinedPlayers(playerList);
   }, [match]);
 
   const handleJoinMatch = async () => {
@@ -64,6 +68,32 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
     }
   }
 
+  const handleLeaveMatch = async () => {
+    try {
+      const storedMatchCredentials = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS) as StoredMatchCredentials | undefined;
+      if (!storedMatchCredentials) {
+        return;
+      }
+      const matchCredentials = (storedMatchCredentials)[match.matchID];
+
+      await lobbyClient.leaveMatch(
+        match.gameName,
+        match.matchID,
+        {
+          playerID: matchCredentials.playerID,
+          credentials: matchCredentials.credentials,
+        }
+      );
+    } catch (error) {
+      console.log('Error leaving match:', error);
+      alert(error.message);
+    }
+  }
+
+  const handlePlayMatch = () => {
+    history.push(`/match/${match.matchID}`);
+  }
+
   return (
     <div>
       {match.gameName} - {match.matchID}. Players joined:
@@ -75,7 +105,8 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
         maxPlayers={match.players.length}
         userName={userName}
         handleJoinMatch={handleJoinMatch}
-        matchID={match.matchID}
+        handleLeaveMatch={handleLeaveMatch}
+        handlePlayMatch={handlePlayMatch}
       />
     </div>
   );

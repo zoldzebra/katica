@@ -1,17 +1,22 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
-
 interface MatchStatusOrActionProps {
   joinedPlayers: string[];
   maxPlayers: number;
   userName: string;
   handleJoinMatch: () => Promise<void>;
-  matchID: string;
+  handleLeaveMatch: () => Promise<void>;
+  handlePlayMatch: () => void;
 }
 
 export const MatchStatusOrAction: React.FC<MatchStatusOrActionProps> = (props): JSX.Element => {
-  const history = useHistory();
-  const { joinedPlayers, maxPlayers, userName, handleJoinMatch, matchID } = props;
+  const {
+    joinedPlayers,
+    maxPlayers,
+    userName,
+    handleJoinMatch,
+    handleLeaveMatch,
+    handlePlayMatch,
+  } = props;
 
   const isFull = (): boolean => joinedPlayers.length === maxPlayers;
 
@@ -19,7 +24,10 @@ export const MatchStatusOrAction: React.FC<MatchStatusOrActionProps> = (props): 
 
   if (isFull() && isJoined()) {
     return (
-      <button onClick={() => history.push(`/match/${matchID}`)}>Play match!</button>
+      <>
+        <button onClick={handlePlayMatch}>Play match!</button>
+        <button onClick={handleLeaveMatch}>Leave match!</button>
+      </>
     )
   }
 
@@ -33,13 +41,14 @@ export const MatchStatusOrAction: React.FC<MatchStatusOrActionProps> = (props): 
 
   if (isJoined()) {
     return (
-      <p>
-        Waiting for others to join...
-      </p>
+      <>
+        <p>Waiting for others to join...</p>
+        <button onClick={handleLeaveMatch}>Leave match!</button>
+      </>
     )
   }
 
   return (
-    <button onClick={() => handleJoinMatch()}>Join!</button>
+    <button onClick={handleJoinMatch}>Join!</button>
   )
 }
