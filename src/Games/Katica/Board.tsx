@@ -40,7 +40,6 @@ function roundCoords(coords: ICartesianCoords) {
 }
 
 const isOnlineGame = true;
-const isAIGame = false;
 
 export class KaticaBoard extends React.Component<IBoardProps, unknown> {
   state: IBoardState = {
@@ -138,66 +137,57 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
     return validMovesHighlight;
   }
 
-  // _getStatus() {
-  //   if (isOnlineGame) {
-  //     if (this.props.ctx.currentPlayer === this.props.playerID) {
-  //       return 'YOUR TURN';
-  //     } else {
-  //       return 'Waiting for opponent...';
-  //     }
-  //   } else {
-  //     // Local or AI game
-  //     switch (this.props.ctx.currentPlayer) {
-  //       case '0':
-  //         return "Red's turn";
-  //       case '1':
-  //         return "Orange's turn";
-  //     }
-  //   }
-  // }
+  _getStatus() {
+    const isPlayersTurn = isOnlineGame && this.props.ctx.currentPlayer === this.props.playerID;
+    const isOpponentsTurn = isOnlineGame && this.props.ctx.currentPlayer !== this.props.playerID;
+    const isRedsTurn = !isOnlineGame && this.props.ctx.currentPlayer === 0;
+    const isOrangesTurn = !isOnlineGame && this.props.ctx.currentPlayer === 1;
+
+    if (isPlayersTurn) {
+      return 'Your turn';
+    }
+    if (isOpponentsTurn) {
+      return 'Waiting for opponent';
+    }
+
+    // Local or AI game
+    if (isRedsTurn) {
+      return "Red's turn";
+    }
+    if (isOrangesTurn) {
+      return "Orenge's turn";
+    }
+  }
 
   _getGameOver() {
+    const isPlayerWon = isOnlineGame
+      && typeof this.props.ctx.gameover.winner !== 'undefined'
+      && this.props.ctx.gameover.winner === this.props.playerID;
+    const isOpponentWon = isOnlineGame
+      && typeof this.props.ctx.gameover.winner !== 'undefined'
+      && this.props.ctx.gameover.winner !== this.props.playerID;
+    const isDraw = isOnlineGame
+      && typeof this.props.ctx.gameover.winner === 'undefined'
+      && this.props.ctx.gameover.draw;
 
-    if (isOnlineGame) {
-      // Online game
-      if (this.props.ctx.gameover.winner !== undefined) {
-        if (this.props.ctx.gameover.winner === this.props.playerID) {
-          return 'you won';
-        } else {
-          return 'you lost';
-        }
-      } else {
-        return 'draw';
-      }
-    } else if (isAIGame) {
-      switch (this.props.ctx.gameover.winner) {
-        case '0':
-          return 'you won';
-        case '1':
-          return 'you lost';
-        case undefined:
-          return 'draw';
-      }
-    } else {
-      // Local game
-      switch (this.props.ctx.gameover.winner) {
-        case '0':
-          return 'red won';
-        case '1':
-          return 'orange won';
-        case undefined:
-          return 'draw';
-      }
+    const gameOverText = 'Game over: ';
+    let result = '';
+
+    if (isPlayerWon) {
+      result = 'You won';
     }
+    if (isOpponentWon) {
+      result = 'You lost';
+    }
+    if (isDraw) {
+      result = 'Draw';
+    }
+    return gameOverText.concat(result);
   }
 
   render() {
     if (this.props.ctx.gameover) {
-      return (
-        <Typography>
-          GAME OVER
-        </Typography>
-      );
+      return this._getGameOverBoard();
     }
     return this._getBoard();
   }
@@ -258,8 +248,8 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
   _getBoard() {
     return (
       <div>
-        <Typography variant="h5" style={{ textAlign: 'center', color: 'white', marginBottom: '16px' }}>
-          {/* {this._getStatus()} */}
+        <Typography variant="h5" style={{ textAlign: 'center', marginBottom: '16px' }}>
+          {this._getStatus()}
         </Typography>
         <Checkerboard
           onClick={this._onClick}
@@ -276,7 +266,10 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
 
   _getGameOverBoard() {
     return (
-      <div style={{ textAlign: 'center' }}>
+      <div>
+        <Typography variant="h5" style={{ textAlign: 'center', marginBottom: '16px' }}>
+          {this._getGameOver()}
+        </Typography>
         <Checkerboard
           onClick={this._onClick}
           invert={true}
