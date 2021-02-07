@@ -40,7 +40,6 @@ function roundCoords(coords: ICartesianCoords) {
 }
 
 const isOnlineGame = true;
-const isAIGame = false;
 
 export class KaticaBoard extends React.Component<IBoardProps, unknown> {
   state: IBoardState = {
@@ -139,42 +138,49 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
   }
 
   _getStatus() {
-    if (isOnlineGame) {
-      if (this.props.ctx.currentPlayer === this.props.playerID) {
-        return 'Your turn';
-      } else {
-        return 'Waiting for opponent...';
-      }
-    } else {
-      // Local or AI game
-      switch (this.props.ctx.currentPlayer) {
-        case '0':
-          return "Red's turn";
-        case '1':
-          return "Orange's turn";
-      }
+    const isPlayersTurn = isOnlineGame && this.props.ctx.currentPlayer === this.props.playerID;
+    const isOpponentsTurn = isOnlineGame && this.props.ctx.currentPlayer !== this.props.playerID;
+    const isRedsTurn = !isOnlineGame && this.props.ctx.currentPlayer === 0;
+    const isOrangesTurn = !isOnlineGame && this.props.ctx.currentPlayer === 1;
+
+    if (isPlayersTurn) {
+      return 'Your turn';
+    }
+    if (isOpponentsTurn) {
+      return 'Waiting for opponent';
+    }
+
+    // Local or AI game
+    if (isRedsTurn) {
+      return "Red's turn";
+    }
+    if (isOrangesTurn) {
+      return "Orenge's turn";
     }
   }
 
   _getGameOver() {
+    const isPlayerWon = isOnlineGame
+      && typeof this.props.ctx.gameover.winner !== 'undefined'
+      && this.props.ctx.gameover.winner === this.props.playerID;
+    const isOpponentWon = isOnlineGame
+      && typeof this.props.ctx.gameover.winner !== 'undefined'
+      && this.props.ctx.gameover.winner !== this.props.playerID;
+    const isDraw = isOnlineGame
+      && typeof this.props.ctx.gameover.winner === 'undefined'
+      && this.props.ctx.gameover.draw;
+
     const gameOverText = 'Game over: ';
     let result = '';
-    if (isOnlineGame) {
-      // Online game
-      if (this.props.ctx.gameover.winner !== undefined) {
-        if (this.props.ctx.gameover.winner === this.props.playerID) {
-          result = 'You won';
-        } else {
-          result = 'You lost';
-        }
-      } else {
-        result = 'Draw';
-      }
-    } else if (isAIGame) {
-      console.log('AI game not supported.');
-    } else {
-      // Local game
-      console.log('Local game not supported.');
+
+    if (isPlayerWon) {
+      result = 'You won';
+    }
+    if (isOpponentWon) {
+      result = 'You lost';
+    }
+    if (isDraw) {
+      result = 'Draw';
     }
     return gameOverText.concat(result);
   }
