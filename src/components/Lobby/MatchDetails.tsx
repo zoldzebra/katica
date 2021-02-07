@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import * as R from 'ramda';
 
 import { LobbyAPI } from 'boardgame.io';
-import { LobbyClient } from 'boardgame.io/client';
+import { GameServerContext } from '../GameServerProvider/GameServerProvider';
 
 import { MatchStatusOrAction } from './MatchStatusOrAction';
 import {
@@ -23,12 +23,12 @@ export interface MatchCredential {
 interface MatchDetailProps {
   match: LobbyAPI.Match,
   userName: string;
-  lobbyClient: LobbyClient;
 }
 
 export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => {
+  const { match, userName } = props;
   const history = useHistory();
-  const { match, userName, lobbyClient } = props;
+  const { lobbyClient } = useContext(GameServerContext);
   const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
 
   useEffect(() => {

@@ -8,7 +8,7 @@ import { LobbyAPI } from 'boardgame.io';
 import { getUserInfo, signOutUser, UserInfo } from '../../Services/userService';
 import { AuthContext } from '../AuthProvider/AuthProvider';
 import { GameServerContext } from '../GameServerProvider/GameServerProvider';
-import { MemoMatchDetails as MatchDetails } from './MatchDetails';
+import { MatchList } from './MatchList';
 import { getObjectFromLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
 import { useInterval } from '../../utils/useInterval';
 
@@ -19,6 +19,7 @@ export const Lobby = (): JSX.Element => {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [gameNames, setGameNames] = useState<string[]>([]);
   const [matches, setMatches] = useState<LobbyAPI.Match[]>([]);
+  const [loadingMatches, setLoadingMatches] = useState(true);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -43,6 +44,7 @@ export const Lobby = (): JSX.Element => {
   useInterval(() => {
     const updateMatchList = async () => {
       const allMatches = await getAllMatches();
+      setLoadingMatches(false);
       if (R.equals(allMatches, matches)) return;
       setMatches(allMatches);
     };
@@ -92,6 +94,20 @@ export const Lobby = (): JSX.Element => {
     await lobbyClient.getMatch(gameName, newMatchID.matchID);
   }
 
+  const renderLoadingOrMatchList = () => {
+    if (loadingMatches) {
+      return (
+        <p>Loading matches</p>
+      );
+    }
+    return (
+      <MatchList
+        matches={matches}
+        userName={userName}
+      />
+    )
+  }
+
   const userName = userInfo?.userName ?? '-';
   const email = userInfo?.email ?? '-';
 
@@ -114,17 +130,7 @@ export const Lobby = (): JSX.Element => {
         })
         }
       </ul>
-      <p>There are a total of {matches.length} matches now:</p>
-      <ul>
-        {matches && matches.map(match =>
-          <li key={match.matchID}>
-            <MatchDetails
-              match={match}
-              userName={userName}
-              lobbyClient={lobbyClient}
-            />
-          </li>)}
-      </ul>
+      {renderLoadingOrMatchList()}
     </Paper>
   );
 }
