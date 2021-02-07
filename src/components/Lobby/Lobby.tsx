@@ -94,6 +94,20 @@ export const Lobby = (): JSX.Element => {
     await lobbyClient.getMatch(gameName, newMatchID.matchID);
   }
 
+  const renderLoadingOrMatchList = () => {
+    if (loadingMatches) {
+      return (
+        <p>Loading matches</p>
+      );
+    }
+    return (
+      <MatchList
+        matches={matches}
+        userName={userName}
+      />
+    )
+  }
+
   const userName = userInfo?.userName ?? '-';
   const email = userInfo?.email ?? '-';
 
@@ -116,11 +130,7 @@ export const Lobby = (): JSX.Element => {
         })
         }
       </ul>
-      <MatchList
-        matches={matches}
-        userName={userName}
-        loadingMatches={loadingMatches}
-      />
+      {renderLoadingOrMatchList()}
     </Paper>
   );
 }
