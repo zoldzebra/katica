@@ -137,29 +137,22 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
     return validMovesHighlight;
   }
 
-  _getStatus() {
+  getStatus() {
     const isPlayersTurn = isOnlineGame && this.props.ctx.currentPlayer === this.props.playerID;
     const isOpponentsTurn = isOnlineGame && this.props.ctx.currentPlayer !== this.props.playerID;
-    const isRedsTurn = !isOnlineGame && this.props.ctx.currentPlayer === 0;
-    const isOrangesTurn = !isOnlineGame && this.props.ctx.currentPlayer === 1;
+
+    let status = '';
 
     if (isPlayersTurn) {
-      return 'Your turn';
+      status = 'Your turn';
     }
     if (isOpponentsTurn) {
-      return 'Waiting for opponent';
+      status = 'Waiting for opponent';
     }
-
-    // Local or AI game
-    if (isRedsTurn) {
-      return "Red's turn";
-    }
-    if (isOrangesTurn) {
-      return "Orenge's turn";
-    }
+    return status;
   }
 
-  _getGameOver() {
+  getGameOver() {
     const isPlayerWon = isOnlineGame
       && typeof this.props.ctx.gameover.winner !== 'undefined'
       && this.props.ctx.gameover.winner === this.props.playerID;
@@ -187,9 +180,9 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
 
   render() {
     if (this.props.ctx.gameover) {
-      return this._getGameOverBoard();
+      return this.getGameOverBoard();
     }
-    return this._getBoard();
+    return this.getActiveBoard();
   }
 
   drawPiece = (piece: { data: Piece, index: number }) => {
@@ -245,48 +238,48 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
       });
   };
 
-  _getBoard() {
+  renderBoard = () => {
+    return (
+      <Checkerboard
+        onClick={this._onClick}
+        invert={true}
+        highlightedSquares={this._getHighlightedSquares()}
+        primaryColor={green[900]}
+        secondaryColor={green[600]}
+        style={{
+          maxHeight: '70vh',
+        }}
+      >
+        {this.getPieces()}
+      </Checkerboard>
+    )
+  }
+
+  renderStatus = (status: string) => {
+    if (status === '') {
+      return null;
+    }
+    return (
+      <Typography variant="h5" style={{ textAlign: 'center', marginBottom: '16px' }}>
+        {status}
+      </Typography>
+    )
+  }
+
+  getActiveBoard() {
     return (
       <div>
-        <Typography variant="h5" style={{ textAlign: 'center', marginBottom: '16px' }}>
-          {this._getStatus()}
-        </Typography>
-        <Checkerboard
-          onClick={this._onClick}
-          invert={true}
-          highlightedSquares={this._getHighlightedSquares()}
-          primaryColor={green[900]}
-          secondaryColor={green[600]}
-          style={{
-            maxHeight: '80vh',
-            maxWidth: '80vw',
-          }}
-        >
-          {this.getPieces()}
-        </Checkerboard>
+        {this.renderStatus(this.getStatus())}
+        {this.renderBoard()}
       </div>
     );
   }
 
-  _getGameOverBoard() {
+  getGameOverBoard() {
     return (
       <div>
-        <Typography variant="h5" style={{ textAlign: 'center', marginBottom: '16px' }}>
-          {this._getGameOver()}
-        </Typography>
-        <Checkerboard
-          onClick={this._onClick}
-          invert={true}
-          highlightedSquares={this._getHighlightedSquares()}
-          primaryColor={green[900]}
-          secondaryColor={green[600]}
-          style={{
-            maxHeight: '80vh',
-            maxWidth: '80vw',
-          }}
-        >
-          {this.getPieces()}
-        </Checkerboard>
+        {this.renderStatus(this.getGameOver())}
+        {this.renderBoard()}
       </div>
     );
   }
