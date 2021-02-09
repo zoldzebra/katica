@@ -135,15 +135,13 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
     const isPlayersTurn = isOnlineGame && this.props.ctx.currentPlayer === this.props.playerID;
     const isOpponentsTurn = isOnlineGame && this.props.ctx.currentPlayer !== this.props.playerID;
 
-    let status = '';
-
     if (isPlayersTurn) {
-      status = 'Your turn';
+      return 'Your turn';
     }
     if (isOpponentsTurn) {
-      status = 'Waiting for opponent';
+      return 'Waiting for opponent';
     }
-    return status;
+    return '';
   }
 
   getGameOver = () => {
@@ -170,13 +168,6 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
       result = 'Draw';
     }
     return gameOverText.concat(result);
-  }
-
-  render() {
-    if (this.props.ctx.gameover) {
-      return this.getGameOverBoard();
-    }
-    return this.getActiveBoard();
   }
 
   drawPiece = (piece: { data: Piece, index: number }) => {
@@ -260,19 +251,18 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
     )
   }
 
-  getActiveBoard = () => {
+  render() {
+    if (this.props.ctx.gameover) {
+      return (
+        <div>
+          {this.renderStatus(this.getGameOver())}
+          {this.renderBoard()}
+        </div>
+      );
+    }
     return (
       <div>
         {this.renderStatus(this.getStatus())}
-        {this.renderBoard()}
-      </div>
-    );
-  }
-
-  getGameOverBoard = () => {
-    return (
-      <div>
-        {this.renderStatus(this.getGameOver())}
         {this.renderBoard()}
       </div>
     );
