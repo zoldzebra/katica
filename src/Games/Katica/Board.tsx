@@ -47,23 +47,20 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
     validMovesHighlight: {},
   };
 
-  isInverted() {
-    // return isOnlineGame(this.props.gameArgs) && this.props.playerID === '1';
-    return true;
-  }
+  isInverted = true;
 
   shouldPlace = (coords: ICartesianCoords) => {
     return R.equals(this.props.G.board[toIndex(coords)], EMPTY_FIELD);
   }
 
-  _shouldDrag = (coords: ICartesianCoords) => {
+  shouldDrag = (coords: ICartesianCoords) => {
     if (this.props.ctx.phase === 'Move' && !this.props.ctx.gameover) {
-      const invertedCoords = applyInvertion(coords, this.isInverted());
+      const invertedCoords = applyInvertion(coords, this.isInverted);
       return this.props.G.board[toIndex(invertedCoords)].player === Number(this.props.ctx.currentPlayer);
     }
   };
 
-  _onClick = (coords: IAlgebraicCoords) => {
+  onClick = (coords: IAlgebraicCoords) => {
     if (this.props.ctx.phase === 'Place') {
       const position = algebraicToCartesian(coords.square);
       const boardIndex = toIndex(position);
@@ -71,9 +68,9 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
         this.props.moves.placePiece(boardIndex);
       }
     }
-  };
+  }
 
-  _onDrag = (coords: IOnDragData) => {
+  onDrag = (coords: IOnDragData) => {
     const x = coords.x;
     const y = coords.y;
     const originalX = coords.originalX;
@@ -81,7 +78,7 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
     if (Math.sqrt((x - originalX) ** 2 + (y - originalY) ** 2) > 0.2) {
       this.setState({
         ...this.state,
-        selected: applyInvertion({ x: originalX, y: originalY }, this.isInverted()),
+        selected: applyInvertion({ x: originalX, y: originalY }, this.isInverted),
       });
     } else {
       this.setState({
@@ -90,15 +87,15 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
         validMovesHighlight: {},
       });
     }
-  };
+  }
 
-  _onDrop = async (coords: ICartesianCoords) => {
+  onDrop = async (coords: ICartesianCoords) => {
     if (this.state.selected) {
-      this._move(applyInvertion(roundCoords(coords), this.isInverted()));
+      this.move(applyInvertion(roundCoords(coords), this.isInverted));
     }
-  };
+  }
 
-  _move = async (coords: ICartesianCoords) => {
+  move = async (coords: ICartesianCoords) => {
     if (this.state.selected === null || coords === null) {
       return;
     }
@@ -109,12 +106,9 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
       selected: null,
       validMovesHighlight: {},
     });
-    // if (isAIGame(this.props.gameArgs) && this.props.ctx.currentPlayer === '1') {
-    //   this.stepAI();
-    // }
-  };
+  }
 
-  _getHighlightedSquares() {
+  getHighlightedSquares = () => {
     const { selected, validMovesHighlight } = this.state;
     const result = {} as IColorMap;
 
@@ -137,11 +131,9 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
     return validMovesHighlight;
   }
 
-  _getStatus() {
+  getStatus = () => {
     const isPlayersTurn = isOnlineGame && this.props.ctx.currentPlayer === this.props.playerID;
     const isOpponentsTurn = isOnlineGame && this.props.ctx.currentPlayer !== this.props.playerID;
-    const isRedsTurn = !isOnlineGame && this.props.ctx.currentPlayer === 0;
-    const isOrangesTurn = !isOnlineGame && this.props.ctx.currentPlayer === 1;
 
     if (isPlayersTurn) {
       return 'Your turn';
@@ -149,17 +141,10 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
     if (isOpponentsTurn) {
       return 'Waiting for opponent';
     }
-
-    // Local or AI game
-    if (isRedsTurn) {
-      return "Red's turn";
-    }
-    if (isOrangesTurn) {
-      return "Orenge's turn";
-    }
+    return '';
   }
 
-  _getGameOver() {
+  getGameOver = () => {
     const isPlayerWon = isOnlineGame
       && typeof this.props.ctx.gameover.winner !== 'undefined'
       && this.props.ctx.gameover.winner === this.props.playerID;
@@ -183,13 +168,6 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
       result = 'Draw';
     }
     return gameOverText.concat(result);
-  }
-
-  render() {
-    if (this.props.ctx.gameover) {
-      return this._getGameOverBoard();
-    }
-    return this._getBoard();
   }
 
   drawPiece = (piece: { data: Piece, index: number }) => {
@@ -233,9 +211,9 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
             x={x}
             y={y}
             draggable={true}
-            shouldDrag={this._shouldDrag}
-            onDrop={this._onDrop}
-            onDrag={this._onDrag}
+            shouldDrag={this.shouldDrag}
+            onDrop={this.onDrop}
+            onDrag={this.onDrag}
             animate={true}
             key={piece.data.id}
           >
@@ -243,42 +221,49 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
           </Token>
         );
       });
-  };
-
-  _getBoard() {
-    return (
-      <div>
-        <Typography variant="h5" style={{ textAlign: 'center', marginBottom: '16px' }}>
-          {this._getStatus()}
-        </Typography>
-        <Checkerboard
-          onClick={this._onClick}
-          invert={true}
-          highlightedSquares={this._getHighlightedSquares()}
-          primaryColor={green[900]}
-          secondaryColor={green[600]}
-        >
-          {this.getPieces()}
-        </Checkerboard>
-      </div>
-    );
   }
 
-  _getGameOverBoard() {
+  renderBoard = () => {
+    return (
+      <Checkerboard
+        onClick={this.onClick}
+        invert={true}
+        highlightedSquares={this.getHighlightedSquares()}
+        primaryColor={green[900]}
+        secondaryColor={green[600]}
+        style={{
+          maxHeight: '70vh',
+        }}
+      >
+        {this.getPieces()}
+      </Checkerboard>
+    )
+  }
+
+  renderStatus = (status: string) => {
+    if (status === '') {
+      return null;
+    }
+    return (
+      <Typography variant="h5" style={{ textAlign: 'center', marginBottom: '16px' }}>
+        {status}
+      </Typography>
+    )
+  }
+
+  render() {
+    if (this.props.ctx.gameover) {
+      return (
+        <div>
+          {this.renderStatus(this.getGameOver())}
+          {this.renderBoard()}
+        </div>
+      );
+    }
     return (
       <div>
-        <Typography variant="h5" style={{ textAlign: 'center', marginBottom: '16px' }}>
-          {this._getGameOver()}
-        </Typography>
-        <Checkerboard
-          onClick={this._onClick}
-          invert={true}
-          highlightedSquares={this._getHighlightedSquares()}
-          primaryColor={green[900]}
-          secondaryColor={green[600]}
-        >
-          {this.getPieces()}
-        </Checkerboard>
+        {this.renderStatus(this.getStatus())}
+        {this.renderBoard()}
       </div>
     );
   }
