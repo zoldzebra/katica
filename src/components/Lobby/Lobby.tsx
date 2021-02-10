@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, MouseEvent } from 'react';
 import { Paper } from '@material-ui/core';
 import { useHistory } from "react-router-dom";
 import * as R from 'ramda';
+import { useTranslation } from 'react-i18next';
 
 import { LobbyAPI } from 'boardgame.io';
 
@@ -13,6 +14,7 @@ import { getObjectFromLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/l
 import { useInterval } from '../../utils/useInterval';
 
 export const Lobby = (): JSX.Element => {
+  const { t } = useTranslation();
   const { user } = useContext(AuthContext);
   const { lobbyClient } = useContext(GameServerContext);
   const history = useHistory();
@@ -108,6 +110,9 @@ export const Lobby = (): JSX.Element => {
     )
   }
 
+  const test = t('description.part1');
+  console.log('test:', test);
+
   const userName = userInfo?.userName ?? '-';
   const email = userInfo?.email ?? '-';
 
@@ -116,6 +121,7 @@ export const Lobby = (): JSX.Element => {
       <p>Username: {userName}, email: {email}</p>
       <button onClick={handleLogoutClick}>Logout</button>
       <h1>Katica Lobby</h1>
+      <h1>{t('title')}</h1>
       <p>Welcome to the Lobby!</p>
       <p>Available games:</p>
       <ul>
