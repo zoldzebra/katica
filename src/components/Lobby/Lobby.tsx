@@ -14,7 +14,7 @@ import { getObjectFromLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/l
 import { useInterval } from '../../utils/useInterval';
 
 export const Lobby = (): JSX.Element => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useContext(AuthContext);
   const { lobbyClient } = useContext(GameServerContext);
   const history = useHistory();
@@ -110,26 +110,27 @@ export const Lobby = (): JSX.Element => {
     )
   }
 
-  const test = t('description.part1');
-  console.log('test:', test);
+  const changeLanguage = (language: string) => i18n.changeLanguage(language);
 
   const userName = userInfo?.userName ?? '-';
   const email = userInfo?.email ?? '-';
 
   return (
     <Paper>
-      <p>Username: {userName}, email: {email}</p>
-      <button onClick={handleLogoutClick}>Logout</button>
-      <h1>Katica Lobby</h1>
-      <h1>{t('title')}</h1>
-      <p>Welcome to the Lobby!</p>
-      <p>Available games:</p>
+      <p>{t('lobby.userName')}: {userName}, {t('lobby.email')}: {email}</p>
+      <button onClick={handleLogoutClick}>{t('lobby.logout')}</button>
+      <p>{t('lobby.changeLanguage')}</p>
+      <button onClick={() => changeLanguage("en")}>{t('lobby.english')}</button>
+      <button onClick={() => changeLanguage("hu")}>{t('lobby.hungarian')}</button>
+      <h1>{t('lobby.lobbyTitle')}</h1>
+      <p>{t('lobby.welcomeMessage')}</p>
+      <p>{t('lobby.availableGames')}</p>
       <ul>
         {gameNames.map((gameName) => {
           return (
             <li key={gameName}>{gameName}
               <button onClick={() => handleCreateNewMatch(gameName)}>
-                Create new match
+                {t('lobby.createNewMatch')}
               </button>
             </li>
           )
