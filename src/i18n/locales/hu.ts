@@ -1,20 +1,27 @@
 export const hu = {
-  "lobby": {
-    "userName": "Felhasználónév",
-    "email": "Email cím",
-    "logout": "Kijelentkezés",
-    "changeLanguage": "Nyelv",
-    "english": "Angol",
-    "hungarian": "Magyar",
-    "lobbyTitle": "Katicatülekedés",
-    "welcomeMessage": "Üdv a lobbyban!",
-    "availableGames": "Elérhető játékok",
-    "createNewMatch": "Új játszma létrehozása",
-    "totalMatches": "Elérhető játszmák"
+  'lobby': {
+    'userName': 'Felhasználónév',
+    'email': 'Email cím',
+    'logout': 'Kijelentkezés',
+    'changeLanguage': 'Nyelv',
+    'english': 'Angol',
+    'hungarian': 'Magyar',
+    'lobbyTitle': 'Katicatülekedés',
+    'welcomeMessage': 'Üdv a lobbyban!',
+    'availableGames': 'Elérhető játékok',
+    'createNewMatch': 'Új játszma létrehozása',
+    'totalMatches': 'Elérhető játszmák'
   },
-  "title": "Udv react-i18next",
-  "description": {
-    "part1": "Teszt szoveg1",
-    "part2": "Teszt szoveg2"
-  }
+  'login': {
+    'login': 'Belépés',
+    'notRegisteredYet': 'Nem regisztráltál még?',
+    'signUp': 'Regisztrálok',
+    'enterEmail': 'Add meg az email címed!',
+    'enterPassword': 'Add meg a jelszavad!',
+  },
+  'signUp': {
+    'signUp': 'Regisztráció',
+    'alreadyHaveAccount': 'Van már regisztrációd?',
+    'enterUserName': 'Add meg a felhasználó neved!',
+  },
 }

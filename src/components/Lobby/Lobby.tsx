@@ -10,11 +10,12 @@ import { getUserInfo, signOutUser, UserInfo } from '../../Services/userService';
 import { AuthContext } from '../AuthProvider/AuthProvider';
 import { GameServerContext } from '../GameServerProvider/GameServerProvider';
 import { MatchList } from './MatchList';
+import { ChangeLanguage } from '../ChangeLanguage/ChangeLanguage';
 import { getObjectFromLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
 import { useInterval } from '../../utils/useInterval';
 
 export const Lobby = (): JSX.Element => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { user } = useContext(AuthContext);
   const { lobbyClient } = useContext(GameServerContext);
   const history = useHistory();
@@ -110,8 +111,6 @@ export const Lobby = (): JSX.Element => {
     )
   }
 
-  const changeLanguage = (language: string) => i18n.changeLanguage(language);
-
   const userName = userInfo?.userName ?? '-';
   const email = userInfo?.email ?? '-';
 
@@ -119,9 +118,7 @@ export const Lobby = (): JSX.Element => {
     <Paper>
       <p>{t('lobby.userName')}: {userName}, {t('lobby.email')}: {email}</p>
       <button onClick={handleLogoutClick}>{t('lobby.logout')}</button>
-      <p>{t('lobby.changeLanguage')}</p>
-      <button onClick={() => changeLanguage("en")}>{t('lobby.english')}</button>
-      <button onClick={() => changeLanguage("hu")}>{t('lobby.hungarian')}</button>
+      <ChangeLanguage />
       <h1>{t('lobby.lobbyTitle')}</h1>
       <p>{t('lobby.welcomeMessage')}</p>
       <p>{t('lobby.availableGames')}</p>

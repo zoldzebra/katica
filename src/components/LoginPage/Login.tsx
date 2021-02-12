@@ -1,7 +1,9 @@
 import React, { useState, FormEvent, ChangeEvent } from "react";
 import { useHistory } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 import { signInUser } from "../../Services/userService";
+import { ChangeLanguage } from '../ChangeLanguage/ChangeLanguage';
 
 interface UserData {
   email: string;
@@ -9,6 +11,7 @@ interface UserData {
 }
 
 export const Login = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   const [values, setValues] = useState({
     email: "",
@@ -35,13 +38,14 @@ export const Login = () => {
 
   return (
     <div style={{ textAlign: 'center' }}>
-      <h1>Login</h1>
+      <ChangeLanguage />
+      <h1>{t('login.login')}</h1>
       <form onSubmit={handleLogin}>
-        <input type="text" name="email" value={values.email} placeholder="Enter your Email" onChange={handleChange} /><br /><br />
-        <input type="password" name="password" value={values.password} placeholder="Enter your Password" onChange={handleChange} /><br /><br />
-        <button>Login</button>
-        <p>Not registered yet?</p>
-        <button onClick={handleSignUp}>SignUp</button>
+        <input type="text" name="email" value={values.email} placeholder={t('login.enterEmail')} onChange={handleChange} /><br /><br />
+        <input type="password" name="password" value={values.password} placeholder={t('login.enterPassword')} onChange={handleChange} /><br /><br />
+        <button>{t('login.login')}</button>
+        <p>{t('login.notRegisteredYet')}</p>
+        <button onClick={handleSignUp}>{t('login.signUp')}</button>
       </form>
     </div>
   );
