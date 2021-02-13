@@ -10,7 +10,6 @@ export const hu = {
     'welcomeMessage': 'Üdv a lobbyban!',
     'availableGames': 'Elérhető játékok',
     'createNewMatch': 'Új játszma létrehozása',
-    'totalMatches': 'Elérhető játszmák'
   },
   'login': {
     'login': 'Belépés',
@@ -23,5 +22,37 @@ export const hu = {
     'signUp': 'Regisztráció',
     'alreadyHaveAccount': 'Van már regisztrációd?',
     'enterUserName': 'Add meg a felhasználó neved!',
+  },
+  'matchList': {
+    'totalMatches': 'Jelenleg {{matches.length}} játszma érhető el:',
+  },
+  'matchDetails': {
+    'playersJoined': 'Csatlakozott játékosok:',
+  },
+  'matchStatus': {
+    'matchIsFull': 'Mindenki csatlakozott',
+    'waitingOthersToJoin': 'Mások csatlakozására vár...',
+    'playMatch': 'Kezdjük a játszmát!',
+    'leaveMatch': 'Kilépek!',
+    'joinMatch': 'Csatlakozom!',
+  },
+  'matchPage': {
+    'loading': 'Egy pillanat...',
+    'credentialsNotFound': 'Sajnos, ehhez a játszmához nincs jogosultságod.',
+    'backToLobby': 'Vissza a lobbyba',
+    'matchPageFor': 'Játszma azonosító:',
+  },
+  'matchComponent': {
+    'leaveMatchBackToLobby': 'Kilépés és vissza a lobbyba',
+  },
+  'katicaBoard': {
+    'yourTurn': 'Te lépsz!',
+    'waitingForOpponent': 'Az ellenfél lép',
+    'redsTurn': 'Piros lép',
+    'orangesTurn': 'Narancs lép',
+    'gameOver': 'A játszma véget ért: ',
+    'youWon': 'Nyertél',
+    'youLost': 'Vesztettél',
+    'draw': 'Döntetlen'
   },
 }

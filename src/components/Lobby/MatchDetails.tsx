@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import * as R from 'ramda';
+import { useTranslation } from 'react-i18next';
 
 import { LobbyAPI } from 'boardgame.io';
 import { GameServerContext } from '../GameServerProvider/GameServerProvider';
@@ -27,6 +28,7 @@ interface MatchDetailProps {
 
 export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => {
   const { match, userName } = props;
+  const { t } = useTranslation();
   const history = useHistory();
   const { lobbyClient } = useContext(GameServerContext);
   const [joinedPlayers, setJoinedPlayers] = useState<string[]>([]);
@@ -96,7 +98,7 @@ export const MatchDetails: React.FC<MatchDetailProps> = (props): JSX.Element => 
 
   return (
     <div>
-      {match.gameName} - {match.matchID}. Players joined:
+      {match.gameName} - {match.matchID}. {t('matchDetails.playersJoined')}
       <ul>
         {joinedPlayers.map(player => <li key={player}>{player}</li>)}
       </ul>

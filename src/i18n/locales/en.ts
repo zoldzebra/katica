@@ -10,7 +10,6 @@ export const en = {
     'welcomeMessage': 'Welcome to the Lobby!',
     'availableGames': 'Available games',
     'createNewMatch': 'Create new match',
-    'totalMatches': 'There are a total of matches:'
   },
   'login': {
     'login': 'Login',
@@ -24,5 +23,37 @@ export const en = {
     'signUp': 'Sign up',
     'alreadyHaveAccount': 'Already have account?',
     'enterUserName': 'Enter your user name',
+  },
+  'matchList': {
+    'totalMatches': 'There are a total of {{matches.length}} matches now:',
+  },
+  'matchDetails': {
+    'playersJoined': 'Players joined:',
+  },
+  'matchStatus': {
+    'matchIsFull': 'Match is full.',
+    'waitingOthersToJoin': 'Waiting for others to join...',
+    'playMatch': 'Play match!',
+    'leaveMatch': 'Leave match!',
+    'joinMatch': 'Join!',
+  },
+  'matchPage': {
+    'loading': 'Loading, please wait...',
+    'credentialsNotFound': 'Sorry, match credentials not found.',
+    'backToLobby': 'Back to lobby',
+    'matchPageFor': 'Match id:',
+  },
+  'matchComponent': {
+    'leaveMatchBackToLobby': 'Leave match and back to lobby',
+  },
+  'katicaBoard': {
+    'yourTurn': 'Your turn',
+    'waitingForOpponent': 'Waiting for opponent',
+    'redsTurn': "Red's turn",
+    'orangesTurn': "Orange's turn",
+    'gameOver': 'Game over: ',
+    'youWon': 'You won',
+    'youLost': 'You lost',
+    'draw': 'Draw'
   },
 }

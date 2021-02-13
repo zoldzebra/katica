@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { useTranslation } from 'react-i18next';
 import { LobbyAPI } from 'boardgame.io';
 
 import { MemoMatchDetails as MatchDetails } from './MatchDetails';
@@ -11,10 +11,11 @@ interface MatchListProps {
 
 export const MatchList: React.FC<MatchListProps> = (props) => {
   const { matches, userName } = props;
+  const { t } = useTranslation();
 
   return (
     <>
-      <p>There are a total of {matches.length} matches now:</p>
+      <p>{t('matchList.totalMatches', { matches })}</p>
       <ul>
         {matches && matches.map(match =>
           <li key={match.matchID}>

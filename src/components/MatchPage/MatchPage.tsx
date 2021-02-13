@@ -1,11 +1,12 @@
 import React, { FC, useState, useEffect } from "react";
 import { RouteComponentProps, useHistory } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 import { MatchComponent } from './MatchComponent';
 import { StoredMatchCredentials } from '../Lobby/MatchDetails';
 import { getObjectFromLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
 import { KaticaGame } from '../../Games/Katica/Game';
-import { KaticaBoard } from '../../Games/Katica/Board';
+import KaticaBoard from '../../Games/Katica/Board';
 import { TicTacToe } from '../../Games/TicTacToe/Game';
 import { TicTacToeBoard } from '../../Games/TicTacToe/Board';
 
@@ -21,6 +22,7 @@ export interface PlayedMatchCredentials {
 }
 
 export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const { matchID } = props.match.params;
   const [playedMatchCredentials, setPlayedMatchCredentials] = useState<PlayedMatchCredentials | undefined>(undefined);
@@ -67,7 +69,7 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
 
   const loadingCredentials = () => {
     return (
-      <h1>Loading...</h1>
+      <h1>{t('matchPage.loading')}</h1>
     )
   }
 
@@ -78,8 +80,8 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
   const noCredentialsBackToLobby = () => {
     return (
       <>
-        <p>Sorry, match credentials not found.</p>
-        <button onClick={backToLobby}>Back to lobby</button>
+        <p>{t('matchPage.credentialsNotFound')}</p>
+        <button onClick={backToLobby}>{t('matchPage.backToLobby')}</button>
       </>
     )
   }
@@ -107,7 +109,7 @@ export const MatchPage: FC<RouteComponentProps<RouteMatchParams>> = (props) => {
 
   return (
     <div>
-      <h1>This is the match page for {matchID}</h1>
+      <h1>{t('matchPage.matchPageFor')} {matchID}</h1>
       {renderMatchOrBackToLobby()}
     </div>
   );

@@ -6,6 +6,7 @@ import green from '@material-ui/core/colors/green';
 import grey from '@material-ui/core/colors/grey';
 import blue from '@material-ui/core/colors/blue';
 import orange from '@material-ui/core/colors/orange';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
 import { IG, Piece, EMPTY_FIELD, toCoord, toIndex, getValidMoves } from './Game';
 import { Token } from '@freeboardgame.org/boardgame.io/ui';
@@ -21,7 +22,7 @@ import {
   cartesianToAlgebraic,
 } from './CheckerboardCustom';
 
-interface IBoardProps extends BoardProps {
+interface IBoardProps extends BoardProps, WithTranslation {
   G: IG;
   ctx: any;
   moves: any;
@@ -41,7 +42,7 @@ function roundCoords(coords: ICartesianCoords) {
 
 const isOnlineGame = true;
 
-export class KaticaBoard extends React.Component<IBoardProps, unknown> {
+class KaticaBoard extends React.Component<IBoardProps, unknown> {
   state: IBoardState = {
     selected: null,
     validMovesHighlight: {},
@@ -138,28 +139,30 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
   }
 
   _getStatus() {
+    const { t } = this.props;
     const isPlayersTurn = isOnlineGame && this.props.ctx.currentPlayer === this.props.playerID;
     const isOpponentsTurn = isOnlineGame && this.props.ctx.currentPlayer !== this.props.playerID;
     const isRedsTurn = !isOnlineGame && this.props.ctx.currentPlayer === 0;
     const isOrangesTurn = !isOnlineGame && this.props.ctx.currentPlayer === 1;
 
     if (isPlayersTurn) {
-      return 'Your turn';
+      return t('katicaBoard.yourTurn');
     }
     if (isOpponentsTurn) {
-      return 'Waiting for opponent';
+      return t('katicaBoard.waitingForOpponent');
     }
 
     // Local or AI game
     if (isRedsTurn) {
-      return "Red's turn";
+      return t('katicaBoard.redsTurn');
     }
     if (isOrangesTurn) {
-      return "Orenge's turn";
+      return t('katicaBoard.orangesTurn');
     }
   }
 
   _getGameOver() {
+    const { t } = this.props;
     const isPlayerWon = isOnlineGame
       && typeof this.props.ctx.gameover.winner !== 'undefined'
       && this.props.ctx.gameover.winner === this.props.playerID;
@@ -170,17 +173,17 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
       && typeof this.props.ctx.gameover.winner === 'undefined'
       && this.props.ctx.gameover.draw;
 
-    const gameOverText = 'Game over: ';
+    const gameOverText = t('katicaBoard.gameOver');
     let result = '';
 
     if (isPlayerWon) {
-      result = 'You won';
+      result = t('katicaBoard.youWon');
     }
     if (isOpponentWon) {
-      result = 'You lost';
+      result = t('katicaBoard.youLost');
     }
     if (isDraw) {
-      result = 'Draw';
+      result = t('katicaBoard.draw');
     }
     return gameOverText.concat(result);
   }
@@ -284,4 +287,4 @@ export class KaticaBoard extends React.Component<IBoardProps, unknown> {
   }
 }
 
-export default KaticaBoard;
+export default withTranslation()(KaticaBoard);
