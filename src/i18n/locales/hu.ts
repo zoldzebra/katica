@@ -3,9 +3,6 @@ export const hu = {
     'userName': 'Felhasználónév',
     'email': 'Email cím',
     'logout': 'Kijelentkezés',
-    'changeLanguage': 'Nyelv',
-    'english': 'Angol',
-    'hungarian': 'Magyar',
     'lobbyTitle': 'Katicatülekedés',
     'welcomeMessage': 'Üdv a lobbyban!',
     'availableGames': 'Elérhető játékok',
@@ -55,4 +52,9 @@ export const hu = {
     'youLost': 'Vesztettél',
     'draw': 'Döntetlen'
   },
+  'changeLanguage': {
+    'changeLanguage': 'Nyelv',
+    'english': 'Angol',
+    'hungarian': 'Magyar',
+  }
 }

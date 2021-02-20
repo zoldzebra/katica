@@ -1,33 +1,65 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
+import { makeStyles } from '@material-ui/core/styles';
+
+import i18n from '../../i18n/config';
+
+const useStyles = makeStyles({
+  selected: {
+    fontWeight: 'bold',
+  },
+  notSelected: {
+    fontWeight: 'normal',
+  }
+})
+
+interface LanguageInfo {
+  code: string,
+  name: string,
+}
+
+interface LanguageList {
+  [key: string]: LanguageInfo;
+}
+
+const LANGUAGES: LanguageList = {
+  hungarian: {
+    code: 'hu',
+    name: i18n.t('changeLanguage.hungarian'),
+  },
+  english: {
+    code: 'en',
+    name: i18n.t('changeLanguage.english'),
+  },
+}
 
 export const ChangeLanguage: React.FC = () => {
+  const classes = useStyles();
   const { t, i18n } = useTranslation();
+  const [actualLanguage, setActualLanguage] = useState<string>(LANGUAGES.hungarian.code);
 
   useEffect(() => {
-    let otherLanguage = '';
     const actualLanguage = i18n.language;
-    if (actualLanguage === 'hu') {
-      otherLanguage = 'en';
-    } else {
-      otherLanguage = 'hu';
-    }
-    const activeLanguageButton = document.getElementById(actualLanguage);
-    const otherLanguageButton = document.getElementById(otherLanguage);
-    if (!activeLanguageButton || !otherLanguageButton) {
-      return;
-    }
-    activeLanguageButton.style.fontWeight = 'bold';
-    otherLanguageButton.style.fontWeight = 'normal';
+    setActualLanguage(actualLanguage);
   }, [i18n.language]);
 
   const changeLanguage = (language: string) => i18n.changeLanguage(language);
 
+  const renderLanguageButtonWithSelectionState = (languageInfo: LanguageInfo) => {
+    let className = classes.notSelected;
+    if (actualLanguage === languageInfo.code) {
+      className = classes.selected;
+    }
+    return (
+      <button className={className} onClick={() => changeLanguage(languageInfo.code)}>{languageInfo.name}</button>
+    )
+  }
+
   return (
     <>
-      <p>{t('lobby.changeLanguage')}</p>
-      <button id='en' onClick={() => changeLanguage('en')}>{t('lobby.english')}</button>
-      <button id='hu' onClick={() => changeLanguage('hu')}>{t('lobby.hungarian')}</button>
+      <p>{t('changeLanguage.changeLanguage')}</p>
+      {renderLanguageButtonWithSelectionState(LANGUAGES.hungarian)}
+      {renderLanguageButtonWithSelectionState(LANGUAGES.english)}
     </>
   )
 }

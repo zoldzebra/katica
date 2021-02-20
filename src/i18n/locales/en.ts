@@ -3,9 +3,6 @@ export const en = {
     'userName': 'User name',
     'email': 'Email',
     'logout': 'Logout',
-    'changeLanguage': 'Language',
-    'english': 'English',
-    'hungarian': 'Hungarian',
     'lobbyTitle': 'Ladybird Scramble',
     'welcomeMessage': 'Welcome to the Lobby!',
     'availableGames': 'Available games',
@@ -56,4 +53,9 @@ export const en = {
     'youLost': 'You lost',
     'draw': 'Draw'
   },
+  'changeLanguage': {
+    'changeLanguage': 'Language',
+    'english': 'English',
+    'hungarian': 'Hungarian',
+  }
 }
