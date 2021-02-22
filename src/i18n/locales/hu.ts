@@ -18,7 +18,7 @@ export const hu = {
   'signUp': {
     'signUp': 'Regisztráció',
     'alreadyHaveAccount': 'Van már regisztrációd?',
-    'enterUserName': 'Add meg a felhasználó neved!',
+    'enterUserName': 'Add meg a felhasználóneved!',
   },
   'matchList': {
     'totalMatches': 'Jelenleg {{matches.length}} játszma érhető el:',

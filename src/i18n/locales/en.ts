@@ -1,6 +1,6 @@
 export const en = {
   'lobby': {
-    'userName': 'User name',
+    'userName': 'Username',
     'email': 'Email',
     'logout': 'Logout',
     'lobbyTitle': 'Ladybird Scramble',
@@ -19,7 +19,7 @@ export const en = {
   'signUp': {
     'signUp': 'Sign up',
     'alreadyHaveAccount': 'Already have account?',
-    'enterUserName': 'Enter your user name',
+    'enterUserName': 'Enter your username',
   },
   'matchList': {
     'totalMatches': 'There are a total of {{matches.length}} matches now:',
