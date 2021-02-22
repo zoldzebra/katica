@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, MouseEvent } from 'react';
 import { Paper } from '@material-ui/core';
 import { useHistory } from "react-router-dom";
 import * as R from 'ramda';
+import { useTranslation } from 'react-i18next';
 
 import { LobbyAPI } from 'boardgame.io';
 
@@ -9,10 +10,12 @@ import { getUserInfo, signOutUser, UserInfo } from '../../Services/userService';
 import { AuthContext } from '../AuthProvider/AuthProvider';
 import { GameServerContext } from '../GameServerProvider/GameServerProvider';
 import { MatchList } from './MatchList';
+import { ChangeLanguage } from '../ChangeLanguage/ChangeLanguage';
 import { getObjectFromLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
 import { useInterval } from '../../utils/useInterval';
 
 export const Lobby = (): JSX.Element => {
+  const { t } = useTranslation();
   const { user } = useContext(AuthContext);
   const { lobbyClient } = useContext(GameServerContext);
   const history = useHistory();
@@ -113,17 +116,18 @@ export const Lobby = (): JSX.Element => {
 
   return (
     <Paper>
-      <p>Username: {userName}, email: {email}</p>
-      <button onClick={handleLogoutClick}>Logout</button>
-      <h1>Katica Lobby</h1>
-      <p>Welcome to the Lobby!</p>
-      <p>Available games:</p>
+      <p>{t('lobby.userName')}: {userName}, {t('lobby.email')}: {email}</p>
+      <button onClick={handleLogoutClick}>{t('lobby.logout')}</button>
+      <ChangeLanguage />
+      <h1>{t('lobby.lobbyTitle')}</h1>
+      <p>{t('lobby.welcomeMessage')}</p>
+      <p>{t('lobby.availableGames')}</p>
       <ul>
         {gameNames.map((gameName) => {
           return (
             <li key={gameName}>{gameName}
               <button onClick={() => handleCreateNewMatch(gameName)}>
-                Create new match
+                {t('lobby.createNewMatch')}
               </button>
             </li>
           )

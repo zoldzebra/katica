@@ -1,4 +1,6 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+
 interface MatchStatusOrActionProps {
   joinedPlayers: string[];
   maxPlayers: number;
@@ -17,6 +19,7 @@ export const MatchStatusOrAction: React.FC<MatchStatusOrActionProps> = (props): 
     handleLeaveMatch,
     handlePlayMatch,
   } = props;
+  const { t } = useTranslation();
 
   const isFull = (): boolean => joinedPlayers.length === maxPlayers;
 
@@ -25,8 +28,8 @@ export const MatchStatusOrAction: React.FC<MatchStatusOrActionProps> = (props): 
   if (isFull() && isJoined()) {
     return (
       <>
-        <button onClick={handlePlayMatch}>Play match!</button>
-        <button onClick={handleLeaveMatch}>Leave match!</button>
+        <button onClick={handlePlayMatch}>{t('matchStatus.playMatch')}</button>
+        <button onClick={handleLeaveMatch}>{t('matchStatus.leaveMatch')}</button>
       </>
     )
   }
@@ -34,7 +37,7 @@ export const MatchStatusOrAction: React.FC<MatchStatusOrActionProps> = (props): 
   if (isFull() && !isJoined()) {
     return (
       <p>
-        Match is full.
+        {t('matchStatus.matchIsFull')}
       </p>
     )
   }
@@ -42,13 +45,13 @@ export const MatchStatusOrAction: React.FC<MatchStatusOrActionProps> = (props): 
   if (isJoined()) {
     return (
       <>
-        <p>Waiting for others to join...</p>
-        <button onClick={handleLeaveMatch}>Leave match!</button>
+        <p>{t('matchStatus.waitingOthersToJoin')}</p>
+        <button onClick={handleLeaveMatch}>{t('matchStatus.leaveMatch')}</button>
       </>
     )
   }
 
   return (
-    <button onClick={handleJoinMatch}>Join!</button>
+    <button onClick={handleJoinMatch}>{t('matchStatus.joinMatch')}</button>
   )
 }
