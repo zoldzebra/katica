@@ -8,7 +8,7 @@ export const hu = {
     'availableGames': 'Elérhető játékok',
     'createNewMatch': 'Új játszma létrehozása',
     'explanation': 'Ez csak egy teszt oldal, folyamatosan fejlesztés alatt.',
-    'devContact': 'Bugok, ötletek, visszajelzés jöhet ide: zoldzebra@gmail.com (Dani)',
+    'devContact': 'Bugok, ötletek, visszajelzés jöhet ide: katicatulekedesfeedback@gmail.com (Dani)',
   },
   'login': {
     'login': 'Belépés',

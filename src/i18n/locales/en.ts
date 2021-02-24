@@ -8,7 +8,7 @@ export const en = {
     'availableGames': 'Available games',
     'createNewMatch': 'Create new match',
     'explanation': 'This is only a testing site, under construction.',
-    'devContact': 'May you find any bugs, have ideas, feedback, write me here: zoldzebra@gmail.com (Dani)',
+    'devContact': 'May you find any bugs, have ideas, feedback, write me here: katicatulekedesfeedback@gmail.com (Dani)',
   },
   'login': {
     'login': 'Login',
