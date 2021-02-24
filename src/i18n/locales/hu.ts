@@ -7,6 +7,8 @@ export const hu = {
     'welcomeMessage': 'Üdv a lobbyban!',
     'availableGames': 'Elérhető játékok',
     'createNewMatch': 'Új játszma létrehozása',
+    'explanation': 'Ez csak egy teszt oldal, folyamatosan fejlesztés alatt.',
+    'devContact': 'Bugok, ötletek, visszajelzés jöhet ide: zoldzebra@gmail.com (Dani)',
   },
   'login': {
     'login': 'Belépés',

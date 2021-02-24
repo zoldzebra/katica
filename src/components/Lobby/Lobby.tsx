@@ -121,6 +121,8 @@ export const Lobby = (): JSX.Element => {
       <ChangeLanguage />
       <h1>{t('lobby.lobbyTitle')}</h1>
       <p>{t('lobby.welcomeMessage')}</p>
+      <p><i>{t('lobby.explanation')}</i></p>
+      <p><i>{t('lobby.devContact')}</i></p>
       <p>{t('lobby.availableGames')}</p>
       <ul>
         {gameNames.map((gameName) => {
