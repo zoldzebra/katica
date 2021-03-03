@@ -254,7 +254,20 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
     )
   }
 
+  handleOK = (eventIgnored: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    this.props.moves.signAgreement();
+  }
+
   render() {
+    if (this.props.ctx.phase === 'Advantage') {
+      return (
+        <div>
+          {this.renderStatus(this.getStatus())}
+          <button onClick={this.handleOK}>OK</button>
+        </div>
+      )
+    }
+
     if (this.props.ctx.gameover) {
       return (
         <div>

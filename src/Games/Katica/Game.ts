@@ -17,6 +17,7 @@ export interface Piece {
 export interface IG {
   board: Piece[];
   piecesPlaced: number;
+  playersAgreed: boolean;
 }
 
 interface ICoord {
@@ -98,7 +99,7 @@ const ALL_MOVES = [
 const ROWS = 7;
 const COLUMNS = 6;
 
-const initialBoard = Array(ROWS * COLUMNS).fill(EMPTY_FIELD);
+const initialBoardAsList = Array(ROWS * COLUMNS).fill(EMPTY_FIELD);
 
 function getStartingPieces(): Piece[] {
   const players = [0, 1];
@@ -177,9 +178,9 @@ function sortStartCoords(startCoords: ICoord[]): ICoord[] {
   return sortedCoords;
 }
 
-function createBasicStartBoard(board: any[]): Piece[] {
+function createBasicStartBoard(boardAsList: any[]): Piece[] {
   const boardMatrix: Piece[][] = Array(COLUMNS).fill(null).map(() => Array(ROWS).fill(null));
-  board.forEach((cell, index) => {
+  boardAsList.forEach((cell, index) => {
     const coords = toCoord(index);
     boardMatrix[coords.x][coords.y] = cell;
   });
@@ -421,18 +422,27 @@ export function movePiece(G: IG, ctx: any, moveFrom: ICoord, moveTo: ICoord): IG
   }
 }
 
+function signAgreement(G: IG, ctxIgnored: any) {
+  return {
+    ...G,
+    playersAgreed: true,
+  }
+}
+
 export const KaticaGame = {
   name: 'katica',
 
   setup: (): IG => ({
-    board: createBasicStartBoard(initialBoard),
+    board: createBasicStartBoard(initialBoardAsList),
     piecesPlaced: 18,
+    playersAgreed: false,
   }),
 
   minPlayers: 2,
   maxPlayers: 2,
 
   moves: {
+    signAgreement,
     placePiece,
     movePiece,
   },
@@ -442,18 +452,16 @@ export const KaticaGame = {
   },
 
   phases: {
-    Place: {
+    Advantage: {
       start: true,
-      moves: { placePiece },
-      endIf: (G: IG) => (G.piecesPlaced >= 18),
+      moves: { placePiece, signAgreement },
+      endIf: (G: IG) => G.playersAgreed,
       next: Phase.Move,
     },
     Move: {
-      // allowedMoves: ['movePiece'],
       moves: { movePiece },
     },
   },
-  // },
 
   endIf: (G: any, ctx: any) => {
     if (ctx.turn > 5) {
