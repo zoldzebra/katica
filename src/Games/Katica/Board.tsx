@@ -254,8 +254,35 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
     )
   }
 
-  handleOK = (eventIgnored: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  handleAgree = (eventIgnored: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     this.props.moves.signAgreement();
+  }
+
+  setAdvantage = (eventIgnored: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    this.props.moves.setAdvantage('a');
+  }
+
+  renderAgreement = (agreement: boolean) => {
+    return (
+      <div>
+        {agreement ? 'OK' : 'NOOOO!'}
+      </div>
+    )
+  }
+
+  renderAdvantage = () => {
+    console.log('Board this.props', this.props);
+    if (!this.props.matchData) {
+      console.log('BOARD: No matchdata found');
+      return;
+    }
+    return (
+      <div>
+        <p>Advantage = {this.props.G.advantageSet}</p>
+        <p>{this.props.matchData[0].name as string}: {this.renderAgreement(this.props.G.player0Agreed)}</p>
+        <p>{this.props.matchData[1].name as string}: {this.renderAgreement(this.props.G.player1Agreed)}</p>
+      </div>
+    )
   }
 
   render() {
@@ -263,7 +290,9 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
       return (
         <div>
           {this.renderStatus(this.getStatus())}
-          <button onClick={this.handleOK}>OK</button>
+          {this.renderAdvantage()}
+          <button onClick={this.setAdvantage}>Set advantage</button>
+          <button onClick={this.handleAgree}>I agree</button>
         </div>
       )
     }

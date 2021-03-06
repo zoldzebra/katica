@@ -86,7 +86,7 @@ var ALL_MOVES = [
 ];
 var ROWS = 7;
 var COLUMNS = 6;
-var initialBoard = Array(ROWS * COLUMNS).fill(EMPTY_FIELD);
+var initialBoardAsList = Array(ROWS * COLUMNS).fill(EMPTY_FIELD);
 function getStartingPieces() {
     var players = [0, 1];
     var pieceTypes = [1, 2, 3];
@@ -166,9 +166,9 @@ function sortStartCoords(startCoords) {
         .concat(leftRow);
     return sortedCoords;
 }
-function createBasicStartBoard(board) {
+function createBasicStartBoard(boardAsList) {
     var boardMatrix = Array(COLUMNS).fill(null).map(function () { return Array(ROWS).fill(null); });
-    board.forEach(function (cell, index) {
+    boardAsList.forEach(function (cell, index) {
         var coords = toCoord(index);
         boardMatrix[coords.x][coords.y] = cell;
     });
@@ -401,15 +401,38 @@ export function movePiece(G, ctx, moveFrom, moveTo) {
         return __assign({}, newG);
     }
 }
+function signAgreement(G, ctx) {
+    if (ctx.currentPlayer === '0') {
+        return __assign(__assign({}, G), { player0Agreed: true });
+    }
+    return __assign(__assign({}, G), { player1Agreed: true });
+}
+function setAdvantage(G, ctxIgnored, advantage) {
+    var newAdvantage = G.advantageSet.concat(advantage);
+    var newPlayer0Agreed = false;
+    var newPlayer1Agreed = false;
+    if (ctxIgnored.currentPlayer === '0') {
+        newPlayer0Agreed = true;
+    }
+    else {
+        newPlayer1Agreed = true;
+    }
+    return __assign(__assign({}, G), { advantageSet: newAdvantage, player0Agreed: newPlayer0Agreed, player1Agreed: newPlayer1Agreed });
+}
 export var KaticaGame = {
     name: 'katica',
     setup: function () { return ({
-        board: createBasicStartBoard(initialBoard),
+        board: createBasicStartBoard(initialBoardAsList),
         piecesPlaced: 18,
+        player0Agreed: false,
+        player1Agreed: false,
+        advantageSet: '',
     }); },
     minPlayers: 2,
     maxPlayers: 2,
     moves: {
+        setAdvantage: setAdvantage,
+        signAgreement: signAgreement,
         placePiece: placePiece,
         movePiece: movePiece,
     },
@@ -417,18 +440,16 @@ export var KaticaGame = {
         moveLimit: 1,
     },
     phases: {
-        Place: {
+        Advantage: {
             start: true,
-            moves: { placePiece: placePiece },
-            endIf: function (G) { return (G.piecesPlaced >= 18); },
+            moves: { placePiece: placePiece, signAgreement: signAgreement, setAdvantage: setAdvantage },
+            endIf: function (G) { return (G.player0Agreed && G.player1Agreed); },
             next: Phase.Move,
         },
         Move: {
-            // allowedMoves: ['movePiece'],
             moves: { movePiece: movePiece },
         },
     },
-    // },
     endIf: function (G, ctx) {
         if (ctx.turn > 5) {
             var result = getMatchResult(G);

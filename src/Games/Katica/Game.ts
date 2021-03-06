@@ -17,7 +17,9 @@ export interface Piece {
 export interface IG {
   board: Piece[];
   piecesPlaced: number;
-  playersAgreed: boolean;
+  player0Agreed: boolean;
+  player1Agreed: boolean;
+  advantageSet: string;
 }
 
 interface ICoord {
@@ -422,10 +424,33 @@ export function movePiece(G: IG, ctx: any, moveFrom: ICoord, moveTo: ICoord): IG
   }
 }
 
-function signAgreement(G: IG, ctxIgnored: any) {
+function signAgreement(G: IG, ctx: any) {
+  if (ctx.currentPlayer === '0') {
+    return {
+      ...G,
+      player0Agreed: true,
+    }
+  }
   return {
     ...G,
-    playersAgreed: true,
+    player1Agreed: true,
+  }
+}
+
+function setAdvantage(G: IG, ctxIgnored: any, advantage: string) {
+  const newAdvantage = G.advantageSet.concat(advantage);
+  let newPlayer0Agreed = false;
+  let newPlayer1Agreed = false;
+  if (ctxIgnored.currentPlayer === '0') {
+    newPlayer0Agreed = true;
+  } else {
+    newPlayer1Agreed = true;
+  }
+  return {
+    ...G,
+    advantageSet: newAdvantage,
+    player0Agreed: newPlayer0Agreed,
+    player1Agreed: newPlayer1Agreed,
   }
 }
 
@@ -435,13 +460,16 @@ export const KaticaGame = {
   setup: (): IG => ({
     board: createBasicStartBoard(initialBoardAsList),
     piecesPlaced: 18,
-    playersAgreed: false,
+    player0Agreed: false,
+    player1Agreed: false,
+    advantageSet: '',
   }),
 
   minPlayers: 2,
   maxPlayers: 2,
 
   moves: {
+    setAdvantage,
     signAgreement,
     placePiece,
     movePiece,
@@ -454,8 +482,8 @@ export const KaticaGame = {
   phases: {
     Advantage: {
       start: true,
-      moves: { placePiece, signAgreement },
-      endIf: (G: IG) => G.playersAgreed,
+      moves: { placePiece, signAgreement, setAdvantage },
+      endIf: (G: IG) => (G.player0Agreed && G.player1Agreed),
       next: Phase.Move,
     },
     Move: {
