@@ -180,6 +180,18 @@ function sortStartCoords(startCoords: ICoord[]): ICoord[] {
   return sortedCoords;
 }
 
+function createDummyAlternateStartBoard(originalStartBoard: Piece[]): Piece[] {
+  const alternateStartBoard = [...originalStartBoard];
+  alternateStartBoard[1] = EMPTY_FIELD;
+  alternateStartBoard[2] = EMPTY_FIELD;
+  alternateStartBoard[3] = EMPTY_FIELD;
+  alternateStartBoard[4] = EMPTY_FIELD;
+
+  alternateStartBoard[38] = EMPTY_FIELD;
+
+  return alternateStartBoard;
+}
+
 function createBasicStartBoard(boardAsList: any[]): Piece[] {
   const boardMatrix: Piece[][] = Array(COLUMNS).fill(null).map(() => Array(ROWS).fill(null));
   boardAsList.forEach((cell, index) => {
@@ -425,45 +437,66 @@ export function movePiece(G: IG, ctx: any, moveFrom: ICoord, moveTo: ICoord): IG
 }
 
 function signAgreement(G: IG, ctx: any) {
+  let newPlayer0Agreed = G.player0Agreed;
+  let newPlayer1Agreed = G.player1Agreed;
   if (ctx.currentPlayer === '0') {
-    return {
-      ...G,
-      player0Agreed: true,
-    }
-  }
-  return {
-    ...G,
-    player1Agreed: true,
-  }
-}
-
-function setAdvantage(G: IG, ctxIgnored: any, advantage: string) {
-  const newAdvantage = G.advantageSet.concat(advantage);
-  let newPlayer0Agreed = false;
-  let newPlayer1Agreed = false;
-  if (ctxIgnored.currentPlayer === '0') {
     newPlayer0Agreed = true;
   } else {
     newPlayer1Agreed = true;
   }
   return {
     ...G,
+    player0Agreed: newPlayer0Agreed,
+    player1Agreed: newPlayer1Agreed,
+  }
+}
+
+function setAdvantage(G: IG, ctx: any, advantage: string, originalStartingBoard: Piece[]) {
+  const newAdvantage = G.advantageSet.concat(advantage);
+  let newPlayer0Agreed = false;
+  let newPlayer1Agreed = false;
+  let newBoard = originalStartingBoard;
+  if (ctx.currentPlayer === '0') {
+    newPlayer0Agreed = true;
+  } else {
+    newPlayer1Agreed = true;
+  }
+  if (newAdvantage === 'aaa') {
+    newBoard = createDummyAlternateStartBoard(originalStartingBoard);
+  }
+  return {
+    ...G,
+    board: newBoard,
     advantageSet: newAdvantage,
     player0Agreed: newPlayer0Agreed,
     player1Agreed: newPlayer1Agreed,
   }
 }
 
-export const KaticaGame = {
-  name: 'katica',
-
-  setup: (): IG => ({
-    board: createBasicStartBoard(initialBoardAsList),
+const setupGame = (ctx: any): IG => {
+  console.log('ctx', ctx);
+  const mainBoard = createBasicStartBoard(initialBoardAsList);
+  return {
+    board: mainBoard,
     piecesPlaced: 18,
     player0Agreed: false,
     player1Agreed: false,
     advantageSet: '',
-  }),
+  }
+}
+
+export const KaticaGame = {
+  name: 'katica',
+
+  // setup: (): IG => ({
+  //   board: createBasicStartBoard(initialBoardAsList),
+  //   piecesPlaced: 18,
+  //   player0Agreed: false,
+  //   player1Agreed: false,
+  //   advantageSet: '',
+  // }),
+
+  setup: setupGame,
 
   minPlayers: 2,
   maxPlayers: 2,

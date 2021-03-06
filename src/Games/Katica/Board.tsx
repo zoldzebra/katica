@@ -34,6 +34,7 @@ interface IBoardProps extends BoardProps, WithTranslation {
 interface IBoardState {
   selected: ICartesianCoords | null;
   validMovesHighlight: IColorMap;
+  originalStartingBoard: Piece[];
 }
 
 function roundCoords(coords: ICartesianCoords) {
@@ -46,7 +47,12 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
   state: IBoardState = {
     selected: null,
     validMovesHighlight: {},
+    originalStartingBoard: this.props.G.board,
   };
+
+  static getDerivedStateFromProps(propsIgnored: IBoardProps, stateIgnored: IBoardState) {
+    return null;
+  }
 
   isInverted = true;
 
@@ -259,7 +265,7 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
   }
 
   setAdvantage = (eventIgnored: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    this.props.moves.setAdvantage('a');
+    this.props.moves.setAdvantage('a', this.state.originalStartingBoard);
   }
 
   renderAgreement = (agreement: boolean) => {
@@ -272,6 +278,8 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
 
   renderAdvantage = () => {
     console.log('Board this.props', this.props);
+    console.log('Board this.state', this.state);
+
     if (!this.props.matchData) {
       console.log('BOARD: No matchdata found');
       return;
@@ -293,6 +301,7 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
           {this.renderAdvantage()}
           <button onClick={this.setAdvantage}>Set advantage</button>
           <button onClick={this.handleAgree}>I agree</button>
+          {this.renderBoard()}
         </div>
       )
     }

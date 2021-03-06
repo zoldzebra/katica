@@ -166,6 +166,15 @@ function sortStartCoords(startCoords) {
         .concat(leftRow);
     return sortedCoords;
 }
+function createDummyAlternateStartBoard(originalStartBoard) {
+    var alternateStartBoard = __spreadArrays(originalStartBoard);
+    alternateStartBoard[1] = EMPTY_FIELD;
+    alternateStartBoard[2] = EMPTY_FIELD;
+    alternateStartBoard[3] = EMPTY_FIELD;
+    alternateStartBoard[4] = EMPTY_FIELD;
+    alternateStartBoard[38] = EMPTY_FIELD;
+    return alternateStartBoard;
+}
 function createBasicStartBoard(boardAsList) {
     var boardMatrix = Array(COLUMNS).fill(null).map(function () { return Array(ROWS).fill(null); });
     boardAsList.forEach(function (cell, index) {
@@ -402,32 +411,53 @@ export function movePiece(G, ctx, moveFrom, moveTo) {
     }
 }
 function signAgreement(G, ctx) {
+    var newPlayer0Agreed = G.player0Agreed;
+    var newPlayer1Agreed = G.player1Agreed;
     if (ctx.currentPlayer === '0') {
-        return __assign(__assign({}, G), { player0Agreed: true });
-    }
-    return __assign(__assign({}, G), { player1Agreed: true });
-}
-function setAdvantage(G, ctxIgnored, advantage) {
-    var newAdvantage = G.advantageSet.concat(advantage);
-    var newPlayer0Agreed = false;
-    var newPlayer1Agreed = false;
-    if (ctxIgnored.currentPlayer === '0') {
         newPlayer0Agreed = true;
     }
     else {
         newPlayer1Agreed = true;
     }
-    return __assign(__assign({}, G), { advantageSet: newAdvantage, player0Agreed: newPlayer0Agreed, player1Agreed: newPlayer1Agreed });
+    return __assign(__assign({}, G), { player0Agreed: newPlayer0Agreed, player1Agreed: newPlayer1Agreed });
 }
-export var KaticaGame = {
-    name: 'katica',
-    setup: function () { return ({
-        board: createBasicStartBoard(initialBoardAsList),
+function setAdvantage(G, ctx, advantage, originalStartingBoard) {
+    var newAdvantage = G.advantageSet.concat(advantage);
+    var newPlayer0Agreed = false;
+    var newPlayer1Agreed = false;
+    var newBoard = originalStartingBoard;
+    if (ctx.currentPlayer === '0') {
+        newPlayer0Agreed = true;
+    }
+    else {
+        newPlayer1Agreed = true;
+    }
+    if (newAdvantage === 'aaa') {
+        newBoard = createDummyAlternateStartBoard(originalStartingBoard);
+    }
+    return __assign(__assign({}, G), { board: newBoard, advantageSet: newAdvantage, player0Agreed: newPlayer0Agreed, player1Agreed: newPlayer1Agreed });
+}
+var setupGame = function (ctx) {
+    console.log('ctx', ctx);
+    var mainBoard = createBasicStartBoard(initialBoardAsList);
+    return {
+        board: mainBoard,
         piecesPlaced: 18,
         player0Agreed: false,
         player1Agreed: false,
         advantageSet: '',
-    }); },
+    };
+};
+export var KaticaGame = {
+    name: 'katica',
+    // setup: (): IG => ({
+    //   board: createBasicStartBoard(initialBoardAsList),
+    //   piecesPlaced: 18,
+    //   player0Agreed: false,
+    //   player1Agreed: false,
+    //   advantageSet: '',
+    // }),
+    setup: setupGame,
     minPlayers: 2,
     maxPlayers: 2,
     moves: {
