@@ -1,6 +1,5 @@
 import { INVALID_MOVE } from 'boardgame.io/core';
 
-
 import * as R from 'ramda';
 
 export enum Phase {
@@ -124,15 +123,16 @@ function getStartingPieces(): Piece[] {
   return pieces;
 }
 
-function shufflePieces(pieces: Piece[]): Piece[] {
+function shufflePieces(pieces: Piece[], ctx: any): Piece[] {
   for (let i = pieces.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(ctx.random.Number() * (i + 1));
     [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
   }
+
   return pieces;
 }
 
-function createStartingOrder(startingPieces: Piece[]): Piece[] {
+function createStartingOrder(startingPieces: Piece[], ctx: any): Piece[] {
   // TODO generate 2 pieces arrays already...
   const startingOrder: Piece[] = [];
   const player0Pieces: Piece[] = [];
@@ -144,7 +144,7 @@ function createStartingOrder(startingPieces: Piece[]): Piece[] {
       player1Pieces.push(piece);
     }
   });
-  [player0Pieces, player1Pieces].forEach(pieces => shufflePieces(pieces));
+  [player0Pieces, player1Pieces].forEach(pieces => shufflePieces(pieces, ctx));
   for (let i = 0; i < startingPieces.length; i++) {
     if (i % 2 === 0) {
       startingOrder.push(player0Pieces[Math.floor(i / 2)]);
@@ -186,19 +186,26 @@ function createDummyAlternateStartBoard(originalStartBoard: Piece[]): Piece[] {
   alternateStartBoard[2] = EMPTY_FIELD;
   alternateStartBoard[3] = EMPTY_FIELD;
   alternateStartBoard[4] = EMPTY_FIELD;
+  alternateStartBoard[5] = EMPTY_FIELD;
+  alternateStartBoard[6] = EMPTY_FIELD;
+  alternateStartBoard[7] = EMPTY_FIELD;
+
 
   alternateStartBoard[38] = EMPTY_FIELD;
+  alternateStartBoard[37] = EMPTY_FIELD;
+  alternateStartBoard[36] = EMPTY_FIELD;
+  alternateStartBoard[35] = EMPTY_FIELD;
 
   return alternateStartBoard;
 }
 
-function createBasicStartBoard(boardAsList: any[]): Piece[] {
+function createBasicStartBoard(boardAsList: any[], ctx: any): Piece[] {
   const boardMatrix: Piece[][] = Array(COLUMNS).fill(null).map(() => Array(ROWS).fill(null));
   boardAsList.forEach((cell, index) => {
     const coords = toCoord(index);
     boardMatrix[coords.x][coords.y] = cell;
   });
-  const piecesInStartingOrder = createStartingOrder(getStartingPieces());
+  const piecesInStartingOrder = createStartingOrder(getStartingPieces(), ctx);
   const startCoords: ICoord[] = [];
   // get table edge coords
   for (let col = 0; col < COLUMNS; col++) {
@@ -473,11 +480,13 @@ function setAdvantage(G: IG, ctx: any, advantage: string, originalStartingBoard:
   }
 }
 
+
+
 const setupGame = (ctx: any): IG => {
-  console.log('ctx', ctx);
-  const mainBoard = createBasicStartBoard(initialBoardAsList);
+  const mainBoard = createBasicStartBoard(initialBoardAsList, ctx);
   return {
     board: mainBoard,
+    // piecesPlaced no longer needed
     piecesPlaced: 18,
     player0Agreed: false,
     player1Agreed: false,
@@ -485,16 +494,10 @@ const setupGame = (ctx: any): IG => {
   }
 }
 
+
+
 export const KaticaGame = {
   name: 'katica',
-
-  // setup: (): IG => ({
-  //   board: createBasicStartBoard(initialBoardAsList),
-  //   piecesPlaced: 18,
-  //   player0Agreed: false,
-  //   player1Agreed: false,
-  //   advantageSet: '',
-  // }),
 
   setup: setupGame,
 

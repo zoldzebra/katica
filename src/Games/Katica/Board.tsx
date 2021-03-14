@@ -21,7 +21,14 @@ import {
   IColorMap,
   cartesianToAlgebraic,
 } from './CheckerboardCustom';
+import { getObjectFromLocalStorage, mergeToObjectInLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
+import { StoredMatchCredentials } from '../../components/Lobby/MatchDetails';
 
+export const STARTING_BOARDS = 'katicaStartingBoards';
+
+interface StoredStartingBoards {
+  [key: string]: Piece[];
+}
 interface IBoardProps extends BoardProps, WithTranslation {
   G: IG;
   ctx: any;
@@ -34,7 +41,7 @@ interface IBoardProps extends BoardProps, WithTranslation {
 interface IBoardState {
   selected: ICartesianCoords | null;
   validMovesHighlight: IColorMap;
-  originalStartingBoard: Piece[];
+  // originalStartingBoard: Piece[];
 }
 
 function roundCoords(coords: ICartesianCoords) {
@@ -47,11 +54,43 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
   state: IBoardState = {
     selected: null,
     validMovesHighlight: {},
-    originalStartingBoard: this.props.G.board,
   };
 
-  static getDerivedStateFromProps(propsIgnored: IBoardProps, stateIgnored: IBoardState) {
-    return null;
+  componentDidMount = () => {
+    const startingBoards = getObjectFromLocalStorage(STARTING_BOARDS) as StoredStartingBoards || undefined;
+    if (!startingBoards || !startingBoards[this.props.matchID]) {
+      mergeToObjectInLocalStorage(STARTING_BOARDS, {
+        [this.props.matchID]: this.props.G.board
+      });
+    }
+    this.syncStartingBoardsWithMatchCredentials();
+  }
+
+  getStartingBoardFromLocalStorage = () => {
+    const startingBoards = getObjectFromLocalStorage(STARTING_BOARDS) as StoredStartingBoards || undefined;
+    if (!startingBoards || !startingBoards[this.props.matchID]) {
+      throw new Error('Starting board in localStorage not found!');
+      return;
+    }
+    return startingBoards[this.props.matchID];
+  }
+
+  syncStartingBoardsWithMatchCredentials = () => {
+    const matchCredentials = getObjectFromLocalStorage(USER_MATCH_CREDENTIALS) as StoredMatchCredentials || undefined;
+    const startingBoards = getObjectFromLocalStorage(STARTING_BOARDS) as StoredStartingBoards || undefined;
+    if (!matchCredentials || !startingBoards) {
+      return
+    }
+    const userMatchIds = Object.keys(matchCredentials);
+    const startingBoardMatchIds = Object.keys(startingBoards);
+    const syncedStartingBoards: StoredStartingBoards = {};
+
+    userMatchIds.forEach(matchId => {
+      if (startingBoardMatchIds.includes(matchId)) {
+        syncedStartingBoards[matchId] = startingBoards[matchId];
+      }
+    })
+    localStorage.setItem(STARTING_BOARDS, JSON.stringify(syncedStartingBoards));
   }
 
   isInverted = true;
@@ -265,7 +304,7 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
   }
 
   setAdvantage = (eventIgnored: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    this.props.moves.setAdvantage('a', this.state.originalStartingBoard);
+    this.props.moves.setAdvantage('a', this.getStartingBoardFromLocalStorage());
   }
 
   renderAgreement = (agreement: boolean) => {
@@ -277,8 +316,8 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
   }
 
   renderAdvantage = () => {
-    console.log('Board this.props', this.props);
-    console.log('Board this.state', this.state);
+    // console.log('Board this.props', this.props);
+    // console.log('Board this.state', this.state);
 
     if (!this.props.matchData) {
       console.log('BOARD: No matchdata found');
