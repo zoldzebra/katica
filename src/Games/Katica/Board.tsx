@@ -23,6 +23,7 @@ import {
 } from './CheckerboardCustom';
 import { getObjectFromLocalStorage, mergeToObjectInLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
 import { StoredMatchCredentials } from '../../components/Lobby/MatchDetails';
+import { AdvantageSelector } from './AdvantageSelector';
 
 export const STARTING_BOARDS = 'katicaStartingBoards';
 
@@ -307,11 +308,16 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
     this.props.moves.setAdvantage('a', this.getStartingBoardFromLocalStorage());
   }
 
+
+  setAdvantage2 = (advantageLevel: string) => {
+    this.props.moves.setAdvantage(advantageLevel, this.getStartingBoardFromLocalStorage());
+  }
+
   renderAgreement = (agreement: boolean) => {
     return (
-      <div>
+      <>
         {agreement ? 'OK' : 'NOOOO!'}
-      </div>
+      </>
     )
   }
 
@@ -340,6 +346,9 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
           {this.renderAdvantage()}
           <button onClick={this.setAdvantage}>Set advantage</button>
           <button onClick={this.handleAgree}>I agree</button>
+          <AdvantageSelector
+            setAdvantage={this.setAdvantage2}
+          />
           {this.renderBoard()}
         </div>
       )

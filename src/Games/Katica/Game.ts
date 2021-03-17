@@ -459,7 +459,7 @@ function signAgreement(G: IG, ctx: any) {
 }
 
 function setAdvantage(G: IG, ctx: any, advantage: string, originalStartingBoard: Piece[]) {
-  const newAdvantage = G.advantageSet.concat(advantage);
+  // const newAdvantage = G.advantageSet.concat(advantage);
   let newPlayer0Agreed = false;
   let newPlayer1Agreed = false;
   let newBoard = originalStartingBoard;
@@ -468,13 +468,13 @@ function setAdvantage(G: IG, ctx: any, advantage: string, originalStartingBoard:
   } else {
     newPlayer1Agreed = true;
   }
-  if (newAdvantage === 'aaa') {
+  if (advantage === '-3') {
     newBoard = createDummyAlternateStartBoard(originalStartingBoard);
   }
   return {
     ...G,
     board: newBoard,
-    advantageSet: newAdvantage,
+    advantageSet: advantage,
     player0Agreed: newPlayer0Agreed,
     player1Agreed: newPlayer1Agreed,
   }
