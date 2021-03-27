@@ -107,15 +107,15 @@ function getStartingPieces() {
     });
     return pieces;
 }
-function shufflePieces(pieces) {
+function shufflePieces(pieces, ctx) {
     var _a;
     for (var i = pieces.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
+        var j = Math.floor(ctx.random.Number() * (i + 1));
         _a = [pieces[j], pieces[i]], pieces[i] = _a[0], pieces[j] = _a[1];
     }
     return pieces;
 }
-function createStartingOrder(startingPieces) {
+function createStartingOrder(startingPieces, ctx) {
     // TODO generate 2 pieces arrays already...
     var startingOrder = [];
     var player0Pieces = [];
@@ -128,7 +128,7 @@ function createStartingOrder(startingPieces) {
             player1Pieces.push(piece);
         }
     });
-    [player0Pieces, player1Pieces].forEach(function (pieces) { return shufflePieces(pieces); });
+    [player0Pieces, player1Pieces].forEach(function (pieces) { return shufflePieces(pieces, ctx); });
     for (var i = 0; i < startingPieces.length; i++) {
         if (i % 2 === 0) {
             startingOrder.push(player0Pieces[Math.floor(i / 2)]);
@@ -172,16 +172,22 @@ function createDummyAlternateStartBoard(originalStartBoard) {
     alternateStartBoard[2] = EMPTY_FIELD;
     alternateStartBoard[3] = EMPTY_FIELD;
     alternateStartBoard[4] = EMPTY_FIELD;
+    alternateStartBoard[5] = EMPTY_FIELD;
+    alternateStartBoard[6] = EMPTY_FIELD;
+    alternateStartBoard[7] = EMPTY_FIELD;
     alternateStartBoard[38] = EMPTY_FIELD;
+    alternateStartBoard[37] = EMPTY_FIELD;
+    alternateStartBoard[36] = EMPTY_FIELD;
+    alternateStartBoard[35] = EMPTY_FIELD;
     return alternateStartBoard;
 }
-function createBasicStartBoard(boardAsList) {
+function createBasicStartBoard(boardAsList, ctx) {
     var boardMatrix = Array(COLUMNS).fill(null).map(function () { return Array(ROWS).fill(null); });
     boardAsList.forEach(function (cell, index) {
         var coords = toCoord(index);
         boardMatrix[coords.x][coords.y] = cell;
     });
-    var piecesInStartingOrder = createStartingOrder(getStartingPieces());
+    var piecesInStartingOrder = createStartingOrder(getStartingPieces(), ctx);
     var startCoords = [];
     // get table edge coords
     for (var col = 0; col < COLUMNS; col++) {
@@ -411,6 +417,7 @@ export function movePiece(G, ctx, moveFrom, moveTo) {
     }
 }
 function signAgreement(G, ctx) {
+    console.log('signAgreement ran.');
     var newPlayer0Agreed = G.player0Agreed;
     var newPlayer1Agreed = G.player1Agreed;
     if (ctx.currentPlayer === '0') {
@@ -422,7 +429,7 @@ function signAgreement(G, ctx) {
     return __assign(__assign({}, G), { player0Agreed: newPlayer0Agreed, player1Agreed: newPlayer1Agreed });
 }
 function setAdvantage(G, ctx, advantage, originalStartingBoard) {
-    var newAdvantage = G.advantageSet.concat(advantage);
+    // const newAdvantage = G.advantageSet.concat(advantage);
     var newPlayer0Agreed = false;
     var newPlayer1Agreed = false;
     var newBoard = originalStartingBoard;
@@ -432,16 +439,28 @@ function setAdvantage(G, ctx, advantage, originalStartingBoard) {
     else {
         newPlayer1Agreed = true;
     }
-    if (newAdvantage === 'aaa') {
+    if (advantage === '-3') {
         newBoard = createDummyAlternateStartBoard(originalStartingBoard);
     }
-    return __assign(__assign({}, G), { board: newBoard, advantageSet: newAdvantage, player0Agreed: newPlayer0Agreed, player1Agreed: newPlayer1Agreed });
+    return __assign(__assign({}, G), { board: newBoard, advantageSet: advantage, player0Agreed: newPlayer0Agreed, player1Agreed: newPlayer1Agreed });
+}
+function setMatchType(G, ctx, isAdvantageMatch) {
+    var newPlayer0Agreed = false;
+    var newPlayer1Agreed = false;
+    if (ctx.currentPlayer === '0') {
+        newPlayer0Agreed = true;
+    }
+    else {
+        newPlayer1Agreed = true;
+    }
+    return __assign(__assign({}, G), { isAdvantageMatch: isAdvantageMatch, player0Agreed: newPlayer0Agreed, player1Agreed: newPlayer1Agreed });
 }
 var setupGame = function (ctx) {
-    console.log('ctx', ctx);
-    var mainBoard = createBasicStartBoard(initialBoardAsList);
+    var mainBoard = createBasicStartBoard(initialBoardAsList, ctx);
     return {
         board: mainBoard,
+        // piecesPlaced no longer needed
+        isAdvantageMatch: false,
         piecesPlaced: 18,
         player0Agreed: false,
         player1Agreed: false,
@@ -450,17 +469,11 @@ var setupGame = function (ctx) {
 };
 export var KaticaGame = {
     name: 'katica',
-    // setup: (): IG => ({
-    //   board: createBasicStartBoard(initialBoardAsList),
-    //   piecesPlaced: 18,
-    //   player0Agreed: false,
-    //   player1Agreed: false,
-    //   advantageSet: '',
-    // }),
     setup: setupGame,
     minPlayers: 2,
     maxPlayers: 2,
     moves: {
+        setMatchType: setMatchType,
         setAdvantage: setAdvantage,
         signAgreement: signAgreement,
         placePiece: placePiece,
@@ -470,8 +483,19 @@ export var KaticaGame = {
         moveLimit: 1,
     },
     phases: {
-        Advantage: {
+        MatchType: {
             start: true,
+            moves: { setMatchType: setMatchType, signAgreement: signAgreement },
+            endIf: function (G) {
+                if (G.player0Agreed && G.player1Agreed) {
+                    return { next: G.isAdvantageMatch ? 'Advantage' : 'Move' };
+                }
+            },
+            onEnd: function (G) {
+                return __assign(__assign({}, G), { player0Agreed: false, player1Agreed: false });
+            }
+        },
+        Advantage: {
             moves: { placePiece: placePiece, signAgreement: signAgreement, setAdvantage: setAdvantage },
             endIf: function (G) { return (G.player0Agreed && G.player1Agreed); },
             next: Phase.Move,

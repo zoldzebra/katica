@@ -15,6 +15,7 @@ export interface Piece {
 
 export interface IG {
   board: Piece[];
+  isAdvantageMatch: boolean;
   piecesPlaced: number;
   player0Agreed: boolean;
   player1Agreed: boolean;
@@ -444,6 +445,7 @@ export function movePiece(G: IG, ctx: any, moveFrom: ICoord, moveTo: ICoord): IG
 }
 
 function signAgreement(G: IG, ctx: any) {
+  console.log('signAgreement ran.');
   let newPlayer0Agreed = G.player0Agreed;
   let newPlayer1Agreed = G.player1Agreed;
   if (ctx.currentPlayer === '0') {
@@ -480,21 +482,34 @@ function setAdvantage(G: IG, ctx: any, advantage: string, originalStartingBoard:
   }
 }
 
-
+function setMatchType(G: IG, ctx: any, isAdvantageMatch: boolean) {
+  let newPlayer0Agreed = false;
+  let newPlayer1Agreed = false;
+  if (ctx.currentPlayer === '0') {
+    newPlayer0Agreed = true;
+  } else {
+    newPlayer1Agreed = true;
+  }
+  return {
+    ...G,
+    isAdvantageMatch,
+    player0Agreed: newPlayer0Agreed,
+    player1Agreed: newPlayer1Agreed,
+  }
+}
 
 const setupGame = (ctx: any): IG => {
   const mainBoard = createBasicStartBoard(initialBoardAsList, ctx);
   return {
     board: mainBoard,
     // piecesPlaced no longer needed
+    isAdvantageMatch: false,
     piecesPlaced: 18,
     player0Agreed: false,
     player1Agreed: false,
     advantageSet: '',
   }
 }
-
-
 
 export const KaticaGame = {
   name: 'katica',
@@ -505,6 +520,7 @@ export const KaticaGame = {
   maxPlayers: 2,
 
   moves: {
+    setMatchType,
     setAdvantage,
     signAgreement,
     placePiece,
@@ -516,8 +532,23 @@ export const KaticaGame = {
   },
 
   phases: {
-    Advantage: {
+    MatchType: {
       start: true,
+      moves: { setMatchType, signAgreement },
+      endIf: (G: IG) => {
+        if (G.player0Agreed && G.player1Agreed) {
+          return { next: G.isAdvantageMatch ? 'Advantage' : 'Move' }
+        }
+      },
+      onEnd: (G: IG) => {
+        return {
+          ...G,
+          player0Agreed: false,
+          player1Agreed: false,
+        }
+      }
+    },
+    Advantage: {
       moves: { placePiece, signAgreement, setAdvantage },
       endIf: (G: IG) => (G.player0Agreed && G.player1Agreed),
       next: Phase.Move,

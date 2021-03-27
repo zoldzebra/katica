@@ -24,6 +24,7 @@ import {
 import { getObjectFromLocalStorage, mergeToObjectInLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
 import { StoredMatchCredentials } from '../../components/Lobby/MatchDetails';
 import { AdvantageSelector } from './AdvantageSelector';
+import { MatchTypeSelector } from './MatchTypeSelector';
 
 export const STARTING_BOARDS = 'katicaStartingBoards';
 
@@ -313,10 +314,14 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
     this.props.moves.setAdvantage(advantageLevel, this.getStartingBoardFromLocalStorage());
   }
 
+  setMatchType = (isAdvantageMatch: boolean) => {
+    this.props.moves.setMatchType(isAdvantageMatch);
+  }
+
   renderAgreement = (agreement: boolean) => {
     return (
       <>
-        {agreement ? 'OK' : 'NOOOO!'}
+        {agreement ? 'Lets go!' : 'Let me see...'}
       </>
     )
   }
@@ -331,7 +336,6 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
     }
     return (
       <div>
-        <p>Advantage = {this.props.G.advantageSet}</p>
         <p>{this.props.matchData[0].name as string}: {this.renderAgreement(this.props.G.player0Agreed)}</p>
         <p>{this.props.matchData[1].name as string}: {this.renderAgreement(this.props.G.player1Agreed)}</p>
       </div>
@@ -339,6 +343,19 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
   }
 
   render() {
+    if (this.props.ctx.phase === 'MatchType') {
+      return (
+        <div>
+          {this.renderStatus(this.getStatus())}
+          <MatchTypeSelector
+            signAgreement={this.handleAgree}
+            setMatchType={this.setMatchType}
+            isAdvantageMatch={this.props.G.isAdvantageMatch}
+          />
+          {this.renderAdvantage()}
+        </div>
+      )
+    }
     if (this.props.ctx.phase === 'Advantage') {
       return (
         <div>
