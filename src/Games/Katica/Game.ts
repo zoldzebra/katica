@@ -511,6 +511,10 @@ const setupGame = (ctx: any): IG => {
   }
 }
 
+const nextPlayerTurn = (ctx: any): number => {
+  return (ctx.playOrderPos + 1) % ctx.numPlayers;
+}
+
 export const KaticaGame = {
   name: 'katica',
 
@@ -555,6 +559,17 @@ export const KaticaGame = {
     },
     Move: {
       moves: { movePiece },
+      turn: {
+        order: {
+          first: (G: IG, ctx: any) => {
+            if (!G.isAdvantageMatch) {
+              return Math.round(ctx.random.Number());
+            }
+            return nextPlayerTurn(ctx);
+          },
+          next: (ctx: any) => nextPlayerTurn(ctx),
+        }
+      }
     },
   },
 
