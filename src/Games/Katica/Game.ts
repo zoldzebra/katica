@@ -16,6 +16,7 @@ export interface Piece {
 export interface IG {
   board: Piece[];
   isAdvantageMatch: boolean;
+  matchStarter: string;
   piecesPlaced: number;
   player0Agreed: boolean;
   player1Agreed: boolean;
@@ -498,12 +499,29 @@ function setMatchType(G: IG, ctx: any, isAdvantageMatch: boolean) {
   }
 }
 
+function setMatchStarter(G: IG, ctx: any, matchStarter: string) {
+  let newPlayer0Agreed = false;
+  let newPlayer1Agreed = false;
+  if (ctx.currentPlayer === '0') {
+    newPlayer0Agreed = true;
+  } else {
+    newPlayer1Agreed = true;
+  }
+  return {
+    ...G,
+    matchStarter,
+    player0Agreed: newPlayer0Agreed,
+    player1Agreed: newPlayer1Agreed,
+  }
+}
+
 const setupGame = (ctx: any): IG => {
   const mainBoard = createBasicStartBoard(initialBoardAsList, ctx);
   return {
     board: mainBoard,
     // piecesPlaced no longer needed
     isAdvantageMatch: false,
+    matchStarter: ctx.playOrder[0],
     piecesPlaced: 18,
     player0Agreed: false,
     player1Agreed: false,
@@ -541,7 +559,7 @@ export const KaticaGame = {
       moves: { setMatchType, signAgreement },
       endIf: (G: IG) => {
         if (G.player0Agreed && G.player1Agreed) {
-          return { next: G.isAdvantageMatch ? 'Advantage' : 'Move' }
+          return { next: G.isAdvantageMatch ? 'MatchStarter' : 'Move' }
         }
       },
       onEnd: (G: IG) => {
@@ -552,8 +570,8 @@ export const KaticaGame = {
         }
       }
     },
-    Advantage: {
-      moves: { placePiece, signAgreement, setAdvantage },
+    MatchStarter: {
+      moves: { setMatchStarter, signAgreement },
       endIf: (G: IG) => (G.player0Agreed && G.player1Agreed),
       next: Phase.Move,
     },

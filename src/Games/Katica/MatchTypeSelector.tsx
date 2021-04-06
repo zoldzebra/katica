@@ -15,7 +15,7 @@ export const MatchTypeSelector: FC<MatchTypeSelectorProps> = (props) => {
   };
 
 
-  const renderRadioButtonsByMatchTypes = () => {
+  const renderAdvantageSelector = () => {
     return (
       <Switch
         checked={isAdvantageMatch}
@@ -27,7 +27,7 @@ export const MatchTypeSelector: FC<MatchTypeSelectorProps> = (props) => {
   return (
     <div>
       <p>Advantage match?</p>
-      {renderRadioButtonsByMatchTypes()}
+      {renderAdvantageSelector()}
       <button onClick={signAgreement}>OK for me!</button>
     </div>
   );

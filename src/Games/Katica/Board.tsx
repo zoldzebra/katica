@@ -23,7 +23,8 @@ import {
 } from './CheckerboardCustom';
 import { getObjectFromLocalStorage, mergeToObjectInLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
 import { StoredMatchCredentials } from '../../components/Lobby/MatchDetails';
-import { AdvantageSelector } from './AdvantageSelector';
+// import { AdvantageSelector } from './AdvantageSelector';
+import { MatchStarterSelector } from './MatchStarterSelector';
 import { MatchTypeSelector } from './MatchTypeSelector';
 
 export const STARTING_BOARDS = 'katicaStartingBoards';
@@ -318,6 +319,10 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
     this.props.moves.setMatchType(isAdvantageMatch);
   }
 
+  setMatchStarter = (matchStarter: string) => {
+    this.props.moves.setMatchStarter(matchStarter);
+  }
+
   renderAgreement = (agreement: boolean) => {
     return (
       <>
@@ -326,8 +331,8 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
     )
   }
 
-  renderAdvantage = () => {
-    // console.log('Board this.props', this.props);
+  renderAgreementStatus = () => {
+    console.log('Board this.props.matchData', this.props.matchData && this.props.matchData);
     // console.log('Board this.state', this.state);
 
     if (!this.props.matchData) {
@@ -352,20 +357,24 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
             setMatchType={this.setMatchType}
             isAdvantageMatch={this.props.G.isAdvantageMatch}
           />
-          {this.renderAdvantage()}
+          {this.renderAgreementStatus()}
         </div>
       )
     }
-    if (this.props.ctx.phase === 'Advantage') {
+    if (this.props.ctx.phase === 'MatchStarter') {
       return (
         <div>
           {this.renderStatus(this.getStatus())}
-          {this.renderAdvantage()}
-          <button onClick={this.setAdvantage}>Set advantage</button>
-          <button onClick={this.handleAgree}>I agree</button>
-          <AdvantageSelector
-            setAdvantage={this.setAdvantage2}
+          <MatchStarterSelector
+            signAgreement={this.handleAgree}
+            setMatchStarter={this.setMatchStarter}
+            matchStarter={this.props.G.matchStarter}
+            playerNames={[
+              'Lajos',
+              'Petya',
+            ]}
           />
+          {this.renderAgreementStatus()}
           {this.renderBoard()}
         </div>
       )
