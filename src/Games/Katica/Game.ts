@@ -578,6 +578,7 @@ export const KaticaGame = {
     Move: {
       moves: { movePiece },
       turn: {
+        moveLimit: 1,
         order: {
           first: (G: IG, ctx: any) => {
             if (!G.isAdvantageMatch) {
@@ -585,7 +586,7 @@ export const KaticaGame = {
             }
             return nextPlayerTurn(ctx);
           },
-          next: (ctx: any) => nextPlayerTurn(ctx),
+          next: (GIgnored: IG, ctx: any) => nextPlayerTurn(ctx),
         }
       }
     },

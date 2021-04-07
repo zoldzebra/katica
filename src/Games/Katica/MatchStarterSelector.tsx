@@ -19,14 +19,17 @@ export const MatchStarterSelector: FC<MatchStarterSelectorProps> = (props) => {
   const renderStarterSelector = () => {
     return playerNames.map((player, index) => {
       return (
-        <Radio
-          key={player}
-          checked={Number(matchStarter) === index}
-          onChange={handleChange}
-          value={index.toString(10)}
-          color="default"
-          size="small"
-        />
+        <>
+          {playerNames[index]}
+          <Radio
+            key={player}
+            checked={Number(matchStarter) === index}
+            onChange={handleChange}
+            value={index.toString(10)}
+            color="default"
+            size="small"
+          />
+        </>
       )
     })
   };
@@ -34,7 +37,6 @@ export const MatchStarterSelector: FC<MatchStarterSelectorProps> = (props) => {
   return (
     <div>
       <p>Who shall start the match?</p>
-      {matchStarter}
       {renderStarterSelector()}
       <button onClick={signAgreement}>OK for me!</button>
     </div>

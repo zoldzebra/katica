@@ -44,7 +44,6 @@ interface IBoardProps extends BoardProps, WithTranslation {
 interface IBoardState {
   selected: ICartesianCoords | null;
   validMovesHighlight: IColorMap;
-  // originalStartingBoard: Piece[];
 }
 
 function roundCoords(coords: ICartesianCoords) {
@@ -332,7 +331,7 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
   }
 
   renderAgreementStatus = () => {
-    console.log('Board this.props.matchData', this.props.matchData && this.props.matchData);
+    console.log('Board this.props', this.props);
     // console.log('Board this.state', this.state);
 
     if (!this.props.matchData) {
@@ -341,11 +340,25 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
     }
     return (
       <div>
-        <p>{this.props.matchData[0].name as string}: {this.renderAgreement(this.props.G.player0Agreed)}</p>
-        <p>{this.props.matchData[1].name as string}: {this.renderAgreement(this.props.G.player1Agreed)}</p>
+        <p>{this.playerNames[0]}: {this.renderAgreement(this.props.G.player0Agreed)}</p>
+        <p>{this.playerNames[1]}: {this.renderAgreement(this.props.G.player1Agreed)}</p>
       </div>
     )
   }
+
+  getPlayerNames = () => {
+    if (!this.props.matchData
+      || !this.props.matchData[0].name
+      || !this.props.matchData[1].name
+      || !this.props.playerID) {
+      return ['Player0', 'Player1'];
+    }
+    const rawNames = [this.props.matchData[0].name, this.props.matchData[1].name];
+    rawNames[Number(this.props.playerID)] = `${rawNames[Number(this.props.playerID)]} (You)`;
+    return rawNames;
+  }
+
+  playerNames = this.getPlayerNames();
 
   render() {
     if (this.props.ctx.phase === 'MatchType') {
@@ -369,10 +382,7 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
             signAgreement={this.handleAgree}
             setMatchStarter={this.setMatchStarter}
             matchStarter={this.props.G.matchStarter}
-            playerNames={[
-              'Lajos',
-              'Petya',
-            ]}
+            playerNames={this.playerNames}
           />
           {this.renderAgreementStatus()}
           {this.renderBoard()}

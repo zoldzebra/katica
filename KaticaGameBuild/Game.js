@@ -455,17 +455,32 @@ function setMatchType(G, ctx, isAdvantageMatch) {
     }
     return __assign(__assign({}, G), { isAdvantageMatch: isAdvantageMatch, player0Agreed: newPlayer0Agreed, player1Agreed: newPlayer1Agreed });
 }
+function setMatchStarter(G, ctx, matchStarter) {
+    var newPlayer0Agreed = false;
+    var newPlayer1Agreed = false;
+    if (ctx.currentPlayer === '0') {
+        newPlayer0Agreed = true;
+    }
+    else {
+        newPlayer1Agreed = true;
+    }
+    return __assign(__assign({}, G), { matchStarter: matchStarter, player0Agreed: newPlayer0Agreed, player1Agreed: newPlayer1Agreed });
+}
 var setupGame = function (ctx) {
     var mainBoard = createBasicStartBoard(initialBoardAsList, ctx);
     return {
         board: mainBoard,
         // piecesPlaced no longer needed
         isAdvantageMatch: false,
+        matchStarter: ctx.playOrder[0],
         piecesPlaced: 18,
         player0Agreed: false,
         player1Agreed: false,
         advantageSet: '',
     };
+};
+var nextPlayerTurn = function (ctx) {
+    return (ctx.playOrderPos + 1) % ctx.numPlayers;
 };
 export var KaticaGame = {
     name: 'katica',
@@ -488,20 +503,32 @@ export var KaticaGame = {
             moves: { setMatchType: setMatchType, signAgreement: signAgreement },
             endIf: function (G) {
                 if (G.player0Agreed && G.player1Agreed) {
-                    return { next: G.isAdvantageMatch ? 'Advantage' : 'Move' };
+                    return { next: G.isAdvantageMatch ? 'MatchStarter' : 'Move' };
                 }
             },
             onEnd: function (G) {
                 return __assign(__assign({}, G), { player0Agreed: false, player1Agreed: false });
             }
         },
-        Advantage: {
-            moves: { placePiece: placePiece, signAgreement: signAgreement, setAdvantage: setAdvantage },
+        MatchStarter: {
+            moves: { setMatchStarter: setMatchStarter, signAgreement: signAgreement },
             endIf: function (G) { return (G.player0Agreed && G.player1Agreed); },
             next: Phase.Move,
         },
         Move: {
             moves: { movePiece: movePiece },
+            turn: {
+                moveLimit: 1,
+                order: {
+                    first: function (G, ctx) {
+                        if (!G.isAdvantageMatch) {
+                            return Math.round(ctx.random.Number());
+                        }
+                        return nextPlayerTurn(ctx);
+                    },
+                    next: function (GIgnored, ctx) { return nextPlayerTurn(ctx); },
+                }
+            }
         },
     },
     endIf: function (G, ctx) {
