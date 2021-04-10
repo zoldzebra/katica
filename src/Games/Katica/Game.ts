@@ -584,7 +584,7 @@ export const KaticaGame = {
             if (!G.isAdvantageMatch) {
               return Math.round(ctx.random.Number());
             }
-            return nextPlayerTurn(ctx);
+            return Number(G.matchStarter);
           },
           next: (GIgnored: IG, ctx: any) => nextPlayerTurn(ctx),
         }

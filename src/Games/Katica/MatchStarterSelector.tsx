@@ -19,17 +19,16 @@ export const MatchStarterSelector: FC<MatchStarterSelectorProps> = (props) => {
   const renderStarterSelector = () => {
     return playerNames.map((player, index) => {
       return (
-        <>
+        <div key={player}>
           {playerNames[index]}
           <Radio
-            key={player}
             checked={Number(matchStarter) === index}
             onChange={handleChange}
             value={index.toString(10)}
             color="default"
             size="small"
           />
-        </>
+        </div>
       )
     })
   };
