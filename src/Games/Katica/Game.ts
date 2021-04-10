@@ -4,6 +4,7 @@ import * as R from 'ramda';
 
 export enum Phase {
   MatchType = 'MatchType',
+  ChooseColor = 'ChooseColor',
   MatchStarter = 'MatchStarter',
   SetAdvantage = 'SetAdvantage',
   Move = 'Move',
@@ -18,10 +19,11 @@ export interface Piece {
 export interface IG {
   board: Piece[];
   isAdvantageMatch: boolean;
+  isPlayer0Red: boolean;
   matchStarter: string;
+  advantage: string;
   player0Agreed: boolean;
   player1Agreed: boolean;
-  advantage: string;
 }
 
 interface ICoord {
@@ -498,10 +500,11 @@ const setupGame = (ctx: any): IG => {
   return {
     board: mainBoard,
     isAdvantageMatch: false,
+    isPlayer0Red: true,
     matchStarter: ctx.playOrder[0],
+    advantage: '',
     player0Agreed: false,
     player1Agreed: false,
-    advantage: '',
   }
 }
 
@@ -535,7 +538,7 @@ export const KaticaGame = {
       moves: { setMatchType, signAgreement },
       endIf: (G: IG) => {
         if (G.player0Agreed && G.player1Agreed) {
-          return { next: G.isAdvantageMatch ? Phase.MatchStarter : Phase.Move }
+          return { next: G.isAdvantageMatch ? Phase.ChooseColor : Phase.Move }
         }
       },
       onEnd: (G: IG) => {
@@ -545,6 +548,17 @@ export const KaticaGame = {
           player1Agreed: false,
         }
       }
+    },
+    ChooseColor: {
+      endIf: (G: IG) => (G.player0Agreed && G.player1Agreed),
+      onEnd: (G: IG) => {
+        return {
+          ...G,
+          player0Agreed: false,
+          player1Agreed: false,
+        }
+      },
+      next: Phase.MatchStarter,
     },
     MatchStarter: {
       moves: { setMatchStarter, signAgreement },

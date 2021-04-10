@@ -24,10 +24,18 @@ import {
 import { getObjectFromLocalStorage, mergeToObjectInLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
 import { StoredMatchCredentials } from '../../components/Lobby/MatchDetails';
 import { AdvantageSelector } from './AdvantageSelector';
+import { ColorSelector } from './ColorSelector';
 import { MatchStarterSelector } from './MatchStarterSelector';
 import { MatchTypeSelector } from './MatchTypeSelector';
 
 export const STARTING_BOARDS = 'katicaStartingBoards';
+
+type Color = typeof Color[keyof typeof Color]
+export const Color = {
+  red: red[900],
+  orange: orange[500],
+  grey: grey[900],
+} as const;
 
 interface StoredStartingBoards {
   [key: string]: Piece[];
@@ -224,27 +232,27 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
     if (piece.data.pieceType === 1) {
       return (
         <g>
-          <circle r="0.4" fill={piece.data.player === 0 ? red[900] : orange[500]} cx="0.5" cy="0.5" />
-          <circle r="0.1" fill={grey[900]} cx="0.5" cy="0.5" />
+          <circle r="0.4" fill={piece.data.player === 0 ? Color.red : Color.orange} cx="0.5" cy="0.5" />
+          <circle r="0.1" fill={Color.grey} cx="0.5" cy="0.5" />
         </g>
       )
     }
     if (piece.data.pieceType === 2) {
       return (
         <g>
-          <circle r="0.4" fill={piece.data.player === 0 ? red[900] : orange[500]} cx="0.5" cy="0.5" />
-          <circle r="0.1" fill={grey[900]} cx="0.35" cy="0.5" />
-          <circle r="0.1" fill={grey[900]} cx="0.65" cy="0.5" />
+          <circle r="0.4" fill={piece.data.player === 0 ? Color.red : Color.orange} cx="0.5" cy="0.5" />
+          <circle r="0.1" fill={Color.grey} cx="0.35" cy="0.5" />
+          <circle r="0.1" fill={Color.grey} cx="0.65" cy="0.5" />
         </g>
       )
     }
     if (piece.data.pieceType === 3) {
       return (
         <g>
-          <circle r="0.4" fill={piece.data.player === 0 ? red[900] : orange[500]} cx="0.5" cy="0.5" />
-          <circle r="0.1" fill={grey[900]} cx="0.35" cy="0.6" />
-          <circle r="0.1" fill={grey[900]} cx="0.65" cy="0.6" />
-          <circle r="0.1" fill={grey[900]} cx="0.5" cy="0.35" />
+          <circle r="0.4" fill={piece.data.player === 0 ? Color.red : Color.orange} cx="0.5" cy="0.5" />
+          <circle r="0.1" fill={Color.grey} cx="0.35" cy="0.6" />
+          <circle r="0.1" fill={Color.grey} cx="0.65" cy="0.6" />
+          <circle r="0.1" fill={Color.grey} cx="0.5" cy="0.35" />
         </g>
       )
     }
@@ -271,6 +279,13 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
           </Token>
         );
       });
+  }
+
+  isPlayerWithRedColor = () => {
+    const isRed = (this.props.playerID === '0' && this.props.G.isPlayer0Red)
+      || (this.props.playerID === '1' && !this.props.G.isPlayer0Red);
+
+    return isRed;
   }
 
   renderBoard = () => {
@@ -366,6 +381,20 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
             isAdvantageMatch={this.props.G.isAdvantageMatch}
           />
           {this.renderAgreementStatus()}
+        </div>
+      )
+    }
+    if (this.props.ctx.phase === 'ChooseColor') {
+      return (
+        <div>
+          {this.renderStatus(this.getStatus())}
+          <ColorSelector
+            signAgreement={this.handleAgree}
+            isPlayer0Red={this.props.G.isPlayer0Red}
+            playerNames={this.playerNames}
+          />
+          {this.renderAgreementStatus()}
+          {this.renderBoard()}
         </div>
       )
     }

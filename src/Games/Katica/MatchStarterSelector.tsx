@@ -17,10 +17,10 @@ export const MatchStarterSelector: FC<MatchStarterSelectorProps> = (props) => {
 
 
   const renderStarterSelector = () => {
-    return playerNames.map((player, index) => {
+    return playerNames.map((playerName, index) => {
       return (
-        <div key={player}>
-          {playerNames[index]}
+        <div key={playerName}>
+          {playerName}
           <Radio
             checked={Number(matchStarter) === index}
             onChange={handleChange}
