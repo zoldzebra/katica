@@ -2,28 +2,26 @@ import React, { FC } from 'react';
 import Radio from '@material-ui/core/Radio';
 
 interface AdvantageSelectorProps {
+  signAgreement: (eventIgnored: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   setAdvantage: (advantageLevel: string) => any;
+  advantage: string;
 }
 
 export const AdvantageSelector: FC<AdvantageSelectorProps> = (props) => {
-  const { setAdvantage } = props;
-  const [selectedValue, setSelectedValue] = React.useState('-6');
+  const { setAdvantage, signAgreement, advantage } = props;
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedValue(event.target.value);
     setAdvantage(event.target.value);
   };
 
-  const advantageLevels = [
-    '-6', '-5', '-4', '-3', '-2', '-1', '1', '2', '3', '4', '5', '6'
-  ];
+  const advantageLevels = ['1', '2', '3', '4', '5', '6'];
 
   const renderRadioButtonsByAdvantageLevels = () => {
     return advantageLevels.map(level => {
       return (
         <Radio
           key={level}
-          checked={selectedValue === level}
+          checked={level === advantage}
           onChange={handleChange}
           value={level}
           color="default"
@@ -38,6 +36,7 @@ export const AdvantageSelector: FC<AdvantageSelectorProps> = (props) => {
       YOU
       {renderRadioButtonsByAdvantageLevels()}
       OPPONENT
+      <button onClick={signAgreement}>OK for me!</button>
     </div>
   );
 }

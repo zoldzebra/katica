@@ -3,7 +3,9 @@ import { INVALID_MOVE } from 'boardgame.io/core';
 import * as R from 'ramda';
 
 export enum Phase {
-  Place = 'Place',
+  MatchType = 'MatchType',
+  MatchStarter = 'MatchStarter',
+  SetAdvantage = 'SetAdvantage',
   Move = 'Move',
 }
 
@@ -17,10 +19,9 @@ export interface IG {
   board: Piece[];
   isAdvantageMatch: boolean;
   matchStarter: string;
-  piecesPlaced: number;
   player0Agreed: boolean;
   player1Agreed: boolean;
-  advantageSet: string;
+  advantage: string;
 }
 
 interface ICoord {
@@ -319,29 +320,6 @@ export function areCoordsEqual(a: ICoord, b: ICoord): boolean {
   return a.x === b.x && a.y === b.y;
 }
 
-export function placePiece(G: IG, ctx: any, boardIndex: number): IG {
-  const board = [...G.board];
-  let pieceType = null;
-  if (ctx.turn < 2) {
-    pieceType = 1;
-  } else if (ctx.turn >= 2 && ctx.turn < 4) {
-    pieceType = 2;
-  } else {
-    pieceType = 3;
-  }
-  board[boardIndex] = {
-    id: ctx.turn,
-    player: Number(ctx.currentPlayer),
-    pieceType,
-  };
-  const newG: IG = {
-    ...G,
-    board,
-    piecesPlaced: G.piecesPlaced + 1,
-  }
-  return { ...newG };
-}
-
 export function getValidMoves(G: IG, ctx: any, moveFrom: ICoord): ICoord[] | null {
   const board = [...G.board];
   const actualPieceType = board[toIndex(moveFrom)].pieceType;
@@ -471,13 +449,13 @@ function setAdvantage(G: IG, ctx: any, advantage: string, originalStartingBoard:
   } else {
     newPlayer1Agreed = true;
   }
-  if (advantage === '-3') {
+  if (advantage === '3') {
     newBoard = createDummyAlternateStartBoard(originalStartingBoard);
   }
   return {
     ...G,
     board: newBoard,
-    advantageSet: advantage,
+    advantage,
     player0Agreed: newPlayer0Agreed,
     player1Agreed: newPlayer1Agreed,
   }
@@ -519,13 +497,11 @@ const setupGame = (ctx: any): IG => {
   const mainBoard = createBasicStartBoard(initialBoardAsList, ctx);
   return {
     board: mainBoard,
-    // piecesPlaced no longer needed
     isAdvantageMatch: false,
     matchStarter: ctx.playOrder[0],
-    piecesPlaced: 18,
     player0Agreed: false,
     player1Agreed: false,
-    advantageSet: '',
+    advantage: '',
   }
 }
 
@@ -543,9 +519,9 @@ export const KaticaGame = {
 
   moves: {
     setMatchType,
+    setMatchStarter,
     setAdvantage,
     signAgreement,
-    placePiece,
     movePiece,
   },
 
@@ -559,7 +535,7 @@ export const KaticaGame = {
       moves: { setMatchType, signAgreement },
       endIf: (G: IG) => {
         if (G.player0Agreed && G.player1Agreed) {
-          return { next: G.isAdvantageMatch ? 'MatchStarter' : 'Move' }
+          return { next: G.isAdvantageMatch ? Phase.MatchStarter : Phase.Move }
         }
       },
       onEnd: (G: IG) => {
@@ -573,7 +549,19 @@ export const KaticaGame = {
     MatchStarter: {
       moves: { setMatchStarter, signAgreement },
       endIf: (G: IG) => (G.player0Agreed && G.player1Agreed),
-      next: Phase.Move,
+      onEnd: (G: IG) => {
+        return {
+          ...G,
+          player0Agreed: false,
+          player1Agreed: false,
+        }
+      },
+      next: Phase.SetAdvantage,
+    },
+    SetAdvantage: {
+      moves: { setAdvantage, signAgreement },
+      endIf: (G: IG) => (G.player0Agreed && G.player1Agreed),
+      next: Phase.Move
     },
     Move: {
       moves: { movePiece },

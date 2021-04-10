@@ -23,7 +23,7 @@ import {
 } from './CheckerboardCustom';
 import { getObjectFromLocalStorage, mergeToObjectInLocalStorage, USER_MATCH_CREDENTIALS } from '../../utils/localStorageHelper';
 import { StoredMatchCredentials } from '../../components/Lobby/MatchDetails';
-// import { AdvantageSelector } from './AdvantageSelector';
+import { AdvantageSelector } from './AdvantageSelector';
 import { MatchStarterSelector } from './MatchStarterSelector';
 import { MatchTypeSelector } from './MatchTypeSelector';
 
@@ -305,13 +305,8 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
     this.props.moves.signAgreement();
   }
 
-  setAdvantage = (eventIgnored: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    this.props.moves.setAdvantage('a', this.getStartingBoardFromLocalStorage());
-  }
-
-
-  setAdvantage2 = (advantageLevel: string) => {
-    this.props.moves.setAdvantage(advantageLevel, this.getStartingBoardFromLocalStorage());
+  setAdvantage = (advantage: string) => {
+    this.props.moves.setAdvantage(advantage, this.getStartingBoardFromLocalStorage());
   }
 
   setMatchType = (isAdvantageMatch: boolean) => {
@@ -383,6 +378,20 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
             setMatchStarter={this.setMatchStarter}
             matchStarter={this.props.G.matchStarter}
             playerNames={this.playerNames}
+          />
+          {this.renderAgreementStatus()}
+          {this.renderBoard()}
+        </div>
+      )
+    }
+    if (this.props.ctx.phase === 'SetAdvantage') {
+      return (
+        <div>
+          {this.renderStatus(this.getStatus())}
+          <AdvantageSelector
+            signAgreement={this.handleAgree}
+            setAdvantage={this.setAdvantage}
+            advantage={this.props.G.advantage}
           />
           {this.renderAgreementStatus()}
           {this.renderBoard()}
