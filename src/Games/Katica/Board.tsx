@@ -8,7 +8,11 @@ import blue from '@material-ui/core/colors/blue';
 import orange from '@material-ui/core/colors/orange';
 import { withTranslation, WithTranslation } from 'react-i18next';
 
-import { IG, Piece, EMPTY_FIELD, toCoord, toIndex, getValidMoves } from './Game';
+import { IG } from './Game';
+import { Piece } from './GameCreateStartingBoard';
+import { toCoord, toIndex } from './GameCoordCalculations';
+import { getValidMoves } from './GamePieceMoves';
+import { EMPTY_FIELD } from './GameConstants';
 import { Token } from '@freeboardgame.org/boardgame.io/ui';
 import { BoardProps } from "boardgame.io/react";
 import {

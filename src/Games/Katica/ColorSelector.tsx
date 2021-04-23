@@ -11,17 +11,12 @@ interface ColorSelectorProps {
 export const ColorSelector: FC<ColorSelectorProps> = (props) => {
   const { signAgreement, isPlayer0Red, playerNames } = props;
 
-  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setMatchType(event.target.checked);
-  // };
-
   const isPlayerWithRedColor = (playerId: number, isPlayer0Red: boolean) => {
     const isRed = (playerId === 0 && isPlayer0Red)
       || (playerId === 1 && !isPlayer0Red);
 
     return isRed;
   }
-
 
   const renderColorSetting = () => {
     return playerNames.map((playerName, index) => {

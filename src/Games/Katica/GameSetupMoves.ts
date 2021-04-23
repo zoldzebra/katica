@@ -1,0 +1,71 @@
+import { IG } from './Game';
+import { Piece, createDummyAlternateStartBoard } from './GameCreateStartingBoard';
+
+export function signAgreement(G: IG, ctx: any) {
+  console.log('signAgreement ran.');
+  let newPlayer0Agreed = G.player0Agreed;
+  let newPlayer1Agreed = G.player1Agreed;
+  if (ctx.currentPlayer === '0') {
+    newPlayer0Agreed = true;
+  } else {
+    newPlayer1Agreed = true;
+  }
+  return {
+    ...G,
+    player0Agreed: newPlayer0Agreed,
+    player1Agreed: newPlayer1Agreed,
+  }
+}
+
+export function setAdvantage(G: IG, ctx: any, advantage: string, originalStartingBoard: Piece[]) {
+  let newPlayer0Agreed = false;
+  let newPlayer1Agreed = false;
+  let newBoard = originalStartingBoard;
+  if (ctx.currentPlayer === '0') {
+    newPlayer0Agreed = true;
+  } else {
+    newPlayer1Agreed = true;
+  }
+  if (advantage === '3') {
+    newBoard = createDummyAlternateStartBoard(originalStartingBoard);
+  }
+  return {
+    ...G,
+    board: newBoard,
+    advantage,
+    player0Agreed: newPlayer0Agreed,
+    player1Agreed: newPlayer1Agreed,
+  }
+}
+
+export function setMatchType(G: IG, ctx: any, isAdvantageMatch: boolean) {
+  let newPlayer0Agreed = false;
+  let newPlayer1Agreed = false;
+  if (ctx.currentPlayer === '0') {
+    newPlayer0Agreed = true;
+  } else {
+    newPlayer1Agreed = true;
+  }
+  return {
+    ...G,
+    isAdvantageMatch,
+    player0Agreed: newPlayer0Agreed,
+    player1Agreed: newPlayer1Agreed,
+  }
+}
+
+export function setMatchStarter(G: IG, ctx: any, matchStarter: string) {
+  let newPlayer0Agreed = false;
+  let newPlayer1Agreed = false;
+  if (ctx.currentPlayer === '0') {
+    newPlayer0Agreed = true;
+  } else {
+    newPlayer1Agreed = true;
+  }
+  return {
+    ...G,
+    matchStarter,
+    player0Agreed: newPlayer0Agreed,
+    player1Agreed: newPlayer1Agreed,
+  }
+}
