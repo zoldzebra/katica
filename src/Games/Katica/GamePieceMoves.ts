@@ -5,6 +5,11 @@ import { IG } from './Game';
 import { ICoord, toIndex, areCoordsEqual } from './GameCoordCalculations';
 import { ALL_MOVES, EMPTY_FIELD } from './GameConstants';
 
+interface PlayerColors {
+  actualPlayer: number,
+  otherPlayer: number,
+}
+
 export function getValidMoves(G: IG, ctx: any, moveFrom: ICoord): ICoord[] | null {
   const board = [...G.board];
   const actualPieceType = board[toIndex(moveFrom)].pieceType;
@@ -16,6 +21,8 @@ export function getValidMoves(G: IG, ctx: any, moveFrom: ICoord): ICoord[] | nul
     return null;
   }
 
+  const playerColors = getActualPlayerColors(G.isPlayer0Red, Number(ctx.currentPlayer));
+
   const possibleMoves = ALL_MOVES[moveSet]
     .map(move => {
       const newX = moveFrom.x + move.x;
@@ -25,10 +32,11 @@ export function getValidMoves(G: IG, ctx: any, moveFrom: ICoord): ICoord[] | nul
         y: newY,
       }
     })
+    // TODO: use constants here
     .filter(coords => (coords.x <= 5 && coords.x >= 0) && (coords.y <= 6 && coords.y >= 0))
-    .filter(coords => board[toIndex(coords)].player !== Number(ctx.currentPlayer));
-  const otherPlayer = ctx.currentPlayer === '0' ? 1 : 0;
-  const opponentFields = possibleMoves.filter(coords => board[toIndex(coords)].player === otherPlayer);
+    .filter(coords => board[toIndex(coords)].color !== playerColors.actualPlayer);
+
+  const opponentFields = possibleMoves.filter(coords => board[toIndex(coords)].color === playerColors.otherPlayer);
   // dont jump over opponent + cant move over (knock out) too close opp
   let validMoves: ICoord[] = [];
   if (opponentFields) {
@@ -106,4 +114,18 @@ export function movePiece(G: IG, ctx: any, moveFrom: ICoord, moveTo: ICoord): IG
     }
     return { ...newG };
   }
+}
+
+export const getActualPlayerColors = (isPlayer0Red: boolean, currentPlayer: number): PlayerColors => {
+  if (isPlayer0Red && currentPlayer === 0
+    || !isPlayer0Red && currentPlayer === 1) {
+    return {
+      actualPlayer: 0,
+      otherPlayer: 1,
+    };
+  }
+  return {
+    actualPlayer: 1,
+    otherPlayer: 0,
+  };
 }

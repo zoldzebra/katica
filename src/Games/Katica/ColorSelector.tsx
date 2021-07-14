@@ -4,19 +4,19 @@ import { Color } from './Board';
 
 interface ColorSelectorProps {
   signAgreement: (eventIgnored: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  switchPlayerColors: () => void;
   isPlayer0Red: boolean;
   playerNames: string[];
 }
 
 export const ColorSelector: FC<ColorSelectorProps> = (props) => {
-  const { signAgreement, isPlayer0Red, playerNames } = props;
+  const { signAgreement, switchPlayerColors, isPlayer0Red, playerNames } = props;
 
-  const isPlayerWithRedColor = (playerId: number, isPlayer0Red: boolean) => {
-    const isRed = (playerId === 0 && isPlayer0Red)
-      || (playerId === 1 && !isPlayer0Red);
-
-    return isRed;
+  const handleChangeSide = (eventIgnored: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    switchPlayerColors();
   }
+
+  const playerColors = [isPlayer0Red, !isPlayer0Red];
 
   const renderColorSetting = () => {
     return playerNames.map((playerName, index) => {
@@ -29,7 +29,7 @@ export const ColorSelector: FC<ColorSelectorProps> = (props) => {
                 r="10"
                 cx="10"
                 cy="10"
-                fill={isPlayerWithRedColor(index, isPlayer0Red) ? Color.red : Color.orange}
+                fill={playerColors[index] ? Color.red : Color.orange}
               />
             </g>
           </svg>
@@ -42,6 +42,7 @@ export const ColorSelector: FC<ColorSelectorProps> = (props) => {
     <div>
       <p>Choose color!</p>
       {renderColorSetting()}
+      <button onClick={handleChangeSide}>Switch sides!</button>
       <button onClick={signAgreement}>OK for me!</button>
     </div>
   );

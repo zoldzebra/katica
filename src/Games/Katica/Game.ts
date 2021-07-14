@@ -2,7 +2,7 @@
 import {
   Piece,
   createBasicStartBoard,
-  initialBoardAsList,
+  emptyBoardAsList,
 } from './GameCreateStartingBoard';
 import { movePiece } from './GamePieceMoves';
 import { getMatchResult } from './GameResult';
@@ -11,6 +11,7 @@ import {
   setAdvantage,
   setMatchType,
   setMatchStarter,
+  switchPlayerColors,
 } from './GameSetupMoves';
 
 export enum Phase {
@@ -32,7 +33,7 @@ export interface IG {
 }
 
 const setupGame = (ctx: any): IG => {
-  const mainBoard = createBasicStartBoard(initialBoardAsList, ctx);
+  const mainBoard = createBasicStartBoard(emptyBoardAsList, ctx);
   return {
     board: mainBoard,
     isAdvantageMatch: false,
@@ -62,6 +63,7 @@ export const KaticaGame = {
 
   moves: {
     setMatchType,
+    switchPlayerColors,
     setMatchStarter,
     setAdvantage,
     signAgreement,
@@ -90,6 +92,7 @@ export const KaticaGame = {
       }
     },
     ChooseColor: {
+      moves: { switchPlayerColors, signAgreement },
       endIf: (G: IG) => (isBothPlayersAgreed(G)),
       onEnd: (G: IG) => {
         return {

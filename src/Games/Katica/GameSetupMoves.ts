@@ -69,3 +69,20 @@ export function setMatchStarter(G: IG, ctx: any, matchStarter: string) {
     player1Agreed: newPlayer1Agreed,
   }
 }
+
+export function switchPlayerColors(G: IG, ctx: any) {
+  let newPlayer0Agreed = false;
+  let newPlayer1Agreed = false;
+  if (ctx.currentPlayer === '0') {
+    newPlayer0Agreed = true;
+  } else {
+    newPlayer1Agreed = true;
+  }
+  const newIsPlayer0Red = !G.isPlayer0Red;
+  return {
+    ...G,
+    isPlayer0Red: newIsPlayer0Red,
+    player0Agreed: newPlayer0Agreed,
+    player1Agreed: newPlayer1Agreed,
+  }
+}

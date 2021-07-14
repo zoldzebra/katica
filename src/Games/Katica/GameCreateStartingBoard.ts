@@ -1,26 +1,27 @@
 import { ICoord, toCoord, toIndex } from './GameCoordCalculations';
 import { EMPTY_FIELD, ROWS, COLUMNS } from './GameConstants';
 
-export const initialBoardAsList = Array(ROWS * COLUMNS).fill(EMPTY_FIELD);
+export const emptyBoardAsList = Array(ROWS * COLUMNS).fill(EMPTY_FIELD);
+
+export const COLORS = [0, 1];  // 0 = red, 1 = orange
+const PIECE_TYPES = [1, 2, 3];
+const PIECES_BY_PIECE_TYPE = 3;
 
 export interface Piece {
   id: number | null,
-  player: number | null,
+  color: number | null,
   pieceType: number | null,
 }
 
 export function getStartingPieces(): Piece[] {
-  const players = [0, 1];
-  const pieceTypes = [1, 2, 3];
-  const piecesPerPieceType = 3;
   let id = 0;
   const pieces: Piece[] = [];
-  players.forEach(player => {
-    pieceTypes.forEach(pieceType => {
-      for (let i = 0; i < piecesPerPieceType; i++) {
+  COLORS.forEach(color => {
+    PIECE_TYPES.forEach(pieceType => {
+      for (let i = 0; i < PIECES_BY_PIECE_TYPE; i++) {
         pieces.push({
           id,
-          player,
+          color,
           pieceType,
         });
         id += 1;
@@ -43,21 +44,21 @@ export function shufflePieces(pieces: Piece[], ctx: any): Piece[] {
 export function createStartingOrder(startingPieces: Piece[], ctx: any): Piece[] {
   // TODO generate 2 pieces arrays already...
   const startingOrder: Piece[] = [];
-  const player0Pieces: Piece[] = [];
-  const player1Pieces: Piece[] = [];
+  const redPieces: Piece[] = [];
+  const orangePieces: Piece[] = [];
   startingPieces.forEach(piece => {
-    if (piece.player === 0) {
-      player0Pieces.push(piece);
+    if (piece.color === 0) {
+      redPieces.push(piece);
     } else {
-      player1Pieces.push(piece);
+      orangePieces.push(piece);
     }
   });
-  [player0Pieces, player1Pieces].forEach(pieces => shufflePieces(pieces, ctx));
+  [redPieces, orangePieces].forEach(pieces => shufflePieces(pieces, ctx));
   for (let i = 0; i < startingPieces.length; i++) {
     if (i % 2 === 0) {
-      startingOrder.push(player0Pieces[Math.floor(i / 2)]);
+      startingOrder.push(redPieces[Math.floor(i / 2)]);
     } else {
-      startingOrder.push(player1Pieces[Math.floor(i / 2)]);
+      startingOrder.push(orangePieces[Math.floor(i / 2)]);
     }
   }
   return startingOrder;

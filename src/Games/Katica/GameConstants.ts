@@ -3,7 +3,7 @@ export const COLUMNS = 6;
 
 export const EMPTY_FIELD = {
   id: null,
-  player: null,
+  color: null,
   pieceType: null,
 };
 
