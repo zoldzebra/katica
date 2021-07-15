@@ -27,7 +27,7 @@ export interface IG {
   isAdvantageMatch: boolean;
   isPlayer0Red: boolean;
   matchStarter: string;
-  advantage: string;
+  advantage: number;
   player0Agreed: boolean;
   player1Agreed: boolean;
 }
@@ -39,7 +39,7 @@ const setupGame = (ctx: any): IG => {
     isAdvantageMatch: false,
     isPlayer0Red: true,
     matchStarter: ctx.playOrder[0],
-    advantage: '',
+    advantage: 0,
     player0Agreed: false,
     player1Agreed: false,
   }

@@ -325,7 +325,7 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
     this.props.moves.signAgreement();
   }
 
-  setAdvantage = (advantage: string) => {
+  setAdvantage = (advantage: number) => {
     this.props.moves.setAdvantage(advantage, this.getStartingBoardFromLocalStorage());
   }
 

@@ -1,5 +1,12 @@
 import { ICoord, toCoord, toIndex } from './GameCoordCalculations';
 import { EMPTY_FIELD, ROWS, COLUMNS } from './GameConstants';
+import {
+  advantageBoardLevel1,
+  advantageBoardLevel2,
+  advantageBoardLevel3,
+  advantageBoardLevel4,
+  advantageBoardLevel5
+} from './GameAdvantageBoardMutations';
 
 export const emptyBoardAsList = Array(ROWS * COLUMNS).fill(EMPTY_FIELD);
 
@@ -107,6 +114,32 @@ export function createDummyAlternateStartBoard(originalStartBoard: Piece[]): Pie
 
   return alternateStartBoard;
 }
+
+export function createAdvantageStartBoard(
+  originalStartBoard: Piece[],
+  advantage: number,
+  starterColor: number,
+): Piece[] {
+  const board = [...originalStartBoard];
+
+  switch (advantage) {
+    case 0:
+      return board;
+    case 1:
+      return advantageBoardLevel1(board, starterColor);
+    case 2:
+      return advantageBoardLevel2(board, starterColor);
+    case 3:
+      return advantageBoardLevel3(board, starterColor);
+    case 4:
+      return advantageBoardLevel4(board, starterColor);
+    case 5:
+      return advantageBoardLevel5(board, starterColor);
+    default:
+      return board;
+  }
+}
+
 
 export function createBasicStartBoard(boardAsList: any[], ctx: any): Piece[] {
   const boardMatrix: Piece[][] = Array(COLUMNS).fill(null).map(() => Array(ROWS).fill(null));

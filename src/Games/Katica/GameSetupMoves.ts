@@ -1,5 +1,6 @@
 import { IG } from './Game';
-import { Piece, createDummyAlternateStartBoard } from './GameCreateStartingBoard';
+import { Piece, createAdvantageStartBoard } from './GameCreateStartingBoard';
+import { getActualPlayerColors } from './GamePieceMoves';
 
 export function signAgreement(G: IG, ctx: any) {
   console.log('signAgreement ran.');
@@ -17,7 +18,7 @@ export function signAgreement(G: IG, ctx: any) {
   }
 }
 
-export function setAdvantage(G: IG, ctx: any, advantage: string, originalStartingBoard: Piece[]) {
+export function setAdvantage(G: IG, ctx: any, advantage: number, originalStartingBoard: Piece[]) {
   let newPlayer0Agreed = false;
   let newPlayer1Agreed = false;
   let newBoard = originalStartingBoard;
@@ -26,9 +27,9 @@ export function setAdvantage(G: IG, ctx: any, advantage: string, originalStartin
   } else {
     newPlayer1Agreed = true;
   }
-  if (advantage === '3') {
-    newBoard = createDummyAlternateStartBoard(originalStartingBoard);
-  }
+  const starterColor = getActualPlayerColors(G.isPlayer0Red, Number(G.matchStarter));
+  newBoard = createAdvantageStartBoard(originalStartingBoard, advantage, starterColor.actualPlayer);
+
   return {
     ...G,
     board: newBoard,
