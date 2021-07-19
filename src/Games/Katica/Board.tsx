@@ -1,6 +1,5 @@
 import * as React from 'react';
 import * as R from 'ramda';
-import Typography from '@material-ui/core/Typography';
 import red from '@material-ui/core/colors/red';
 import green from '@material-ui/core/colors/green';
 import grey from '@material-ui/core/colors/grey';
@@ -31,6 +30,9 @@ import { AdvantageSelector } from './AdvantageSelector';
 import { ColorSelector } from './ColorSelector';
 import { MatchStarterSelector } from './MatchStarterSelector';
 import { MatchTypeSelector } from './MatchTypeSelector';
+import { MatchSetupWrapper } from './MatchSetupWrapper';
+import { MatchDisplayWrapper } from './MatchDisplayWrapper';
+
 
 export const STARTING_BOARDS = 'katicaStartingBoards';
 
@@ -310,17 +312,6 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
     )
   }
 
-  renderStatus = (status: string) => {
-    if (status === '') {
-      return null;
-    }
-    return (
-      <Typography variant="h5" style={{ textAlign: 'center', marginBottom: '16px' }}>
-        {status}
-      </Typography>
-    )
-  }
-
   handleAgree = (eventIgnored: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     this.props.moves.signAgreement();
   }
@@ -341,30 +332,6 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
     this.props.moves.setMatchStarter(matchStarter);
   }
 
-  renderAgreement = (agreement: boolean) => {
-    return (
-      <>
-        {agreement ? 'Lets go!' : 'Let me see...'}
-      </>
-    )
-  }
-
-  renderAgreementStatus = () => {
-    console.log('Board this.props', this.props);
-    // console.log('Board this.state', this.state);
-
-    if (!this.props.matchData) {
-      console.log('BOARD: No matchdata found');
-      return;
-    }
-    return (
-      <div>
-        <p>{this.playerNames[0]}: {this.renderAgreement(this.props.G.player0Agreed)}</p>
-        <p>{this.playerNames[1]}: {this.renderAgreement(this.props.G.player1Agreed)}</p>
-      </div>
-    )
-  }
-
   getPlayerNames = () => {
     let rawNames: string[] = [];
     if (!this.props.matchData
@@ -381,79 +348,105 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
   }
 
   playerNames = this.getPlayerNames();
+  playerAgreement = [this.props.G.player0Agreed, this.props.G.player1Agreed];
 
   render() {
     if (this.props.ctx.phase === 'MatchType') {
       return (
-        <div>
-          {this.renderStatus(this.getStatus())}
-          <MatchTypeSelector
-            signAgreement={this.handleAgree}
-            setMatchType={this.setMatchType}
-            isAdvantageMatch={this.props.G.isAdvantageMatch}
-          />
-          {this.renderAgreementStatus()}
-        </div>
+        <MatchDisplayWrapper
+          status={this.getStatus()}
+          matchSetup={
+            <MatchSetupWrapper
+              playerNames={this.playerNames}
+              playerAgreement={this.playerAgreement}
+              signAgreement={this.handleAgree}
+            >
+              <MatchTypeSelector
+                setMatchType={this.setMatchType}
+                isAdvantageMatch={this.props.G.isAdvantageMatch}
+              />
+            </MatchSetupWrapper>
+          }
+          board={this.renderBoard()}
+        ></MatchDisplayWrapper>
       )
     }
     if (this.props.ctx.phase === 'ChooseColor') {
       return (
-        <div>
-          {this.renderStatus(this.getStatus())}
-          <ColorSelector
-            signAgreement={this.handleAgree}
-            switchPlayerColors={this.switchPlayerColors}
-            isPlayer0Red={this.props.G.isPlayer0Red}
-            playerNames={this.playerNames}
-          />
-          {this.renderAgreementStatus()}
-          {this.renderBoard()}
-        </div>
+        <MatchDisplayWrapper
+          status={this.getStatus()}
+          matchSetup={
+            <MatchSetupWrapper
+              playerNames={this.playerNames}
+              playerAgreement={this.playerAgreement}
+              signAgreement={this.handleAgree}
+            >
+              <ColorSelector
+                switchPlayerColors={this.switchPlayerColors}
+                isPlayer0Red={this.props.G.isPlayer0Red}
+                playerNames={this.playerNames}
+              />
+            </MatchSetupWrapper>
+          }
+          board={this.renderBoard()}
+        ></MatchDisplayWrapper>
       )
     }
     if (this.props.ctx.phase === 'MatchStarter') {
       return (
-        <div>
-          {this.renderStatus(this.getStatus())}
-          <MatchStarterSelector
-            signAgreement={this.handleAgree}
-            setMatchStarter={this.setMatchStarter}
-            matchStarter={this.props.G.matchStarter}
-            playerNames={this.playerNames}
-          />
-          {this.renderAgreementStatus()}
-          {this.renderBoard()}
-        </div>
+        <MatchDisplayWrapper
+          status={this.getStatus()}
+          matchSetup={
+            <MatchSetupWrapper
+              playerNames={this.playerNames}
+              playerAgreement={this.playerAgreement}
+              signAgreement={this.handleAgree}
+            >
+              <MatchStarterSelector
+                setMatchStarter={this.setMatchStarter}
+                matchStarter={this.props.G.matchStarter}
+                playerNames={this.playerNames}
+              />
+            </MatchSetupWrapper>
+          }
+          board={this.renderBoard()}
+        ></MatchDisplayWrapper>
       )
     }
     if (this.props.ctx.phase === 'SetAdvantage') {
       return (
-        <div>
-          {this.renderStatus(this.getStatus())}
-          <AdvantageSelector
-            signAgreement={this.handleAgree}
-            setAdvantage={this.setAdvantage}
-            advantage={this.props.G.advantage}
-          />
-          {this.renderAgreementStatus()}
-          {this.renderBoard()}
-        </div>
+        <MatchDisplayWrapper
+          status={this.getStatus()}
+          matchSetup={
+            <MatchSetupWrapper
+              playerNames={this.playerNames}
+              playerAgreement={this.playerAgreement}
+              signAgreement={this.handleAgree}
+            >
+              <AdvantageSelector
+                setAdvantage={this.setAdvantage}
+                advantage={this.props.G.advantage}
+              />
+            </MatchSetupWrapper>
+          }
+          board={this.renderBoard()}
+        ></MatchDisplayWrapper>
       )
     }
 
     if (this.props.ctx.gameover) {
       return (
-        <div>
-          {this.renderStatus(this.getGameOver())}
-          {this.renderBoard()}
-        </div>
+        <MatchDisplayWrapper
+          status={this.getGameOver()}
+          board={this.renderBoard()}>
+        </MatchDisplayWrapper>
       );
     }
     return (
-      <div>
-        {this.renderStatus(this.getStatus())}
-        {this.renderBoard()}
-      </div>
+      <MatchDisplayWrapper
+        status={this.getStatus()}
+        board={this.renderBoard()}>
+      </MatchDisplayWrapper>
     );
   }
 }

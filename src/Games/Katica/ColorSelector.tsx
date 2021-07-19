@@ -3,14 +3,13 @@ import React, { FC } from 'react';
 import { Color } from './Board';
 
 interface ColorSelectorProps {
-  signAgreement: (eventIgnored: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   switchPlayerColors: () => void;
   isPlayer0Red: boolean;
   playerNames: string[];
 }
 
 export const ColorSelector: FC<ColorSelectorProps> = (props) => {
-  const { signAgreement, switchPlayerColors, isPlayer0Red, playerNames } = props;
+  const { switchPlayerColors, isPlayer0Red, playerNames } = props;
 
   const handleChangeSide = (eventIgnored: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     switchPlayerColors();
@@ -43,7 +42,6 @@ export const ColorSelector: FC<ColorSelectorProps> = (props) => {
       <p>Choose color!</p>
       {renderColorSetting()}
       <button onClick={handleChangeSide}>Switch sides!</button>
-      <button onClick={signAgreement}>OK for me!</button>
     </div>
   );
 }

@@ -38,7 +38,6 @@ export function getStartingPieces(): Piece[] {
   return pieces;
 }
 
-
 export function shufflePieces(pieces: Piece[], ctx: any): Piece[] {
   for (let i = pieces.length - 1; i > 0; i--) {
     const j = Math.floor(ctx.random.Number() * (i + 1));
@@ -96,25 +95,6 @@ export function sortStartCoords(startCoords: ICoord[]): ICoord[] {
   return sortedCoords;
 }
 
-export function createDummyAlternateStartBoard(originalStartBoard: Piece[]): Piece[] {
-  const alternateStartBoard = [...originalStartBoard];
-  alternateStartBoard[1] = EMPTY_FIELD;
-  alternateStartBoard[2] = EMPTY_FIELD;
-  alternateStartBoard[3] = EMPTY_FIELD;
-  alternateStartBoard[4] = EMPTY_FIELD;
-  alternateStartBoard[5] = EMPTY_FIELD;
-  alternateStartBoard[6] = EMPTY_FIELD;
-  alternateStartBoard[7] = EMPTY_FIELD;
-
-
-  alternateStartBoard[38] = EMPTY_FIELD;
-  alternateStartBoard[37] = EMPTY_FIELD;
-  alternateStartBoard[36] = EMPTY_FIELD;
-  alternateStartBoard[35] = EMPTY_FIELD;
-
-  return alternateStartBoard;
-}
-
 export function createAdvantageStartBoard(
   originalStartBoard: Piece[],
   advantage: number,
@@ -139,7 +119,6 @@ export function createAdvantageStartBoard(
       return board;
   }
 }
-
 
 export function createBasicStartBoard(boardAsList: any[], ctx: any): Piece[] {
   const boardMatrix: Piece[][] = Array(COLUMNS).fill(null).map(() => Array(ROWS).fill(null));

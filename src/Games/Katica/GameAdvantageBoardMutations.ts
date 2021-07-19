@@ -112,6 +112,7 @@ function findIndexAndRemove(playerPiecesBoard: PlayerPieces[], pieceType: number
   return playerPiecesBoard[index].pieceIndex;
 }
 
+// to provide a repeatable random order for each match, so selected pieces will be the same.
 function shufflePlayerPiecesSeededRandom(board: PlayerPieces[]): PlayerPieces[] {
   const seed = board.findIndex(playerPiece => playerPiece.piece.pieceType === 3);
   for (let i = board.length - 1; i > 0; i--) {

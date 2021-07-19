@@ -2,13 +2,12 @@ import React, { FC } from 'react';
 import Radio from '@material-ui/core/Radio';
 
 interface AdvantageSelectorProps {
-  signAgreement: (eventIgnored: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   setAdvantage: (advantageLevel: number) => any;
   advantage: number;
 }
 
 export const AdvantageSelector: FC<AdvantageSelectorProps> = (props) => {
-  const { setAdvantage, signAgreement, advantage } = props;
+  const { setAdvantage, advantage } = props;
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAdvantage(Number(event.target.value));
@@ -36,7 +35,6 @@ export const AdvantageSelector: FC<AdvantageSelectorProps> = (props) => {
       YOU
       {renderRadioButtonsByAdvantageLevels()}
       OPPONENT
-      <button onClick={signAgreement}>OK for me!</button>
     </div>
   );
 }

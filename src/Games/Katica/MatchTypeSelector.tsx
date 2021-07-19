@@ -2,13 +2,12 @@ import React, { FC } from 'react';
 import Switch from '@material-ui/core/Switch';
 
 interface MatchTypeSelectorProps {
-  signAgreement: (eventIgnored: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   setMatchType: (matchType: boolean) => any;
   isAdvantageMatch: boolean;
 }
 
 export const MatchTypeSelector: FC<MatchTypeSelectorProps> = (props) => {
-  const { setMatchType, signAgreement, isAdvantageMatch } = props;
+  const { setMatchType, isAdvantageMatch } = props;
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMatchType(event.target.checked);
@@ -28,7 +27,6 @@ export const MatchTypeSelector: FC<MatchTypeSelectorProps> = (props) => {
     <div>
       <p>Advantage match?</p>
       {renderAdvantageSelector()}
-      <button onClick={signAgreement}>OK for me!</button>
     </div>
   );
 }
