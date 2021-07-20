@@ -24,7 +24,7 @@ export const MatchDisplayWrapper: FC<MatchDisplayWrapperProps> = (props) => {
   return (
     <div>
       {renderStatus(status)}
-      {matchSetup ? matchSetup : null}
+      {matchSetup}
       {board}
     </div>
   );
