@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 import Radio from '@material-ui/core/Radio';
 
 interface AdvantageSelectorProps {
@@ -7,6 +8,7 @@ interface AdvantageSelectorProps {
 }
 
 export const AdvantageSelector: FC<AdvantageSelectorProps> = (props) => {
+  const { t } = useTranslation();
   const { setAdvantage, advantage } = props;
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,9 +34,8 @@ export const AdvantageSelector: FC<AdvantageSelectorProps> = (props) => {
 
   return (
     <div>
-      YOU
+      <p>{t('katicaBoard.chooseAdvantage')}</p>
       {renderRadioButtonsByAdvantageLevels()}
-      OPPONENT
     </div>
   );
 }

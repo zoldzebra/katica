@@ -53,7 +53,15 @@ export const en = {
     'gameOver': 'Game over: ',
     'youWon': 'You won',
     'youLost': 'You lost',
-    'draw': 'Draw'
+    'draw': 'Draw',
+    'you': 'You',
+    'matchSetup': 'Match setup',
+    'okayForMe': 'Okay for me!',
+    'isThisAdvantageMatch': 'Is this an advantage giving match?',
+    'whoGetsAdvantage': 'Who will get advantage?',
+    'okayWithColors': 'Are you okay with the colors?',
+    'switchColors': 'No, switch colors!',
+    'chooseAdvantage': 'Choose advantage level!',
   },
   'changeLanguage': {
     'changeLanguage': 'Language',

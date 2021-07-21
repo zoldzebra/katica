@@ -80,7 +80,7 @@ export const KaticaGame = {
       moves: { setMatchType, signAgreement },
       endIf: (G: IG) => {
         if (isBothPlayersAgreed(G)) {
-          return { next: G.isAdvantageMatch ? Phase.ChooseColor : Phase.Move }
+          return { next: G.isAdvantageMatch ? Phase.MatchStarter : Phase.Move }
         }
       },
       onEnd: (G: IG) => {
@@ -91,8 +91,8 @@ export const KaticaGame = {
         }
       }
     },
-    ChooseColor: {
-      moves: { switchPlayerColors, signAgreement },
+    MatchStarter: {
+      moves: { setMatchStarter, signAgreement },
       endIf: (G: IG) => (isBothPlayersAgreed(G)),
       onEnd: (G: IG) => {
         return {
@@ -101,10 +101,10 @@ export const KaticaGame = {
           player1Agreed: false,
         }
       },
-      next: Phase.MatchStarter,
+      next: Phase.ChooseColor,
     },
-    MatchStarter: {
-      moves: { setMatchStarter, signAgreement },
+    ChooseColor: {
+      moves: { switchPlayerColors, signAgreement },
       endIf: (G: IG) => (isBothPlayersAgreed(G)),
       onEnd: (G: IG) => {
         return {

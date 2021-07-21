@@ -52,7 +52,15 @@ export const hu = {
     'gameOver': 'A játszma véget ért: ',
     'youWon': 'Nyertél',
     'youLost': 'Vesztettél',
-    'draw': 'Döntetlen'
+    'draw': 'Döntetlen',
+    'you': 'Te',
+    'matchSetup': 'Játszma előkészítés',
+    'okayForMe': 'Részemről rendben!',
+    'isThisAdvantageMatch': 'Előnyadásos játszma legyen?',
+    'whoGetsAdvantage': 'Kinél lesz az előny?',
+    'okayWithColors': 'Megfelelőek így a színek?',
+    'switchColors': 'Nem, cseréljük meg a színeket!',
+    'chooseAdvantage': 'Állítsd be az előny nagyságát!',
   },
   'changeLanguage': {
     'changeLanguage': 'Nyelv',

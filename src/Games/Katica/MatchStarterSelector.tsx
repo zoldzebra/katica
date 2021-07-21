@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 import Radio from '@material-ui/core/Radio';
 
 interface MatchStarterSelectorProps {
@@ -8,6 +9,7 @@ interface MatchStarterSelectorProps {
 }
 
 export const MatchStarterSelector: FC<MatchStarterSelectorProps> = (props) => {
+  const { t } = useTranslation();
   const { setMatchStarter, matchStarter, playerNames } = props;
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,7 +36,7 @@ export const MatchStarterSelector: FC<MatchStarterSelectorProps> = (props) => {
 
   return (
     <div>
-      <p>Who shall start the match?</p>
+      <p>{t('katicaBoard.whoGetsAdvantage')}</p>
       {renderStarterSelector()}
     </div>
   );

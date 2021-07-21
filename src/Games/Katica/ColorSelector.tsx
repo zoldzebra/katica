@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Color } from './Board';
 
@@ -9,6 +10,7 @@ interface ColorSelectorProps {
 }
 
 export const ColorSelector: FC<ColorSelectorProps> = (props) => {
+  const { t } = useTranslation();
   const { switchPlayerColors, isPlayer0Red, playerNames } = props;
 
   const handleChangeSide = (eventIgnored: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -39,9 +41,9 @@ export const ColorSelector: FC<ColorSelectorProps> = (props) => {
 
   return (
     <div>
-      <p>Choose color!</p>
+      <p>{t('katicaBoard.okayWithColors')}</p>
       {renderColorSetting()}
-      <button onClick={handleChangeSide}>Switch sides!</button>
+      <button onClick={handleChangeSide}>{t('katicaBoard.switchColors')}</button>
     </div>
   );
 }

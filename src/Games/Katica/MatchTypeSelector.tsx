@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 import Switch from '@material-ui/core/Switch';
 
 interface MatchTypeSelectorProps {
@@ -7,6 +8,7 @@ interface MatchTypeSelectorProps {
 }
 
 export const MatchTypeSelector: FC<MatchTypeSelectorProps> = (props) => {
+  const { t } = useTranslation();
   const { setMatchType, isAdvantageMatch } = props;
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,7 +27,7 @@ export const MatchTypeSelector: FC<MatchTypeSelectorProps> = (props) => {
 
   return (
     <div>
-      <p>Advantage match?</p>
+      <p>{t('katicaBoard.isThisAdvantageMatch')}</p>
       {renderAdvantageSelector()}
     </div>
   );

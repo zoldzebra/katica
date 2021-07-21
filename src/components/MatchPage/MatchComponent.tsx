@@ -44,7 +44,7 @@ export const MatchComponent: FC<MatchComponentProps> = (props) => {
         matchID={playedMatchCredentials.matchID}
         playerID={playedMatchCredentials.playerID}
         credentials={playedMatchCredentials.credentials}
-        debug={true}
+        debug={false}
       />
     </>
   )

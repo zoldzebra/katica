@@ -330,6 +330,8 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
   }
 
   getPlayerNames = () => {
+    const { t } = this.props;
+    const you = t('katicaBoard.you');
     let rawNames: string[] = [];
     if (!this.props.matchData
       || !this.props.matchData[0].name
@@ -339,7 +341,7 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
     }
     if (this.props?.matchData) {
       rawNames = [this.props.matchData[0].name as string, this.props.matchData[1].name as string];
-      rawNames[Number(this.props.playerID)] = `${rawNames[Number(this.props.playerID)]} (You)`;
+      rawNames[Number(this.props.playerID)] = `${rawNames[Number(this.props.playerID)]} (${you})`;
     }
     return rawNames;
   }
@@ -352,17 +354,17 @@ class KaticaBoard extends React.Component<IBoardProps, unknown> {
           isAdvantageMatch={this.props.G.isAdvantageMatch}
         />
       );
-      case 'ChooseColor': return (
-        <ColorSelector
-          switchPlayerColors={this.switchPlayerColors}
-          isPlayer0Red={this.props.G.isPlayer0Red}
-          playerNames={this.playerNames}
-        />
-      );
       case 'MatchStarter': return (
         <MatchStarterSelector
           setMatchStarter={this.setMatchStarter}
           matchStarter={this.props.G.matchStarter}
+          playerNames={this.playerNames}
+        />
+      );
+      case 'ChooseColor': return (
+        <ColorSelector
+          switchPlayerColors={this.switchPlayerColors}
+          isPlayer0Red={this.props.G.isPlayer0Red}
           playerNames={this.playerNames}
         />
       );
